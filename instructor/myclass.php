@@ -5,21 +5,25 @@ include "conf.php";
 if(!isset($_SESSION['stnamed'])){
      header('Location: ../index.php');
 }
+$lname = $_SESSION['stnamed'];
+?>
+<?php
+$sql = " SELECT term from lpterm where `status` = 1";
+$result = mysqli_query($con,$sql);
+$row = mysqli_fetch_array($result);
+ $term = $row["term"];
+ $_SESSION['term'] =$term;
 
 ?>
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
-$termed = $db_handle->runQuery($query);
-?>
-<?php
-foreach ($termed as $termd) {
- $terd = $termd["term"];
 
-?>
 <?php
-}
+
+$sql = " SELECT * from lhpclassalloc  WHERE `tutorid` = '$lname' and term = '$term'";
+$result = mysqli_query($con,$sql);
+$row = mysqli_fetch_array($result);
+ $classid = $row["classid"];
+ $_SESSION['classalloc'] =$classid;
+
 ?>
 <!doctype html>
 <html class="no-js" lang="">
@@ -27,7 +31,7 @@ foreach ($termed as $termd) {
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Scoresheet - LearnAble</title>
+    <title>Affective Domain Ratings - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
@@ -98,13 +102,83 @@ foreach ($termed as $termd) {
           
       }
     </script>
-    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+
+     <script>
+	function loadtable(){
+		
+		$.ajax({
+			url: 'getaffective.php',
+			success: function(data){
+				
+				$("#cadata").html(data);
+			}
+		})
+	};
+</script>
+
+<script>
+      function recordaffective(){
+                  var termid="<?php echo $term ?>";
+                  var classid="<?php echo $classid ?>";
+                    var learnerid=$("#learnerid").val();
+                    var presentid=$("#present").val();
+                    var leadr=$("#lead").val();
+                    var eloquentr=$("#eloquent").val();
+                    var neatr=$("#neat").val();
+                    var creater=$("#creative").val();
+                    var respond=$("#response").val();
+                $.ajax({
+                    url:'submitaffect.php',
+                    method:'POST',
+                    data:{
+                        term:termid,
+                        classid:classid,
+                        learnerid:learnerid,
+                        present:presentid,
+                        ratingl:leadr,
+                        ratinge:eloquentr,
+                        ratingn:neatr,
+                        ratingc:creater,
+                        ratingr:respond
+                    },
+                   success:function(data){
+                       alert(data);
+                       $("#learnerid").val("");
+                       $("#present").val("");
+                       $("#lead").val("");
+                       $("#eloquent").val("");
+                       $("#neat").val("");
+                       $("#creative").val("");
+                       $("#response").val("");
+                   }
+                });
+                $(document).ready(function(){
+		
+		$.ajax({
+			url: 'getaffective.php',
+			success: function(data){
+				
+				$("#cadata").html(data);
+			}
+		})
+	});
+            };
+    </script>
+
+   
+
+<script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
-		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> 
+   
 
 </head>
 
-<body>
+<body  onload="loadtable()">
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -201,10 +275,10 @@ mysqli_close($conn);
                                 <thead>
                                     <tr>
                                        <th>S/N</th>
-                                       <th>Subject</th>
-										<th>Continuous Assessment Score</th>
-										<th>Examination Scores</th>
-										<th>View Cumulative Scores</th>
+                                       <th>Class name</th>
+										<th>Class Population</th>
+										<th>Designation</th>
+										
                                     </tr>
                                 </thead>
                                
@@ -219,7 +293,7 @@ mysqli_close($conn);
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("SELECT * from lhpalloc  WHERE `staffid` = '$lname' and term = '$terd' ORDER BY term DESC ");
+            $query=$conn->prepare("SELECT * from lhpclassalloc  WHERE `tutorid` = '$lname' and term = '$term' ");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
@@ -228,31 +302,26 @@ mysqli_close($conn);
             <?php
             
                 $term = $row->term;	
-            	$cname = $row->classid;
-                $sbjt = $row->sbjid;
-                $sb = $row->subject;
-               $cn = $row-> classname;
+            	$classid = $row->classid;
+                
  
-               $sql = "SELECT count('questid') FROM `lhpquestion` WHERE sbjid = '$sbjt' AND status = 1 ";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_array($result);
-                        $num = $row[0]; 
+                $sql = " SELECT COUNT(id) as classpop from lhpuser where classid = '$classid'";
+                $result = mysqli_query($con,$sql);
+                $row = mysqli_fetch_array($result);
+                  $population = $row['classpop'];
+
+                  $sql = " SELECT classname from lhpclass  where `classid` = '$classid' ";
+            $result = mysqli_query($con,$sql);
+            $row = mysqli_fetch_array($result);
+             $classname = $row["classname"];
                 
                 ?>
             <tr>
                 <td><?php echo $count++ ?></td>
-                 <td><strong><?php echo $cn." ".$sb?></strong></td>
-                	<td>
-				   <span><a href="recordca.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-default" ><strong>Record CA Scores</strong></a></span>
-				</td>
-				
-					<td>
-				 <span>  <a href="recordexam.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-danger" ><strong>Record Exam Scores</strong></a></span>
-				</td>
-               	<td>
-				 <span>  <a href="viewcum.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-primary" ><strong>View Cumuative Score </strong></a></span>
-				</td>
-                
+                 
+                <td><span><strong><?php echo $classname?></strong></span></td>
+				<td><span><strong><?php echo $population?></strong></span></td>
+                <td><span><strong>Class Teacher</strong></span></td>
 				
 			
                 
@@ -263,11 +332,10 @@ mysqli_close($conn);
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                       <th>S/N</th>
-										<th>Subject</th>
-										<th>Continuous Assessment Score</th>
-										<th>Examination Scores</th>
-										<th>View Cumulative Scores</th>
+                                    <th>S/N</th>
+                                       <th>Class name</th>
+										<th>Class Population</th>
+										<th>Designation</th>
 									    
 									
                                     </tr>
@@ -280,6 +348,209 @@ mysqli_close($conn);
         </div>
     </div>
     <!-- Data Table area End-->
+    <div class="breadcomb-area">
+		<div class="container">
+			<div class="row">
+
+            </div>
+                </div>
+			</div>
+    <div class="form-element-area">
+        <div class="container">
+            <div class="row">
+                
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-element-list">
+                        <div class="basic-tb-hd">
+                            <h2>Record Affective Domain and Attendance Records  <br>	 <?php
+							
+    if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
+    {
+      printf('<b>%s</b>', $_SESSION['remessage']);
+      unset($_SESSION['remessage']);
+    }
+  ?></h2>
+                        </div>
+					</div>
+				</div>
+                  </div>      
+                        <br>
+                        <br>
+                        <br>
+						<div class="row">
+			
+							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>Select Student </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <select type="text" required="yes" class="form-control" id="learnerid" >
+											<option value="">Select Learner Id</option>
+										<?php
+$sql = "SELECT * FROM `lhpuser` WHERE `classid` = '$classid'";
+$result = mysqli_query($con, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+     // output data of each row
+    while($row = mysqli_fetch_assoc($result)) {
+      $id =  $row["uname"];
+      $fullname =  $row["fname"];
+
+echo '<option value="'.$id.'">'.$id." - ".$fullname.'</option>';
+    }
+}
+?>
+										</select>
+                                    </div>
+                                </div>
+                            </div>
+							
+							<div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                                <label>Total Present Days  </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                            <input type="number" required="yes" class="form-control" min="0"  id="present" >
+			
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                                <label>Affective Domain - Leadership  </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                    <select type="text" required="yes" class="form-control" id="lead" >
+											<option value="">Rate Leadership SKills</option>
+                      <option value="5">Excellent - 5</option>
+                      <option value="4">Very Good - 4</option>
+                      <option value="3">Moderate - 3</option>
+                      <option value="2">Fair - 2</option>
+                      <option value="1">Poor - 1</option>
+                                    </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                                <label>Affective Domain - Eloquence  </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                           
+                            <select type="text" required="yes" class="form-control" id="eloquent" >
+											<option value="">Rate Eloquency</option>
+                      <option value="5">Excellent - 5</option>
+                      <option value="4">Very Good - 4</option>
+                      <option value="3">Moderate - 3</option>
+                      <option value="2">Fair - 2</option>
+                      <option value="1">Poor - 1</option>
+                                    </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                                <label>Affective Domain - Neatness  </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                    <select type="text" required="yes" class="form-control" id="neat" >
+											<option value="">Rate Neatness</option>
+                      <option value="5">Excellent - 5</option>
+                      <option value="4">Very Good - 4</option>
+                      <option value="3">Moderate - 3</option>
+                      <option value="2">Fair - 2</option>
+                      <option value="1">Poor - 1</option>
+                                    </select>
+			
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                                <label>Affective Domain - Creativity </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                    <select type="text" required="yes" class="form-control" id="creative" >
+											<option value="">Rate Creativity</option>
+                      <option value="5">Excellent - 5</option>
+                      <option value="4">Very Good - 4</option>
+                      <option value="3">Moderate - 3</option>
+                      <option value="2">Fair - 2</option>
+                      <option value="1">Poor - 1</option>
+                                    </select>
+			
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                                <label>Affective Domain - Responsiveness  </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                    <select type="text" required="yes" class="form-control" id="response" >
+											<option value="">Rate Response in Class</option>
+                      <option value="5">Excellent - 5</option>
+                      <option value="4">Very Good - 4</option>
+                      <option value="3">Moderate - 3</option>
+                      <option value="2">Fair - 2</option>
+                      <option value="1">Poor - 1</option>
+                                    </select>
+			
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                           
+							
+					
+							<br>
+							<br>
+							<div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
+                                
+								<div class="form-group ic-cmp-int">
+                                    
+                      <div class="nk-int-st">
+                          <button  type="submit" class="form-control" class="btn btn-success" onclick="recordaffective()" > <strong>RECORD Affective Domain and Attendance Records</strong></button> 
+                                    </div>
+                                </div>
+                            </div>
+				
+				
+				</div>
+                </div>
+			</div>
+            
+      <div id="cadata" >
+        
+        </div>
+
+      
     <!-- Start Footer area-->
   <?php include ("foot.php"); ?>
     <!-- End Footer area-->

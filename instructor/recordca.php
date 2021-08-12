@@ -164,7 +164,7 @@ $studentlist = $db_handle->runQuery($query);
             };
     </script>
     <script>
-	$(document).ready(function(){
+		function loadtable(){
 		
 		$.ajax({
 			url: 'getcascore.php',
@@ -173,7 +173,7 @@ $studentlist = $db_handle->runQuery($query);
 				$("#cadata").html(data);
 			}
 		})
-	});
+	};
 </script>
     
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
@@ -185,7 +185,7 @@ $studentlist = $db_handle->runQuery($query);
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> 
 </head>
 
-<body>
+<body  onload="loadtable()">
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->

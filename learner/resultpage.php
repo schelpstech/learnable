@@ -61,12 +61,14 @@ if (mysqli_num_rows($result) > 0) {
 	
   }
 }
+
+// Class Population
 $sql = "SELECT COUNT(id) AS pop FROM `lhpuser` WHERE `classid` = '$cclass' ";
                $result=mysqli_query($con,$sql);
                 $row=mysqli_fetch_array($result);
                      
                       $pop = $row["pop"];
-
+//Result Configuration
 $sql = "SELECT * FROM lhpresultconfig WHERE term = '$term' ";
 $result=mysqli_query($con,$sql);
  $row=mysqli_fetch_array($result);
@@ -75,7 +77,35 @@ $result=mysqli_query($con,$sql);
        $opendays = $row["sch_open"];
        $sign = $row["signature"];
 
+//Get Affective Domain
+       $sql = "SELECT *  from lhpaffective WHERE uname = '$lname' AND term = '$term'";
+$result=mysqli_query($con,$sql);
+ $row=mysqli_fetch_array($result);
+      
+     
+                  $present =  $row["total_present"];
+                  $lead =  $row["rating1"];
+                  $eloq =  $row["rating2"];
+                  $neat =  $row["rating3"];
+                  $create =  $row["rating4"];
+                  $response =  $row["rating5"];
+
+
+ //Get Class Teacher's name
+$sql = "SELECT * FROM `lhpclassalloc` WHERE term = '$term' and classid = '$cclass'";
+$result=mysqli_query($con,$sql);
+$row=mysqli_fetch_array($result);
+        $tutor = $row["tutorid"];
+ 
+        $sql = "SELECT * FROM `lhpstaff` WHERE  sname = '$tutor'";
+   $result=mysqli_query($con,$sql);
+        $row=mysqli_fetch_array($result);
+                $tutorname = $row["staffname"];
 ?>
+
+
+
+
 	
 <!doctype html>
 <html>
@@ -144,7 +174,7 @@ $result=mysqli_query($con,$sql);
     <script type="text/javascript" src="./chartload.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.2.0/jspdf.umd.min.js"></script>
   
-    <script  type="text/javascript" src="./chartload.js">
+    <script  >
  
       function generatePDF() {
        
@@ -269,7 +299,7 @@ $result=mysqli_query($con,$sql);
 	<td><strong><p style ="text-align: center;">Male</p></strong></td>      
 				<td><strong><p style ="text-align: center;">4 years</p></strong></td>
 				<td><strong><p style ="text-align: center;"><?php echo $dclass; ?></p></strong></td>
-				<td><strong><p style ="text-align: center;">Mr Bright Johnson</p></strong></td>
+				<td><strong><p style ="text-align: center;"><?php echo $tutorname; ?></p></strong></td>
 				<td><strong><p style ="text-align: center;"><?php echo $pop; ?></p></strong></td>
 				<td><strong><p style ="text-align: center;"><image  src="images/profilepix/<?php echo $pix; ?>"  height="100" width="100"/></p></strong></td>
             </tr>
@@ -321,13 +351,13 @@ $result=mysqli_query($con,$sql);
            
             <tr>
             <td><strong><p style ="text-align: center;"><?php echo $opendays ?></p></strong></td>
-	<td><strong><p style ="text-align: center;">112</p></strong></td>
-	<td><strong><p style ="text-align: center;">8</p></strong></td>      
-				<td><strong><p style ="text-align: center;">4</p></strong></td>
-				<td><strong><p style ="text-align: center;">4</p></strong></td>
-				<td><strong><p style ="text-align: center;">4</p></strong></td>
-				<td><strong><p style ="text-align: center;">4</p></strong></td>
-				<td><strong><p style ="text-align: center;">4</p></strong></td>
+	<td><strong><p style ="text-align: center;"><?php echo $present ?></p></strong></td>
+	<td><strong><p style ="text-align: center;"><?php echo $opendays - $present;?></p></strong></td>      
+				<td><strong><p style ="text-align: center;"><?php echo $lead ?></p></strong></td>
+				<td><strong><p style ="text-align: center;"><?php echo $eloq ?></p></strong></td>
+				<td><strong><p style ="text-align: center;"><?php echo $neat ?></p></strong></td>
+				<td><strong><p style ="text-align: center;"><?php echo $create ?></p></strong></td>
+				<td><strong><p style ="text-align: center;"><?php echo $response ?></p></strong></td>
             </tr>
            
             </tbody>
@@ -624,26 +654,7 @@ $result=mysqli_query($con,$sql);
             </div>
         </div>
     
-
-    <div id="doc" class="breadcomb-area">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <style type="text/css">
-      #chart-container {
-        width: auto;
-        height: auto;
-      }
-    </style>
-    <div id="chart-container">
-      <canvas id="mycanvas"></canvas>
-    </div>
-    </div>
-            </div>
-        </div>
-    </div>
-   
-    <div class="breadcomb-area">
+        <div class="breadcomb-area">
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -665,9 +676,29 @@ $result=mysqli_query($con,$sql);
 					</div>
 				</div>
 			</div>
-		<
-  
+      </div>
+    <div  class="breadcomb-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <style type="text/css">
+      #chart-container {
+        width: auto;
+        height: auto;
+      }
+    </style>
+    <div id="chart-container">
+      <canvas id="mycanvas"></canvas>
     </div>
+    </div>
+            </div>
+        </div>
+    </div>
+   
+   
+		
+  
+    
    
     <button id="cmd" onclick="generatePDF()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i><h3>Download Results</h3> </button>
     <!-- Start Footer area-->
