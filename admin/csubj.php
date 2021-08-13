@@ -268,7 +268,7 @@ foreach ($classresult as $classed) {
                                          <th>S/N</th>
 										<th>Class name</th>
 										<th>Subject</th>
-										
+										<th>Delete</th>
 										
 										
                                     </tr>
@@ -295,7 +295,10 @@ foreach ($classresult as $classed) {
                 <td><?php echo $count++ ?></td>
 				<td><?php echo $row->classname ?></td>
 				<td><?php echo $row->sbjname ?></td>
-				
+        <td>
+				    
+        <a href="delsubject.php?id=<?php echo $row->sbjid?>&sbjref=<?php echo $row->sbjname?>&classref=<?php echo $row->classname?>" type="button"  class="btn btn-danger" >Delete Subject</a>
+				</td>
 				
 				
                 
@@ -309,7 +312,7 @@ foreach ($classresult as $classed) {
                                          <th>S/N</th>
 										<th>Class name</th>
 										<th>Subject</th>
-										
+										<th>Delete</th>
                                     </tr>
                                 </tfoot>
                             </table>

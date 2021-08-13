@@ -9,8 +9,9 @@ if (isset($_POST['edstdt']) && $_POST['edstdt'] == 'Modify Learner Details')
 	$lnnn = mysqli_real_escape_string($con,$_POST['nname']);  
 	$lnnnn = mysqli_real_escape_string($con,$_POST['nemail']);  
 	$lnnnnn = mysqli_real_escape_string($con,$_POST['nclass']);
-	
-	 $sql= "UPDATE lhpuser SET upwd = '$lnn', email = '$lnnnn', classid = '$lnnnnn', fname = '$lnnn' WHERE uname = '$ln'";
+	$gender = mysqli_real_escape_string($con,$_POST['gender']);
+  $dob = mysqli_real_escape_string($con,$_POST['dob']);
+	 $sql= "UPDATE lhpuser SET upwd = '$lnn', email = '$lnnnn', classid = '$lnnnnn', fname = '$lnnn', gender = '$gender', dob = '$dob' WHERE uname = '$ln'";
 	 
 	 
 		if(mysqli_query($con, $sql)){	

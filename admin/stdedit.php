@@ -214,6 +214,52 @@ foreach ($editresult as $ed) {
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label> Learner's Date of Birth</label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <input type="date" required="yes" class="form-control" name="dob" 
+                                        <?php
+foreach ($editresult as $ed) {
+    ?>
+ value="<?php echo $ed["dob"]; ?>">
+<?php
+}
+?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>Select Gender</label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <select  type="text" required="yes" class="form-control" name="gender">
+<?php
+foreach ($editresult as $ed) {
+	$gender = $ed["gender"]
+?>
+<?php
+}
+?>
+
+<option value="<?php echo $gender; ?>"><?php echo $gender; ?></option>
+<option value="Male">Male</option>
+ <option value="Female">Female</option>
+
+                            </select>
+                                    </div>
+                                </div>
+                            </div>
 							
 							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
                                 <label> Learner's Email Address</label>

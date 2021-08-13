@@ -5,12 +5,13 @@ include "conf.php";
 if(!isset($_SESSION['unamed'])){
    header('Location: ../index.php');
 }
-?>
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpclass";
-$classresult = $db_handle->runQuery($query);
+
+$sql = " SELECT term from lpterm where `status` = 1";
+$result = mysqli_query($con,$sql);
+$row = mysqli_fetch_array($result);
+ $term = $row["term"];
+ 
+
 ?>
 
 
@@ -20,12 +21,12 @@ $classresult = $db_handle->runQuery($query);
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Manage Learners - LearnAble</title>
+    <title>Manage Records - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="http://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -91,7 +92,27 @@ $classresult = $db_handle->runQuery($query);
           
       }
     </script>
-    
+    <script>
+function getstd() {
+        var str='';
+        var val=document.getElementById('classtn');
+        for (i=0;i< val.length;i++) { 
+            if(val[i].selected){
+                str += val[i].value + ','; 
+            }
+        }         
+        var str=str.slice(0,str.length -1);
+        
+	$.ajax({          
+        	type: "GET",
+        	url: "get_std.php",
+        	data:'cld='+str,
+        	success: function(data){
+        		$("#std-list").html(data);
+        	}
+	});
+}
+</script>
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
@@ -120,7 +141,7 @@ $classresult = $db_handle->runQuery($query);
     </div>
     <!-- End Header Top Area -->
     <!-- Mobile Menu start -->
-     <?php include "nav.html"; ?>
+  <?php include "nav.html"; ?> 
     <!-- Main Menu area End-->
 	<!-- Breadcomb area Start-->
 	<div class="breadcomb-area">
@@ -159,151 +180,24 @@ $classresult = $db_handle->runQuery($query);
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Create Learners Account</h2>
-                            <p>Use the form below to create Learners account </p>
+                            <h2>Manage Academic Scores Record</h2>
+                            <p>View and Reset Academic Scores Record </p>
 						<h2>	 <?php
 							
-    if (isset($_SESSION['lsmessaged']) && $_SESSION['lsmessaged'])
+    if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
     {
-      printf('<b>%s</b>', $_SESSION['lsmessaged']);
-      unset($_SESSION['lsmessaged']);
+      printf('<b>%s</b>', $_SESSION['remessage']);
+      unset($_SESSION['remessage']);
     }
   ?></h2>
                         </div>
 					</div>
 				</div>
                   </div>      
-                        <br>
-                        <br>
-                        <br>
-						<div class="row">
-						<form method="POST" action="createle.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
-                         
-							 
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label> Learner's Full Name</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="lname" placeholder="Enter Learner's Fullname">
-                                    </div>
-                                </div>
-                            </div>
-							
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label> Learner's UserName</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" maxlength="12" name="luname" placeholder="Enter Learner's Login Username">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label> Learner's Gender</label>
-							            	<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <select type="text" required="yes" class="form-control"  name="gender">
-                                        <option value="">Enter Learner's Gender</option>
-                                        <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                        </select>
-                                      </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label> Learner's Date of Birth</label>
-								            <div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <input type="date" required="yes" class="form-control"  name="dob" >
-                                    </div>
-                                </div>
-                            </div>
-
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label> Learner's Password</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="lpwd" placeholder="Enter Learner's Log in Password">
-                                    </div>
-                                </div>
-                            </div>
-							
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label> Learner's Email Address</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <input type="email" required="yes" class="form-control" name="lmail"  placeholder="Learner's Email address">
-                                    </div>
-                                </div>
-                            </div>
-							
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Select Class</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <select type="text" required="yes" class="form-control" name="lclass" >
-										<option> Select Class</option>
-										<?php
-foreach ($classresult as $classed) {
-    ?>
-<option value="<?php echo $classed["classid"]; ?>"><?php echo $classed["classname"]; ?></option>
-<?php
-}
-?>
-										</select>
-                                    </div>
-                                </div>
-                            </div>
-							
-							<br>
-							<br>
-							<div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
-                                
-								<div class="form-group ic-cmp-int">
-                                    
-                                    <div class="nk-int-st">
-                                       <input type="submit" class="form-control" name="createl" value="Create Learner Account"/> 
-                                    </div>
-                                </div>
-                            </div>
-							
-                    
-				</form>
-				
-				</div>
+                       
                 </div>
 			</div>	
-			
-		</div>
-	</div>
+	
 	
 	<!-- Breadcomb area End-->
     <!-- Data Table area Start-->
@@ -312,27 +206,20 @@ foreach ($classresult as $classed) {
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="data-table-list">
-                        <div class="basic-tb-hd">
-                            <h2>Learners' List
-							
-						</h2>
-                            <p>Learners' Contact and Log in details</p>
-                        </div>
+                       
                         <div class="table-responsive">
                             <table id="data-table-basic" class="table table-striped">
                                 <thead>
                                     <tr>
-                                         <th>S/N</th>
+                                          <th>S/N</th>
+										  <th>Term</th>
 										<th>Class</th>
+                                        <th>Subject</th>
 										<th>Full name</th>
-										<th>Username</th>
-										<th>Gender</th>
-                    <th>Date of Birth</th>
-										<th>Email </th>
-										<th>Log in</th>
-										<th>Status</th>
-										<th>Edit </th>
-										
+										<th>CA Score </th>
+										<th>Exam Score </th>
+										<th>Total Score</th>
+										<th>Action</th>
 										
                                     </tr>
                                 </thead>
@@ -348,49 +235,70 @@ foreach ($classresult as $classed) {
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("select * from lhpuser ORDER BY classid DESC ");
+            $query=$conn->prepare("select * from lhpresultrecord where term ='$term' ORDER BY rectime DESC ");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
             {
-            $cname = $row->classid;
-             $fname = $row->fname;
-              $uname = $row->uname;
-               $email = $row->email;
-                $upwd = $row->upwd;
-                 $status = $row->status;
-                 $gender = $row->gender;
-                 $dob = $row->dob;
+                
+                $term = $row->term;
+                $classref = $row->classid;
+                $learnerid = $row->lid;
+                $sbj = $row->subjid;
+                $cascore = $row->score;
+                $examscore = $row->examscore;
+                $totalscore = $row->totalscore;
+                $id= $row->id;
+$sql = "SELECT classname FROM lhpclass WHERE classid='$classref'";
 
-                 if ($status == 1){
-                     $stat = '<a href="stdact.php?unam='.$uname.'" type="button"  class="btn btn-success" >Active. Change</a>';
-                 }
-                 else{
-                     $stat = '<a href="stdact.php?unam='.$uname.'" type="button"  class="btn btn-danger" >Inactive. Change</a>';
-                 }
-            $sql = "SELECT * FROM lhpclass WHERE classid  = '$cname'";
-				$result=mysqli_query($con,$sql);
-				 $row=mysqli_fetch_array($result);
-               
-               $cn = $row['classname'];
-      
+$result = mysqli_query($con, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    
+	$cname =$row["classname"];
+  }
+} 
+
+$sql = "SELECT sbjname FROM lhpsubject WHERE sbjid ='$sbj'";
+
+$result = mysqli_query($con, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    
+	$sbjname =$row["sbjname"];
+  }
+} 
+
+$sql = "SELECT fname FROM lhpuser WHERE uname ='$learnerid'";
+
+$result = mysqli_query($con, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    
+	$learner =$row["fname"];
+  }
+} 
+
+                
             ?>
             <tr>
-                <td><?php echo $count++ ?></td>
-				<td><?php echo $cn ?></td>
-				<td><?php echo $fname ?></td>
-				<td><?php echo $uname ?></td>
-        <td><?php echo $gender ?></td>
-        <td><?php echo $dob ?></td>
-				<td><?php echo $email ?></td>
-				<td><?php echo $upwd ?></td>
-				<td><?php echo $stat ?></td>
-				<td>
-				    <a href="stdedit.php?unam=<?php echo $uname ?>" type="button"  class="btn btn-info" >Edit</a>
-				</td>
+                <td><strong><?php echo $count++ ?></strong></td>
+				<td><strong><?php echo $term ?></strong></td>
+				<td><strong><?php echo $cname ?></strong></td>
+                <td><strong><?php echo $sbj." - ".$sbjname; ?></strong></td>
+				<td><strong><?php echo $learnerid." - ".$learner; ?></strong></td>
+				<td><strong><?php echo $cascore ?></strong></td>
+				<td><strong><?php echo $examscore ?></strong></td>
+                <td><strong><?php echo $totalscore ?></strong></td>
+                <td><a href="delrecord.php?id=<?php echo $id ?>&sbjid=<?php echo $sbjname ?>&lid=<?php echo $learner ?>" type="button" class="btn btn-primary"><strong>RESET</strong></a></td>
 			
-		
-			
+				
                 
             </tr>
             <?php }?>
@@ -399,16 +307,15 @@ foreach ($classresult as $classed) {
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                         <th>S/N</th>
+                                    <th>S/N</th>
+										  <th>Term</th>
 										<th>Class</th>
+                                        <th>Subject</th>
 										<th>Full name</th>
-										<th>Username</th>
-                    <th>Gender</th>
-                    <th>Date of Birth</th>
-										<th>Email </th>
-										<th>Log in</th>
-										<th>Status</th>
-										<th>Edit </th>
+										<th>CA Score </th>
+										<th>Exam Score </th>
+										<th>Total Score</th>
+										<th>Action</th>
 										
                                     </tr>
                                 </tfoot>
@@ -421,8 +328,7 @@ foreach ($classresult as $classed) {
     </div>
     <!-- Data Table area End-->
     <!-- Start Footer area-->
-      <?php include "foot.html"; ?>
- 
+   <?php include "foot.html"; ?>
     <!-- End Footer area-->
     
     
