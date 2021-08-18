@@ -56,10 +56,10 @@ if(isset($_POST['but_submit'])){
 
             $sql= "INSERT INTO log  (uname,utype,stat,uip) VALUES ('$uname','$type',1, '$uip')";
 		    if(mysqli_query($con, $sql)){
-			session_start();
+            }
 			$_SESSION['stnamed'] = $uname;
             header('Location:instructor/profile.php');
-        }
+        
         }
     
     else{

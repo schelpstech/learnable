@@ -21,7 +21,7 @@ $row = mysqli_fetch_array($result);
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Manage Records - LearnAble</title>
+    <title>Manage Scores Records - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon

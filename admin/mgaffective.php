@@ -5,16 +5,14 @@ include "conf.php";
 if(!isset($_SESSION['unamed'])){
    header('Location: ../index.php');
 }
+
+$sql = " SELECT term from lpterm where `status` = 1";
+$result = mysqli_query($con,$sql);
+$row = mysqli_fetch_array($result);
+ $term = $row["term"];
+ 
+
 ?>
-
-<?php
-
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpclass";
-$classresult = $db_handle->runQuery($query);
-?>
-
 
 
 <!doctype html>
@@ -23,12 +21,12 @@ $classresult = $db_handle->runQuery($query);
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Manage Class and Subjects - LearnAble</title>
+    <title>Manage Affective Domain Records - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-   <link rel="shortcut icon" type="image/x-icon" href="http://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -94,10 +92,32 @@ $classresult = $db_handle->runQuery($query);
           
       }
     </script>
+    <script>
+function getstd() {
+        var str='';
+        var val=document.getElementById('classtn');
+        for (i=0;i< val.length;i++) { 
+            if(val[i].selected){
+                str += val[i].value + ','; 
+            }
+        }         
+        var str=str.slice(0,str.length -1);
+        
+	$.ajax({          
+        	type: "GET",
+        	url: "get_std.php",
+        	data:'cld='+str,
+        	success: function(data){
+        		$("#std-list").html(data);
+        	}
+	});
+}
+</script>
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
-
+		
+		
 </head>
 
 <body>
@@ -137,14 +157,6 @@ $classresult = $db_handle->runQuery($query);
 									</div>
 									<div class="breadcomb-ctn">
 										<h2>Welcome Admin</h2>
-										<h2>	 <?php
-					
-    if (isset($_SESSION['clmessage']) && $_SESSION['clmessage'])
-    {
-      printf('<b>%s</b>', $_SESSION['clmessage']);
-      unset($_SESSION['clmessage']);
-    }
-  ?></h2>
 										<p>.<span class="bread-ntd"></span></p>
 									</div>
 								</div>
@@ -168,85 +180,24 @@ $classresult = $db_handle->runQuery($query);
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Create Subject</h2>
-                            <p>Use the form below to create subject for your classes </p>
-					
+                            <h2>Manage Affective Domain and Attendance Record</h2>
+                            <p>View and Reset Affective Domain and Attendance  Record </p>
+						<h2>	 <?php
+							
+    if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
+    {
+      printf('<b>%s</b>', $_SESSION['remessage']);
+      unset($_SESSION['remessage']);
+    }
+  ?></h2>
                         </div>
 					</div>
 				</div>
                   </div>      
-                        <br>
-                        <br>
-                        <br>
-						<div class="row">
-						<form method="POST" action="createsbj.php" class="form-element-area"  id="fupload" enctype="multipart/form-data">
-                         
-							 
-							 <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label> Select Class</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <select type="text" required class="form-control"  name="sbjclass">
-										<option> Select Class</option>
-										<?php
-foreach ($classresult as $classed) {
-    ?>
-<option value="<?php echo $classed["classid"]; ?>"><?php echo $classed["classname"]; ?></option>
-<?php
-}
-?>
-										</select>
-                                    </div>
-                                </div>
-                            </div>
-							 
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label> Subject name</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="sbjname" placeholder="Enter Subject name">
-                                    </div>
-                                </div>
-                            </div>
-							
-							
-							
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                               
-                            </div>
-							
-							
-							
-							
-							<br>
-							<br>
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                
-								<div class="form-group ic-cmp-int">
-                                    
-                                    <div class="nk-int-st">
-                                       <input type="submit" class="form-control" name="createsb" value="Create Subject"/> 
-                                    </div>
-                                </div>
-                            </div>
-							
-                    
-				</form>
-				
-				</div>
+                       
                 </div>
 			</div>	
-			
-		</div>
-	</div>
+	
 	
 	<!-- Breadcomb area End-->
     <!-- Data Table area Start-->
@@ -255,20 +206,22 @@ foreach ($classresult as $classed) {
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="data-table-list">
-                        <div class="basic-tb-hd">
-                            <h2>Subject List</h2>
-                            <p>A list of all the subjects offered in all the classes</p>
-                        </div>
+                       
                         <div class="table-responsive">
                             <table id="data-table-basic" class="table table-striped">
                                 <thead>
                                     <tr>
-                                         <th>S/N</th>
-										<th>Class name</th>
-										<th>Subject</th>
-										<th>Delete</th>
-										
-										
+                                          <th>S/N</th>
+										  <th>Term</th>
+										<th>Class</th>
+                                        <th>Full name</th>
+										<th>Present Days </th>
+										<th>Leadership Ratings</th>
+										<th>Eloquence Ratings</th>
+										<th>Neatness Ratings</th>
+										<th>Creativity Ratings</th>
+                                        <th>Responsiveness Ratings</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                
@@ -283,21 +236,62 @@ foreach ($classresult as $classed) {
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("select * from lhpsubject ORDER BY classid ASC ");
+            $query=$conn->prepare("select * from lhpaffective where term ='$term' ORDER BY rectime DESC ");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
             {
+                
+                $term = $row->term;
+                $classref = $row->classid;
+                $learnerid = $row->uname;
+                $present = $row->total_present;
+                $rating1 = $row->rating1;
+                $rating2 = $row->rating2;
+                $rating3 = $row->rating3;
+                $rating4 = $row->rating4;
+                $rating5 = $row->rating5;
+                $id= $row->affid;
+$sql = "SELECT classname FROM lhpclass WHERE classid='$classref'";
+
+$result = mysqli_query($con, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    
+	$cname =$row["classname"];
+  }
+} 
+
+
+$sql = "SELECT fname FROM lhpuser WHERE uname ='$learnerid'";
+
+$result = mysqli_query($con, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    
+	$learner =$row["fname"];
+  }
+} 
+
+                
             ?>
             <tr>
-                <td><?php echo $count++ ?></td>
-				<td><?php echo $row->classname ?></td>
-				<td><?php echo $row->sbjname ?></td>
-        <td>
-				    
-        <a href="delsubject.php?id=<?php echo $row->sbjid?>&sbjref=<?php echo $row->sbjname?>&classref=<?php echo $row->classname?>" type="button"  class="btn btn-danger" >Delete Subject</a>
-				</td>
-				
+                <td><strong><?php echo $count++ ?></strong></td>
+				<td><strong><?php echo $term ?></strong></td>
+				<td><strong><?php echo $cname ?></strong></td>
+				<td><strong><?php echo $learnerid." - ".$learner; ?></strong></td>
+				<td><strong><?php echo $present ?></strong></td>
+                <td><strong><?php echo $rating1 ?></strong></td>
+				<td><strong><?php echo $rating2 ?></strong></td>
+                <td><strong><?php echo $rating3 ?></strong></td>
+                <td><strong><?php echo $rating4 ?></strong></td>
+                <td><strong><?php echo $rating5 ?></strong></td>
+                <td><a href="delrating.php?id=<?php echo $id ?>&lid=<?php echo $learner ?>" type="button" class="btn btn-primary"><strong>RESET</strong></a></td>
+			
 				
                 
             </tr>
@@ -307,10 +301,18 @@ foreach ($classresult as $classed) {
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                         <th>S/N</th>
-										<th>Class name</th>
-										<th>Subject</th>
-										<th>Delete</th>
+                                        <th>S/N</th>
+										<th>Term</th>
+										<th>Class</th>
+                                        <th>Full name</th>
+										<th>Present Days </th>
+										<th>Leadership Ratings</th>
+										<th>Eloquence Ratings</th>
+										<th>Neatness Ratings</th>
+										<th>Creativity Ratings</th>
+                                        <th>Responsiveness Ratings</th>
+                                        <th>Action</th>
+										
                                     </tr>
                                 </tfoot>
                             </table>
@@ -321,17 +323,11 @@ foreach ($classresult as $classed) {
         </div>
     </div>
     <!-- Data Table area End-->
-	<div class="breadcomb-area">
-		<div class="container">
-			<div class="row">
-			</div>
-		</div>
-	 </div>
-	
-	
     <!-- Start Footer area-->
    <?php include "foot.html"; ?>
     <!-- End Footer area-->
+    
+    
     <!-- jquery
 		============================================ -->
     <script src="js/vendor/jquery-1.12.4.min.js"></script>
@@ -397,7 +393,7 @@ foreach ($classresult as $classed) {
     <script src="js/main.js"></script>
 	<!-- tawk chat JS
 		============================================ -->
-   
+    <script src="js/tawk-chat.js"></script>
 </body>
 
 </html>

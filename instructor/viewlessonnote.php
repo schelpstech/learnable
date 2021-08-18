@@ -33,7 +33,7 @@ if(!empty($_GET['teacher'])) {
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Supervised Lesson Notes for <?php echo $subject; ?> - LearnAble</title>
+    <title>Supervised Lesson Notes  - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
@@ -277,9 +277,16 @@ mysqli_close($conn);
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
                             <h2>
+                            <?php
 							
-						</h2>
-                            <p>This table contains all the learning materials and assessment added for <?php echo $subject; ?>  </p>
+              if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
+              {
+                printf('<b>%s</b>', $_SESSION['remessage']);
+                unset($_SESSION['remessage']);
+              }
+            ?>
+					                	</h2>
+                            <p>This table contains all the learning materials and assessment added for <?php echo $subject; ?></p>
                         </div>
                         <div class="table-responsive">
                             <table id="data-table-basic" class="table table-striped">
@@ -332,14 +339,14 @@ mysqli_close($conn);
         <td><strong><?php echo $topic?></strong></td>
         <td><strong><?php echo $type?></strong></td>
         <td>
-             <a href="noteview.php?id=<?php echo $noteid?>&typ=<?php echo $type?>" type="button"  class="btn btn-warning" ><strong>View Assessments </strong></a>
+             <a href="noteview.php?id=<?php echo $noteid?>&typ=<?php echo $type?>" type="button"  class="btn btn-primary" ><strong>View Learning Material</strong></a>
         </td>
         <td><strong><?php
         if ($review == 1){
-            $but = '<button class="btn-btn-success">Approved</button>';
+            $but = '<button class="btn btn-success"><strong>Approved</strong></button>';
         }
         if ($review == 0){
-            $but = '<button class="btn-btn-success">Pending</button>';
+            $but = '<a href="activatenote.php?ref='.$noteid.'&teacher='.$teacherid.'&term='.$term.'&sbjid='.$sbjid.'&subject='.$subject.'" type="button" class="btn btn-warning"><strong>Pending : Click to Approve</strong></button>';
         }
         echo $but;
         ?>
