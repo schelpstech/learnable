@@ -20,11 +20,26 @@ if (isset($_POST['createquestion']) && $_POST['createquestion'] == 'Add Question
   
    
     $topicid = $_SESSION['topicid'];
-    
+    $sql= "SELECT sbjname FROM `lhpsubject`  where sbjid = $subject";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+               $subjectname = $row['sbjname'];
+
+  $sql= "SELECT topic FROM `lhpscheme`  where schmid = $topicid";
+               $result=mysqli_query($con,$sql);
+                $row=mysqli_fetch_array($result);
+                      $topicname = $row['topic'];
+
+    $update = 'A new assignment has been added to the TOPIC : '.$topicname.' scheduled for '. $week.' in '. $subjectname; 
+               
+   
    if($typed == "text"){
         $lesson = mysqli_real_escape_string($con,$_POST['lesson']);
         $sql= "INSERT INTO `lhpquestion`  (topicid, type, content, staffid, status,deadline, grade, sbjid, term) VALUES ('$topicid', '$typed', '$lesson', '$staff', '$status' , '$due', '$grade', '$subject' , '$term')";
-		if(mysqli_query($con, $sql)){	
+		if(mysqli_query($con, $sql)){
+      $sql= "INSERT INTO `lhpnotice`  ( subject, message, refid, term) VALUES ('New Assignment', '$update', '$classname','$term' )";
+      if(mysqli_query($con, $sql)){
+      }	
 		$message ='Status : Question has been successfully added to the topic : '.$topic;
 		}
 
@@ -38,6 +53,9 @@ if (isset($_POST['createquestion']) && $_POST['createquestion'] == 'Add Question
           $online = mysqli_real_escape_string($con,$_POST['online']);
         $sql= "INSERT INTO `lhpquestion`  (topicid, type, content, staffid, status, deadline, grade, sbjid, term) VALUES ('$topicid', '$typed', '$online', '$staff', '$status' , '$due',  '$grade', '$subject', '$term')";
 		if(mysqli_query($con, $sql)){	
+      $sql= "INSERT INTO `lhpnotice`  ( subject, message, refid, term) VALUES ('New Assignment', '$update', '$classname','$term' )";
+      if(mysqli_query($con, $sql)){
+      }
 		$message ='Status : Link to Online Question has been successfully added to the topic : '.$topic;
 		}
 
@@ -77,7 +95,10 @@ if (isset($_POST['createquestion']) && $_POST['createquestion'] == 'Add Question
       {
           $sql= "INSERT INTO `lhpquestion`  (topicid, type, content, staffid, status, deadline, grade, sbjid, term) VALUES ('$topicid', '$typed', '$neoFileName', '$staff', '$status', '$due',  '$grade', '$subject', '$term')";
 		
-		if(mysqli_query($con, $sql)){	
+		if(mysqli_query($con, $sql)){	  $sql= "INSERT INTO `lhpnotice`  ( subject, message, refid, term) VALUES ('New Assignment', '$update', '$classname','$term' )";
+      if(mysqli_query($con, $sql)){
+      }
+
 		$message ='Status : Question has been successfully added to the topic : '.$topic;
 		}
 

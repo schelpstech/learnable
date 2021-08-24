@@ -5,14 +5,11 @@ include "conf.php";
 if(!isset($_SESSION['studnamed'])){
      header('Location: ../index.php');
 }
+if(!empty($_GET['term'])) {
+  $term = $_GET["term"]; 
+}
+?>
 
-?>
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm";
-$termed = $db_handle->runQuery($query);
-?>
 
 <?php
 $lname = $_SESSION['studnamed'];
@@ -35,20 +32,7 @@ if (mysqli_num_rows($result) > 0) {
 
 ?>			
 
-<?php
-$sql = "SELECT * FROM `lpterm` WHERE `status` = 1";
-$result = mysqli_query($con, $sql);
 
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-      $term = $row["term"];
-	
-  }
-} 
-
-?>
 <?php
 $sql = "SELECT classname FROM `lhpclass` WHERE `classid` = '$cclass'";;
 $result = mysqli_query($con, $sql);

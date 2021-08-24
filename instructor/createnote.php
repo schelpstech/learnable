@@ -13,19 +13,31 @@ if (isset($_POST['createnote']) && $_POST['createnote'] == 'Add Note of Lesson T
     $topic = mysqli_real_escape_string($con,$_POST['topic']);
     $typed = mysqli_real_escape_string($con,$_POST['typed']);
     $status = 1;
-   
-   
-  
-   
     $topicid = $_SESSION['topicid'];
+  $sql= "SELECT sbjname FROM `lhpsubject`  where sbjid = $subject";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+               $subjectname = $row['sbjname'];
+
+  $sql= "SELECT topic FROM `lhpscheme`  where schmid = $topicid";
+               $result=mysqli_query($con,$sql);
+                $row=mysqli_fetch_array($result);
+                      $topicname = $row['topic'];
+
+    $update = 'A new learning material has been added to the TOPIC : '.$topicname.' scheduled for '. $week.' in '. $subjectname; 
+               
+   
     
    if($typed == "text"){
         $lesson = mysqli_real_escape_string($con,$_POST['lesson']);
         $sql= "INSERT INTO `lhpnote`  (topicid, type, content, staffid, status, sbjid, term) VALUES ('$topicid', '$typed', '$lesson', '$staff', '$status', '$subject', '$term' )";
 		if(mysqli_query($con, $sql)){	
+      $sql= "INSERT INTO `lhpnotice`  ( subject, message, refid, term) VALUES ('New Lesson Note ', '$update', '$classname','$term' )";
+		if(mysqli_query($con, $sql)){
+    }	
 		$message ='Status : Note has been successfully added to the topic : '.$topic;
 		}
-
+    
       else 
       {
         $message = 'Status : Error adding note to the topic.';
@@ -36,6 +48,9 @@ if (isset($_POST['createnote']) && $_POST['createnote'] == 'Add Note of Lesson T
           $online = mysqli_real_escape_string($con,$_POST['online']);
         $sql= "INSERT INTO `lhpnote`  (topicid, type, content, staffid, status, sbjid, term) VALUES ('$topicid', '$typed', '$online', '$staff', '$status', '$subject', '$term')";
 		if(mysqli_query($con, $sql)){	
+      $sql= "INSERT INTO `lhpnotice`  ( subject, message, refid, term) VALUES ('New Lesson Note ', '$update', '$classname','$term' )";
+      if(mysqli_query($con, $sql)){
+      }
 		$message ='Status : Link to Online Learning Material has been successfully added to the topic : '.$topic;
 		}
 
@@ -76,6 +91,9 @@ if (isset($_POST['createnote']) && $_POST['createnote'] == 'Add Note of Lesson T
           $sql= "INSERT INTO `lhpnote`  (topicid, type, content, staffid, status, sbjid, term) VALUES ('$topicid', '$typed', '$neoFileName', '$staff', '$status', '$subject', '$term')";
 		
 		if(mysqli_query($con, $sql)){	
+      $sql= "INSERT INTO `lhpnotice`  ( subject, message, refid, term) VALUES ('New Lesson Note ', '$update', '$classname','$term' )";
+      if(mysqli_query($con, $sql)){
+      }
 		$message ='Status : Learning Material has been successfully added to the topic : '.$topic;
 		}
 
@@ -138,7 +156,10 @@ if (isset($_POST['createnote']) && $_POST['createnote'] == 'Add Note of Lesson T
       {
           $sql= "INSERT INTO `lhpnote`  (topicid, type, content, staffid, status, sbjid, term) VALUES ('$topicid', '$typed', '$neoFileName', '$staff', '$status', '$subject', '$term')";
 		
-		if(mysqli_query($con, $sql)){	
+		if(mysqli_query($con, $sql)){
+      $sql= "INSERT INTO `lhpnotice`  ( subject, message, refid, term) VALUES ('New Lesson Note ', '$update', '$classname','$term' )";
+      if(mysqli_query($con, $sql)){
+      }	
 		$message ='Status : Audio-Visual file has been successfully added to the topic : '.$topic;
 		}
 

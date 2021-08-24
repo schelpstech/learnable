@@ -4,38 +4,81 @@
 include "conf.php";
 if(!isset($_SESSION['studnamed'])){
      header('Location: ../index.php');
+     
+}
+
+if(!empty($_GET['ref'])) {
+    $payid = $_GET["ref"]; 
 }
 
 ?>
 
 
-
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm";
-$termed = $db_handle->runQuery($query);
-?>
-
 <?php
 $lname = $_SESSION['studnamed'];
 
+include "config.php";
+
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
+}
 
 $sql = "SELECT * FROM `lhpuser` WHERE `uname` = '$lname'";
-$result = mysqli_query($con, $sql);
+$result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
   // output data of each row
   while($row = mysqli_fetch_assoc($result)) {
     
       $stname = $row["fname"];
-      
+      $email = $row["email"];
       $cclass = $row["classid"];
       $pix = $row["picture"];
-	
+      $numb = $row["numb"];
   }
 } 
 
+$sql = "SELECT classname FROM `lhpclass` WHERE `classid` = '$cclass'";
+$result = mysqli_query($conn, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    $dclass = $row["classname"];
+     
+  }
+}
+
+
+
+$sql = "SELECT * FROM `lhptransaction` WHERE `transid` = '$payid'";
+$result = mysqli_query($conn, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    
+    $term = $row["term"];
+    $receipt = $row["transid"];
+    $refd = $row["reference"];
+    $mode = $row["mode"];
+    $paydate = $row["paydate"];
+    $amount = $row["amount"];
+    $classref = $row["classid"];
+  }
+}
+
+$sql = "SELECT classname FROM `lhpclass` WHERE `classid` = '$classref'";
+$result = mysqli_query($conn, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    $refclass = $row["classname"];
+}
+}
+
+mysqli_close($conn);
 ?>			
 
 	
@@ -138,7 +181,7 @@ function getclass() {
         		$("#sbj-list").html(data);
         	}
 	});
-}
+}s
 </script>
 </head>
 
@@ -166,147 +209,122 @@ function getclass() {
 <?php include "nav.html"; ?>
     <!-- Main Menu area End-->
 	<!-- Breadcomb area Start-->
-	<div class="breadcomb-area">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="breadcomb-list">
-						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-								<div class="breadcomb-wp">
-								    
-									<div class="breadcomb-icon">
-										<i class="notika-icon notika-windows"></i>
-									</div>
-									<div class="breadcomb-ctn">
-										<h2> Academic Reportsheets for <?php
 
-include "config.php";
 
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
-}
-
-$sql = "SELECT classname FROM `lhpclass` WHERE `classid` = '$cclass'";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-      $dclass = $row["classname"];
-      
-    echo $dclass;
-  }
-} 
-
-mysqli_close($conn);
-?>
-
-								</h2>
-										<p><span class="bread-ntd"></span></p>
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
-								<div class="breadcomb-report">
-									<button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i class="notika-icon notika-sent"></i></button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 	
+            <div class="invoice-area">
+<div class="container">
+<div class="row">
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<div class="invoice-wrap">
+<div class="invoice-img">
+<h1 style="color:white;"> Payment Receipt for <?php echo $stname ?></h1>
+</div>
+<div class="invoice-hds-pro">
+<div class="row">
+<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+<div class="invoice-cmp-ds ivc-frm">
+<div class="invoice-frm">
+<span>Invoice from</span>
+</div>
+<div class="comp-tl">
+<h2>DWAT College</h2>
+<p>2/3 Orange street, ECWA Side, Ifo, Ogun State</p>
+</div>
+<div class="cmp-ph-em">
+<span>+234 803 584 8598</span>
+<span>bursary@dwatschools.com.ng</span>
+</div>
+</div>
+</div>
+<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+<div class="invoice-cmp-ds ivc-to">
+<div class="invoice-frm">
+<span>Invoice to</span>
+</div>
+<div class="comp-tl">
+<h2><?php echo $lname. ' - '.$stname; ?></h2>
+<p><?php echo $dclass; ?></p>
+</div>
+<div class="cmp-ph-em">
+<span><?php echo $numb; ?></span>
+<span><?php echo $email; ?></span>
+</div>
+ </div>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+<div class="invoice-hs">
+<span>Receipt #</span>
+<h2>#<?php echo $receipt; ?></h2>
+</div>
+</div>
+<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+<div class="invoice-hs date-inv sm-res-mg-t-30 tb-res-mg-t-30 tb-res-mg-t-0">
+<span>Date</span>
+<h2><?php echo $paydate; ?></h2>
+</div>
+</div>
+<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+<div class="invoice-hs wt-inv sm-res-mg-t-30 tb-res-mg-t-30 tb-res-mg-t-0">
+<span>Class</span>
+<h2><?php echo $refclass; ?></h2>
+</div>
+</div>
+<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+<div class="invoice-hs gdt-inv sm-res-mg-t-30 tb-res-mg-t-30 tb-res-mg-t-0">
+<span>Term</span>
+<h2><?php echo $term; ?></h2>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<div class="invoice-sp">
+<table class="table table-hover">
+<thead>
+<tr>
+<th>#</th>
+<th>Transaction ID</th>
+<th>Mode of Payment</th>
+<th>Amount Paid</th>
+<th>Status </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><?php echo $refd; ?></td>
+<td><?php echo $mode; ?></td>
+<td><?php echo $amount; ?></td>
+<td><a href="#" type="button"  class="btn btn-success" >Successful Confirmed</a></td>
+</tr>
 
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-    <!-- Data Table area Start-->
-    <div id="doc" class="data-table-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="data-table-list">
-                        <div class="basic-tb-hd">
-                            <h2>Your Report Sheets
-							
-						</h2>
-                            <p>This table contains all your published reportssheets.</p>
-                        </div>
-                        <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-striped">
-                                <thead>
-                                    <tr>
-                   <th>S/N</th>
-										<th>Term </th>
-										<th> Status </th>
-										
-										
-                                    </tr>
-                                </thead>
-                               
-                                    
-                                     <tbody>
-				
-				
-				
-				 <?php
-			$lname = $_SESSION['studnamed'];
-			$val = "1";
-			include_once './conn.php';
-				
-            $count=1;
-            $query=$conn->prepare("select * FROM lhpresultconfig ");
-           $query->setFetchMode(PDO::FETCH_OBJ);
-           $query->execute();
-            while($row=$query->fetch())
-            {
-              $termname = $row->term;
-              $termstatus = $row->status;
-
-              if ($termstatus == 1){
-                  $action = '<a href="resultpage.php?term='.$termname.'" type="button"  class="btn btn-success" ><strong>Term Result has been published. Click to View Result</strong></a>';
-
-              }
-              elseif($termstatus == 0){
-                $action = '<button  class="btn btn-danger" >Term Result is unavailable at the moment. Check back later.</button>';
-
-            }
-            ?>
-            <tr>
-                <td><?php echo $count++ ?></td>
-				
-				<td><?php echo $termname ?></td>
-				<td><?php echo $action ?></td>
-				<td>
-				    
-				</td>
-            </tr>
-            <?php }?>
-            </tbody>
-                                   
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                     
-										
-                    <th>S/N</th>
-										<th>Term </th>
-										<th> Status </th>
-										
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Data Table area End-->
+<div class="invoice-ds-int invoice-last">
+<h2>Signature</h2>
+<p class="tab-mg-b-0">School Bursar </p>
+<p class="tab-mg-b-0">DWAT COLLEGE </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+   
  
-    
+      
     <!-- Start Footer area-->
     <?php include "foot.php"; ?>
   

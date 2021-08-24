@@ -4,7 +4,6 @@
 include "conf.php";
 if(!isset($_SESSION['studnamed'])){
      header('Location: ../index.php');
-     
 }
 
 ?>
@@ -14,11 +13,8 @@ if(!isset($_SESSION['studnamed'])){
 <?php
 require_once ("DBController.php");
 $db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
+$query = "SELECT * FROM lpterm";
 $termed = $db_handle->runQuery($query);
-foreach ($termed as $td) {
-    $term = $td["term"]; 
-}
 ?>
 
 <?php
@@ -48,26 +44,7 @@ if (mysqli_num_rows($result) > 0) {
 mysqli_close($conn);
 ?>			
 
- <?php
- $lname = $_SESSION['studnamed']; 
- 
- $sql = "SELECT SUM(amount) AS billed FROM `lhpassignedfee` WHERE stdid = '$lname' AND term = '$term' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $bill = $row["billed"];
-                       
-                       
-$sql = "SELECT SUM(amount) AS pay FROM `lhptransaction` WHERE stdid = '$lname' AND term = '$term' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $paid = $row["pay"];
-                       
- $sql = "SELECT SUM(amount) AS outs FROM `lhpassignedfee` WHERE stdid = '$lname' AND term != '$term' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $out = $row["outs"];
-
-?>	
+	
 <!doctype html>
 <html class="no-js" lang="">
 
@@ -172,7 +149,7 @@ function getclass() {
 </head>
 
 <body>
-    <!--[if lt IE 8]>
+   <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <!-- Start Header Top Area -->
@@ -192,8 +169,8 @@ function getclass() {
     </div>
     <!-- End Header Top Area -->
     <!-- Mobile Menu start -->
+    
 <?php include "nav.html"; ?>
-    <!-- Main Menu area End-->
 	<!-- Breadcomb area Start-->
 	<div class="breadcomb-area">
 		<div class="container">
@@ -201,14 +178,14 @@ function getclass() {
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="breadcomb-list">
 						<div class="row">
-							<div class="col-lg-9 col-md-6 col-sm-6 col-xs-12">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 								<div class="breadcomb-wp">
 								    
 									<div class="breadcomb-icon">
 										<i class="notika-icon notika-windows"></i>
 									</div>
 									<div class="breadcomb-ctn">
-										<h2> School Fees Payment and Records for <?php
+										<h2> Subjects Available for <?php
 
 include "config.php";
 
@@ -237,7 +214,7 @@ mysqli_close($conn);
 									</div>
 								</div>
 							</div>
-							<div class="col-lg-3 col-md-6 col-sm-6 col-xs-3">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
 								<div class="breadcomb-report">
 									<button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i class="notika-icon notika-sent"></i></button>
 								</div>
@@ -276,150 +253,59 @@ mysqli_close($conn);
 					
                 </div>
 			</div>	
-<div class="breadcomb-area">
-        <div class="notika-status-area">
+
+    
+    <div class="notika-status-area">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                <?php
+
+
+include "config.php";
+
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
+}
+
+  $sql = "SELECT * FROM `lhpnotice` WHERE `refid` = '$cclass' ORDER BY rectime DESC ";
+$result = mysqli_query($conn, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    
+      $sbj = $row["subject"];
+      $timee = $row["rectime"];
+        $dmessage = $row["message"];
+		
+ echo '<div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter"> <?php echo $bill; ?> </span></h2>
-                          <h4><strong>Total Amount Billed for <?php echo $term; ?></strong></h4>
+                            <button class="btn btn-success"><i class="notika-icon notika-alarm"></i><h2 style="color:white;">'.$sbj.' </h2><h5 style="color:cream;"><span>Posted on :  '.$timee.'</span></h5></button>
+                           
+                            <p><span>'.$dmessage.'</span></p>
                         </div>
-                        <div class="sparkline-bar-stats1">1,2,3,4,5</div>
+                        
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2><span class="counter">
-                              <?php echo $paid; ?>
-                            </span></h2>
-                           <h4><strong>Total Amount Paid For <?php echo $term; ?></strong></h4>
-                        </div>
-                        <div class="sparkline-bar-stats2">1,2,3,4,5</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2><span class="counter">
-                                <?php echo $out; ?>
-                            </span></h2>
-               <h4><strong>Previous Term Outstanding Payment</strong></h4>
-                        </div>
-                        <div class="sparkline-bar-stats3">1,2,3,4,5</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2><span class="counter">
-                                <?php echo ($paid - $bill) - $out; ?>
-                                 </span></h2>
-            <h4><strong>Total Outstanding Payment</strong></h4>
-                        </div>
-                        <div class="sparkline-bar-stats4">1,2,3,4,5</div>
-                    </div>
-                </div>
-            </div>
+                </div>';
+	
+  }
+} 
+
+
+
+mysqli_close($conn);
+?>	
+
+             </div>
         </div>
     </div>
-   </div>
-   
+    
+
  
-        <!-- Data Table area Start-->
-    <div id="doc" class="data-table-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="data-table-list">
-                        <div class="basic-tb-hd">
-                            <h2>Your School Fees Payment History
-							
-						</h2>
-                            <p>This table contains all payments you have made.</p>
-                        </div>
-                        <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                          <th>S/N</th>
-										<th>Payment Date</th>
-										<th> Mode of Payment</th>
-									    <th> Amount Paid</th>
-									    <th> Payment Status</th>
-									    <th> Generate Receipt</th>
-                                    </tr>
-                                </thead>
-                               
-                                    
-                                     <tbody>
-				
-				
-				
-				 <?php
-			$lname = $_SESSION['studnamed'];
-			$val = "1";
-			include_once './conn.php';
-				
-            $count=1;
-            $query=$conn->prepare("select * from lhptransaction WHERE stdid = '$lname' ORDER BY paydate");
-           $query->setFetchMode(PDO::FETCH_OBJ);
-           $query->execute();
-            while($row=$query->fetch())
-            {
-                $status = $row-> status ;
-                $ref = $row-> transid;
-                 if ($status == 1){
-               $feestatus = '<a href="#" type="button"  class="btn btn-success" >Successful Confirmed</a>';
-                $receipt = '<a href="myreceipt.php?ref='.$ref.'" type="button"  class="btn btn-success" >Generate Receipt</a>';
-               }
-               elseif ($status == 2){
-                $feestatus = '<a href="#" type="button"  class="btn btn-warning" >Pending Confirmation</a>';  
-                $receipt = '<a href="#" type="button"  class="btn btn-warning" > Receipt Pending</a>';   
-               }
-               elseif ($status == 0){
-                $feestatus = '<a href="#" type="button"  class="btn btn-danger" >Unsuccessful</a>'; 
-                $receipt = '<a href="#" type="button"  class="btn btn-danger" >No Receipt</a>';
-                   
-               }
-              
-            ?>
-          
-            <tr>
-                <td><?php echo $count++ ?></td>
-				<td><?php echo $row-> paydate ?> </td>
-				<td> <?php echo strtoupper($row-> mode); ?> </td>
-			    <td><strong> <?php echo $row-> amount; ?> </strong></td>
-			    <td> <?php echo $feestatus; ?> </td>
-			    <td>  <?php echo $receipt; ?> </td>
-            </tr>
-            <?php }?>
-            </tbody>
-                                   
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-										<th>S/N</th>
-										<th>Payment Date</th>
-										<th> Mode of Payment</th>
-									    <th> Amount Paid</th>
-									    <th> Payment Status</th>
-									    <th> Generate Receipt</th>
-										
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
     <!-- Start Footer area-->
-    <?php include "foot.php"; ?>
-  
+ <?php include "foot.php"; ?>
     <!-- End Footer area-->
     <!-- jquery
 		============================================ -->

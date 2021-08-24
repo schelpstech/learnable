@@ -1,6 +1,4 @@
-
 <?php
-
 include "conf.php";
 $type = "Instructor";
 function getUserIpAddr(){
@@ -56,14 +54,16 @@ if(isset($_POST['but_submit'])){
 
             $sql= "INSERT INTO log  (uname,utype,stat,uip) VALUES ('$uname','$type',1, '$uip')";
 		    if(mysqli_query($con, $sql)){
-            }
+		    
+		    }
+		   
 			$_SESSION['stnamed'] = $uname;
-            header('Location:instructor/profile.php');
+            header('Location: instructor/profile.php');
         
-        }
+        }  
     
     else{
-        $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',2, '$uip' )";
+        $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',2, '$uip')";
         if(mysqli_query($con, $sql)){ 
         session_start();
          $messagef = "Ooops! Your account has been de-activated, kindly contact school";
