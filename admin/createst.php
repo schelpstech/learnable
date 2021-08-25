@@ -12,13 +12,13 @@ if (isset($_POST['createst']) && $_POST['createst'] == 'Create Staff Account')
 	$stpwd = mysqli_real_escape_string($con,$_POST['stpwd']);  
 	$stmail = mysqli_real_escape_string($con,$_POST['stmail']);  
 	$stfone = mysqli_real_escape_string($con,$_POST['stfone']);  
-	
+	$role = mysqli_real_escape_string($con,$_POST['role']); 
 	
 	
 
 
 		 
-		  $sql= "INSERT INTO lhpstaff (sname, staffname, spwd, semail, sfone)  VALUES ('$stuname', '$stname', '$stpwd', '$stmail', '$stfone')";
+		  $sql= "INSERT INTO lhpstaff (sname, staffname, spwd, semail, sfone, role)  VALUES ('$stuname', '$stname', '$stpwd', '$stmail', '$stfone' , '$role')";
 		if(mysqli_query($con, $sql)){	
 		
 		$ssmessaged = 'Status : Staff Account successfully created.';

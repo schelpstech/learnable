@@ -269,7 +269,21 @@ function getclass() {
                                 </div>
                             </div>
 							
-							
+                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label> Staff Designation</label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <select type="text" required="yes" class="form-control"  name="role" placeholder="Select Staff Role">
+                                    <option value="t">Teaching Staff</option>
+                                    <option value="b">Bursary Staff</option>
+                                        </select>
+                                      </div>
+                                </div>
+                            </div>
 							<br>
 							<br>
 							<div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">

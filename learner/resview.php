@@ -214,7 +214,7 @@ mysqli_close($conn);
 								</div>
 							</div>
 						</div>
-					</div>
+					</div>      
 				</div>
 			</div>
 		</div>
@@ -223,10 +223,7 @@ mysqli_close($conn);
 
 
     <!-- Data Table area Start-->
-    <div id="doc" class="data-table-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div id="doc" class="      ol-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
                             <h2>Your Report Sheets

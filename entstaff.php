@@ -52,14 +52,25 @@ if(isset($_POST['but_submit'])){
 
         if($count == 1){
 
+            $sql_query = "select role  from lhpstaff where sname='".$uname."' and spwd='".$password."' and status = 1" ;
+            $result = mysqli_query($con,$sql_query);
+            $row = mysqli_fetch_array($result);
+    
+            $role = $row['role'];
+
+
             $sql= "INSERT INTO log  (uname,utype,stat,uip) VALUES ('$uname','$type',1, '$uip')";
 		    if(mysqli_query($con, $sql)){
 		    
 		    }
-		   
+		   if ($role = "t"){
+			$_SESSION['unamed'] = $uname;
+            header('Location: bursar/profile.php');
+           }
+           else if ($role = "b"){
 			$_SESSION['stnamed'] = $uname;
             header('Location: instructor/profile.php');
-        
+           }
         }  
     
     else{
@@ -98,7 +109,7 @@ if(isset($_POST['but_submit'])){
          session_start();
          $messagef = "Invalid Log in Credentials";
         $_SESSION['messagef'] = $messagef;
-        header("Location: admin.php");
+        header("Location: staff.php");
     }
 
 }
@@ -107,6 +118,6 @@ else{
     session_start();
     $messagef = "Unauthorised Access";
    $_SESSION['messagef'] = $messagef;
-   header("Location: admin.php");
+   header("Location: staff.php");
 }
 ?>
