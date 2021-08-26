@@ -6,28 +6,39 @@ if(!isset($_SESSION['stnamed'])){
      header('Location: ../index.php');
 }
 
-?>
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
-$termed = $db_handle->runQuery($query);
-?>
-<?php
-foreach ($termed as $termd) {
- $terd = $termd["term"];
 
-?>
-<?php
+if(!empty($_GET['sbjid'])) {         
+        $sbjid = $_GET["sbjid"];
+       
 }
+if(!empty($_GET['term'])) {         
+        $term = $_GET["term"];
+        
+}
+if(!empty($_GET['id'])) {         
+        $id = $_GET["id"];
+        
+}
+if(!empty($_GET['cid'])) {         
+    $cid = $_GET["cid"];
+    
+}
+$sql = "SELECT * FROM lhpalloc WHERE sbjid = '$sbjid' AND classid  = '$cid' AND term  = '$term' ";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+               $subject = $row['subject'];
+               $classname = $row["classname"];
 ?>
+
+
+
 <!doctype html>
 <html class="no-js" lang="">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Scoresheet - LearnAble</title>
+    <title>View Scoresheet for <?php echo $subject. " ". $classname; ?> - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
@@ -71,6 +82,7 @@ foreach ($termed as $termd) {
     <link rel="stylesheet" href="css/jquery.dataTables.min.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+	
     <!-- main CSS
 		============================================ -->
     <link rel="stylesheet" href="css/main.css">
@@ -84,24 +96,44 @@ foreach ($termed as $termd) {
 		============================================ -->
 	<script src="js/html2pdf.bundle.min.js"></script>
     
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
       function generatePDF() {
         // Choose the element that our invoice is rendered in.
         const element = document.getElementById("doc");
         // Choose the element and save the PDF for our user.
         html2pdf()
-        .set({ html2canvas: { scale: 4 } })
+        .set({ html2canvas: { scale: 1 } })
         .from(element)
         .save();
           
           
       }
     </script>
+    
+ 
+    
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> 
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+    function generatePF() {
+            var divContents = $("#doc").html();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write('<html><head><title>Cumulative Scoresheet</title>');
+            printWindow.document.write('</head><body >');
+            printWindow.document.write(divContents);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        };
+    </script>
 </head>
 
 <body>
@@ -180,32 +212,34 @@ mysqli_close($conn);
 				</div>
 			</div>
 		</div>
-	</div>
+</div>
 	
-	
+
+				
 	<!-- Breadcomb area End-->
     <!-- Data Table area Start-->
+ 
+ 
     <div id="doc" class="data-table-area">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
-                            <h2>Termly Scoresheet
-							
-						</h2>
-                            <p>This table contains all the subjects you can record their CA and Exam scores </p>
+                       <h4 style="text-align:center;"><?php echo $term ?> Weekly Assessment Scoresheet for <?php echo $subject. ' in '. $classname ?>.</h4><br>
+					     
+                            
                         </div>
+                        
+                        <button id="btnPrint" class="btn btn-default" onclick="generatePF()"><strong>Print</strong></button>
                         <div class="table-responsive">
                             <table id="data-table-basic" class="table table-striped">
                                 <thead>
                                     <tr>
                                        <th>S/N</th>
-                                       <th>Subject</th>
-                                       <th>Weekly Assessment Score</th>
-										<th>Continuous Assessment Score</th>
-										<th>Examination Scores</th>
-										<th>View Cumulative Scores</th>
+                                       <th >Learners' Details</th>
+										<th>Week</th>
+										<th> Scores</th>
                                     </tr>
                                 </thead>
                                
@@ -215,51 +249,44 @@ mysqli_close($conn);
 				
 				
 				 <?php
-			$lname = $_SESSION['stnamed'];
-			
+		
 			include_once './conn.php';
-				
+
             $count=1;
-            $query=$conn->prepare("SELECT * from lhpalloc  WHERE `staffid` = '$lname' and term = '$terd' ORDER BY term DESC ");
+            $query=$conn->prepare("SELECT *  from lhpweekrecord WHERE subjid = '$sbjid' AND term = '$term' and lid = '$id'   ORDER BY week ASC");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
             {
+                
+                
             ?>
             <?php
-            
-                $term = $row->term;	
-            	$cname = $row->classid;
-                $sbjt = $row->sbjid;
-                $sb = $row->subject;
-               $cn = $row-> classname;
- 
-               $sql = "SELECT count('questid') FROM `lhpquestion` WHERE sbjid = '$sbjt' AND status = 1 ";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_array($result);
-                        $num = $row[0]; 
-                
+               
+                 $studentid =  $row->lid;
+                  $score =  $row->score;
+                  $week =  $row->week;
+                  
+             $sql = "SELECT fname FROM lhpuser WHERE uname  = '$studentid' ";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+              
+               $studentname = $row["fname"];   
                 ?>
             <tr>
                 <td><?php echo $count++ ?></td>
-                 <td><strong><?php echo $cn." ".$sb?></strong></td>
-                 <td>
-				   <span><a href="recordweek.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-warning" ><strong>Weekly Assessment</strong></a></span>
-				</td>
-                 <td>
-				   <span><a href="recordca.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-default" ><strong>Record CA Scores</strong></a></span>
-				</td>
-				
-					<td>
-				 <span>  <a href="recordexam.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-danger" ><strong>Record Exam Scores</strong></a></span>
-				</td>
-               	<td>
-				 <span>  <a href="viewcum.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-primary" ><strong>View Cumuative Score </strong></a></span>
-				</td>
-                
-				
-			
-                
+             
+             <td> 
+    <button class="btn btn-basic"><strong><?php echo $studentid." - ".$studentname; ?></strong></button>
+             </td>
+             <td> 
+    <button class="btn btn-default"><strong><?php echo $week ?></strong></button>
+             </td>
+             <td> 
+    <button class="btn btn-default"><strong><?php echo $score ?></strong></button>
+             </td>
+       
+            
             </tr>
             <?php }?>
             </tbody>
@@ -267,14 +294,10 @@ mysqli_close($conn);
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                       <th>S/N</th>
-										<th>Subject</th>
-                    <th>Weekly Assessment Score</th>
-                    <th>Continuous Assessment Score</th>
-										<th>Examination Scores</th>
-										<th>View Cumulative Scores</th>
-									    
-									
+                                        <th>S/N</th>
+                                       <th >Learners' Details</th>
+                                       <th>Week</th>
+										<th> Scores</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -283,6 +306,7 @@ mysqli_close($conn);
                 </div>
             </div>
         </div>
+   </div>     
     </div>
     <!-- Data Table area End-->
     <!-- Start Footer area-->
@@ -353,7 +377,9 @@ mysqli_close($conn);
     <script src="js/main.js"></script>
 	<!-- tawk chat JS
 		============================================ -->
+      <!--Start of Tawk.to Script-->
 
+<!--End of Tawk.to Script-->
 </body>
 
 </html>

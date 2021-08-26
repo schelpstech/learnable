@@ -63,11 +63,11 @@ if(isset($_POST['but_submit'])){
 		    if(mysqli_query($con, $sql)){
 		    
 		    }
-		   if ($role = "t"){
+		   if ($role == "b"){
 			$_SESSION['unamed'] = $uname;
             header('Location: bursar/profile.php');
            }
-           else if ($role = "b"){
+           else if ($role == "t"){
 			$_SESSION['stnamed'] = $uname;
             header('Location: instructor/profile.php');
            }

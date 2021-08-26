@@ -6,28 +6,50 @@ if(!isset($_SESSION['stnamed'])){
      header('Location: ../index.php');
 }
 
+
+if(!empty($_GET['sbj'])) {         
+        $sbjid = $_GET["sbj"];
+        $_SESSION['ssid'] =$sbjid;
+}
+if(!empty($_GET['term'])) {         
+        $term = $_GET["term"];
+        $_SESSION['ttid'] =$term;
+}
+if(!empty($_GET['classid'])) {         
+        $classid = $_GET["classid"];
+        $_SESSION['ccid'] =$classid;
+}
+
+
+
+$sql = "SELECT * FROM lhpalloc WHERE sbjid = '$sbjid' AND classid  = '$classid' AND term  = '$term' ";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+               $subject = $row['subject'];
+               $classname = $row["classname"];
+               
+$sql = "SELECT ca_score FROM lhpresultconfig WHERE term  = '$term' ";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+              
+               $max = $row["ca_score"];
+               $_SESSION['maxca'] = $max;
 ?>
+
 <?php
 require_once ("DBController.php");
 $db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
-$termed = $db_handle->runQuery($query);
+$query = "SELECT * FROM `lhpuser` where classid = '$classid' ";
+$studentlist = $db_handle->runQuery($query);
 ?>
-<?php
-foreach ($termed as $termd) {
- $terd = $termd["term"];
 
-?>
-<?php
-}
-?>
 <!doctype html>
 <html class="no-js" lang="">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Scoresheet - LearnAble</title>
+    <title>View Scoresheet for <?php echo $subject. " ". $classname; ?> - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
@@ -71,6 +93,7 @@ foreach ($termed as $termd) {
     <link rel="stylesheet" href="css/jquery.dataTables.min.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+	
     <!-- main CSS
 		============================================ -->
     <link rel="stylesheet" href="css/main.css">
@@ -84,27 +107,86 @@ foreach ($termed as $termd) {
 		============================================ -->
 	<script src="js/html2pdf.bundle.min.js"></script>
     
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
       function generatePDF() {
-        // Choose the element that our invoice is rendered in.
-        const element = document.getElementById("doc");
-        // Choose the element and save the PDF for our user.
-        html2pdf()
-        .set({ html2canvas: { scale: 4 } })
-        .from(element)
-        .save();
+        var divContents = $("#cadata").html();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write('<html><head><title>CA Scoresheet</title>');
+            printWindow.document.write('</head><body >');
+            printWindow.document.write(divContents);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
           
           
       }
     </script>
+    
+    	  <script>
+      function recordwkscores (){
+               
+                var subjectid="<?php echo $sbjid ?>";
+                 var classid="<?php echo $classid ?>";
+                  var termid="<?php echo $term ?>";
+                   var cascore=$("#wkscore").val();
+                    var learnerid=$("#learnerid").val();
+                    var weekid=$("#weekid").val();
+                    
+                    
+                $.ajax({
+                    url:'submitweek.php',
+                    method:'POST',
+                    data:{
+                        nameid:learnerid,
+                        cascore:cascore,
+                        subject:subjectid,
+                        classid:classid,
+                        week:weekid,
+                        term:termid
+                    },
+                   success:function(data){
+                       alert(data);
+                       $("#wkscore").val("");
+                      
+                   }
+                });
+                
+             	$(document).ready(function(){
+		
+		$.ajax({
+			url: 'getwkscore.php',
+			success: function(data){
+				
+				$("#wkdata").html(data);
+			}
+		})
+	});
+            };
+    </script>
+    <script>
+		function loadtable(){
+		
+		$.ajax({
+			url: 'getwkscore.php',
+			success: function(data){
+				
+				$("#wkdata").html(data);
+			}
+		})
+	};
+</script>
+    
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> 
 </head>
 
-<body>
+<body  onload="loadtable()">
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -180,109 +262,116 @@ mysqli_close($conn);
 				</div>
 			</div>
 		</div>
-	</div>
+</div>
 	
-	
-	<!-- Breadcomb area End-->
-    <!-- Data Table area Start-->
-    <div id="doc" class="data-table-area">
+<div class="form-element-area">
         <div class="container">
             <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="data-table-list">
+                
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Termly Scoresheet
+                            <h2>Record Weekly Assessment Scores  <br>	 <?php
 							
-						</h2>
-                            <p>This table contains all the subjects you can record their CA and Exam scores </p>
+    if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
+    {
+      printf('<b>%s</b>', $_SESSION['remessage']);
+      unset($_SESSION['remessage']);
+    }
+  ?></h2>
                         </div>
-                        <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                       <th>S/N</th>
-                                       <th>Subject</th>
-                                       <th>Weekly Assessment Score</th>
-										<th>Continuous Assessment Score</th>
-										<th>Examination Scores</th>
-										<th>View Cumulative Scores</th>
-                                    </tr>
-                                </thead>
-                               
-                                    
-                                     <tbody>
-				
-				
-				
-				 <?php
-			$lname = $_SESSION['stnamed'];
+					</div>
+				</div>
+                  </div>      
+                        <br>
+                        <br>
+                        <br>
+						<div class="row">
 			
-			include_once './conn.php';
-				
-            $count=1;
-            $query=$conn->prepare("SELECT * from lhpalloc  WHERE `staffid` = '$lname' and term = '$terd' ORDER BY term DESC ");
-           $query->setFetchMode(PDO::FETCH_OBJ);
-           $query->execute();
-            while($row=$query->fetch())
-            {
-            ?>
-            <?php
-            
-                $term = $row->term;	
-            	$cname = $row->classid;
-                $sbjt = $row->sbjid;
-                $sb = $row->subject;
-               $cn = $row-> classname;
- 
-               $sql = "SELECT count('questid') FROM `lhpquestion` WHERE sbjid = '$sbjt' AND status = 1 ";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_array($result);
-                        $num = $row[0]; 
-                
-                ?>
-            <tr>
-                <td><?php echo $count++ ?></td>
-                 <td><strong><?php echo $cn." ".$sb?></strong></td>
-                 <td>
-				   <span><a href="recordweek.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-warning" ><strong>Weekly Assessment</strong></a></span>
-				</td>
-                 <td>
-				   <span><a href="recordca.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-default" ><strong>Record CA Scores</strong></a></span>
-				</td>
-				
-					<td>
-				 <span>  <a href="recordexam.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-danger" ><strong>Record Exam Scores</strong></a></span>
-				</td>
-               	<td>
-				 <span>  <a href="viewcum.php?sbj=<?php echo $sbjt?>&term=<?php echo $term?>&classid=<?php echo $cname?>" type="button"  class="btn btn-primary" ><strong>View Cumuative Score </strong></a></span>
-				</td>
-                
-				
-			
-                
-            </tr>
-            <?php }?>
-            </tbody>
-                                   
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                       <th>S/N</th>
-										<th>Subject</th>
-                    <th>Weekly Assessment Score</th>
-                    <th>Continuous Assessment Score</th>
-										<th>Examination Scores</th>
-										<th>View Cumulative Scores</th>
-									    
+							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>Select Student </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
 									
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
+                                    <div class="nk-int-st">
+                                        <select type="text" required="yes" class="form-control" id="learnerid" >
+											<option value="">Select Learner Id</option>
+										<?php
+foreach ($studentlist as $stlist) {
+    ?>
+<option value="<?php echo $stlist["uname"]; ?>"><?php echo $stlist["uname"]." - ".$stlist["fname"]; ?></option>
+<?php
+}
+?>
+										</select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>Select Week </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <select type="text" required="yes" class="form-control" id="weekid" >
+											<option value="Week 1">Week 1 </option>
+                                            <option value="Week 2">Week 2 </option>
+                                            <option value="Week 3">Week 3 </option>
+                                            <option value="Week 4">Week 4 </option>
+                                            <option value="Week 5">Week 5 </option>
+                                            <option value="Week 6">Week 6 </option>
+                                            <option value="Week 7">Week 7 </option>
+                                            <option value="Week 8">Week 8 </option>
+                                            <option value="Week 9">Week 9 </option>
+                                            <option value="Week 10">Week 10 </option>
+											</select>
+                                    </div>
+                                </div>
+                            </div>
+							
+							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>Enter Weekly Score - Maximum score obtainable =  10 </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                            <input type="number" required="yes" class="form-control" min="0"  max = "10" id="wkscore" >
+			
+                                    </div>
+                                </div>
+                            </div>
+                            
+                           
+							
+					
+							<br>
+							<br>
+							<div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
+                                
+								<div class="form-group ic-cmp-int">
+                                    
+                      <div class="nk-int-st">
+                          <button type="submit" class="form-control" id="saveca"class="btn btn-success" onclick="recordwkscores()" > <strong>RECORD Weekly Assessment SCORE</strong></button> 
+                                    </div>
+                                </div>
+                            </div>
+				
+				
+				</div>
                 </div>
-            </div>
-        </div>
+			</div>	
+				
+	<!-- Breadcomb area End-->
+    <!-- Data Table area Start-->
+ 
+<div id="wkdata" >
+        
     </div>
     <!-- Data Table area End-->
     <!-- Start Footer area-->
@@ -353,7 +442,9 @@ mysqli_close($conn);
     <script src="js/main.js"></script>
 	<!-- tawk chat JS
 		============================================ -->
+      <!--Start of Tawk.to Script-->
 
+<!--End of Tawk.to Script-->
 </body>
 
 </html>
