@@ -4,7 +4,7 @@ include "conf.php";
 if(!empty($_GET['class_id'])) {         
     $classid = $_GET["class_id"];
 }
-$_SESSION['termed'] = $term;
+$term = $_SESSION['termed'];
 ?>
 
 <div class="notika-status-area">
