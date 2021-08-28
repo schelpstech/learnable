@@ -23,7 +23,7 @@ $term = $_SESSION['termed'];
                              
                                 ?>
                                 </span></h2>
-                         <a href="#">   <h4><strong><?php echo $term." "; ?>Expected Income </strong></h4></a>
+                         <a href="#">   <h6><strong><?php echo $term." "; ?>Expected Income </strong></h6></a>
                         </div>
                         
                     </div>
@@ -42,7 +42,7 @@ $term = $_SESSION['termed'];
                         echo intval($row['total_payment']);     
                                 ?>
                             </span></h2>
-                         <a href="#">   <h4><strong><?php echo $term." "; ?>Actual Income</strong></h4></a>
+                         <a href="#">   <h6><strong><?php echo $term." "; ?>Actual Income</strong></h6></a>
                         </div>
                     
                     </div>
@@ -61,7 +61,7 @@ $term = $_SESSION['termed'];
                              
                                 ?>
                             </span></h2>
-                           <a href="#"> <h4><strong><?php echo $term." "; ?>Number of Students</strong></h4></a>
+                           <a href="#"> <h6><strong><?php echo $term." "; ?>Number of Students</strong></h6></a>
                         </div>
                   
                     </div>
@@ -77,7 +77,7 @@ $term = $_SESSION['termed'];
                                
                                echo intval($row['num_payment']);
                                 ?> </span></h2>
-                          <a href="#">  <h4><strong><?php echo $term." "; ?>Paying Students</strong></h4></a>
+                          <a href="#">  <h6><strong><?php echo $term." "; ?>Paying Students</strong></h6></a>
                         </div>
                         
                     </div>
@@ -106,12 +106,13 @@ $term = $_SESSION['termed'];
                             <p>A breakdown of payment expected and received by class</p>
                         </div>
                         <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-hover">
+                            <table id="data-table-basic" class="table table-bordered">
                                 <thead>
                                     <tr>
                       <th>S/N</th>
                       <th>Class </th>
 					<th>Full Name</th>
+                    <th>Contact Phone</th>
                     <th>Total Amount Billed</th>
                     <th>Total Amount Paid</th>	
                     <th>Total Amount Owing</th>
@@ -138,7 +139,7 @@ $term = $_SESSION['termed'];
               $fname = $row->fname;
               $uname = $row->uname;
               $classid = $row->classid;
-
+              $phone = $row->numb;
               
 
             $sql = "SELECT classname from lhpclass where classid = '$classid'";
@@ -160,6 +161,7 @@ $term = $_SESSION['termed'];
             <td><strong><?php echo $count++ ?></strong></td>
             <td><strong><?php echo $classname?></strong></td>
             <td><strong><?php echo $fname ?></strong></td>
+            <td><strong><?php echo $phone ?></strong></td>
             <td><strong>&#8358;<?php echo intval($tbill) ?></strong></td>
 			<td><strong>&#8358;<?php echo intval($trev) ?></strong></td>	
             <td><strong>&#8358;<?php echo intval($trev) - intval($tbill)?></strong></td>  
@@ -185,6 +187,7 @@ $term = $_SESSION['termed'];
                         <th>S/N</th>
                       <th>Class </th>
 					<th>Full Name</th>
+                    <th>Contact Phone</th>
                     <th>Total Amount Billed</th>
                     <th>Total Amount Paid</th>	
                     <th>Total Amount Owing</th>
