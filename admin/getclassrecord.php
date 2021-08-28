@@ -16,7 +16,7 @@ if(!empty($_GET['class_id'])) {
                             <h2>&#8358;<span class="counter">
                                 <?php
                               	include_once './conf.php';
-                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee` where classid = '$classid'";
+                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee` where classid = '$classid' and where `status` = 1";
                                   $result=mysqli_query($con,$sql);
                                  $row=mysqli_fetch_array($result);
                                  echo intval($row['total_bill']);
@@ -35,7 +35,7 @@ if(!empty($_GET['class_id'])) {
                              <?php
                                 
                               	include_once './conf.php';
-                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction` where classid = '$classid'";
+                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction` where classid = '$classid' and where `status` = 1";
                          $result=mysqli_query($con,$sql);
                         $row=mysqli_fetch_array($result);
                         
@@ -54,7 +54,7 @@ if(!empty($_GET['class_id'])) {
                                 
                                  <?php
                                 
-                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee` where classid = '$classid'";
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee` where classid = '$classid' and where `status` = 1";
                                 $result=mysqli_query($con,$sql);
                                $row=mysqli_fetch_array($result);
                                echo intval($row['num_bill']);
@@ -71,7 +71,7 @@ if(!empty($_GET['class_id'])) {
                         <div class="website-traffic-ctn">
                             <h2><span class="counter"><?php
                                 
-                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction` where classid = '$classid'";
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction` where classid = '$classid' and where `status` = 1";
                                 $result=mysqli_query($con,$sql);
                                $row=mysqli_fetch_array($result);
                                
@@ -146,12 +146,12 @@ if(!empty($_GET['class_id'])) {
            $row=mysqli_fetch_array($result);
            $classname = "$row[classname]";
 
-            $sql = " SELECT Sum(`amount`) as tbill FROM `lhpassignedfee` where stdid = '$uname'";
+            $sql = " SELECT Sum(`amount`) as tbill FROM `lhpassignedfee` where stdid = '$uname' and where `status` = 1";
             $result=mysqli_query($con,$sql);
            $row=mysqli_fetch_array($result);
            $tbill = "$row[tbill]";
 
-           $sql = " SELECT Sum(`amount`) as trev FROM `lhptransaction` where stdid = '$uname'";
+           $sql = " SELECT Sum(`amount`) as trev FROM `lhptransaction` where stdid = '$uname' and where `status` = 1";
             $result=mysqli_query($con,$sql);
            $row=mysqli_fetch_array($result);
            $trev = "$row[trev]";

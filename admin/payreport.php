@@ -172,7 +172,7 @@ function getclass() {
                                 <?php
                                 
                               	include_once './conf.php';
-                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee`";
+                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee` where `status` = 1";
                                   $result=mysqli_query($con,$sql);
                                  $row=mysqli_fetch_array($result);
                                  echo "$row[total_bill]";
@@ -191,7 +191,7 @@ function getclass() {
                              <?php
                                 
                               	include_once './conf.php';
-                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction`";
+                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction` where `status` = 1";
                          $result=mysqli_query($con,$sql);
                         $row=mysqli_fetch_array($result);
                         echo "$row[total_payment]";
@@ -210,7 +210,7 @@ function getclass() {
                                 
                                  <?php
                                 
-                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee";
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee` where `status` = 1";
                                 $result=mysqli_query($con,$sql);
                                $row=mysqli_fetch_array($result);
                                echo "$row[num_bill]";
@@ -227,7 +227,7 @@ function getclass() {
                         <div class="website-traffic-ctn">
                             <h2><span class="counter"><?php
                                 
-                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction`";
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction` where `status` = 1";
                                 $result=mysqli_query($con,$sql);
                                $row=mysqli_fetch_array($result);
                                echo "$row[num_payment]";
