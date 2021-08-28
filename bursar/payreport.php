@@ -2,84 +2,28 @@
 
 // Check user login or not
 include "conf.php";
-if(!isset($_SESSION['studnamed'])){
-     header('Location: ../index.php');
-     
+if(!isset($_SESSION['unamed'])){
+   header('Location: ../index.php');
 }
 
+
+$sql = "SELECT term from lpterm where `status` = 1";
+$result=mysqli_query($con,$sql);
+$row=mysqli_fetch_array($result);
+$term = "$row[term]";
 ?>
-
-
-
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
-$termed = $db_handle->runQuery($query);
-foreach ($termed as $td) {
-    $term = $td["term"]; 
-}
-?>
-
-<?php
-$lname = $_SESSION['studnamed'];
-
-include "config.php";
-
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
-}
-
-$sql = "SELECT * FROM `lhpuser` WHERE `uname` = '$lname'";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-      $stname = $row["fname"];
-      
-      $cclass = $row["classid"];
-      $pix = $row["picture"];
-	
-  }
-} 
-
-mysqli_close($conn);
-?>			
-
- <?php
- $lname = $_SESSION['studnamed']; 
- 
- $sql = "SELECT SUM(amount) AS billed FROM `lhpassignedfee` WHERE stdid = '$lname' AND term = '$term' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $bill = $row["billed"];
-                       
-                       
-$sql = "SELECT SUM(amount) AS pay FROM `lhptransaction` WHERE stdid = '$lname' AND term = '$term' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $paid = $row["pay"];
-                       
- $sql = "SELECT SUM(amount) AS outs FROM `lhpassignedfee` WHERE stdid = '$lname' AND term != '$term' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $out = $row["outs"];
-
-?>	
 <!doctype html>
 <html class="no-js" lang="">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Learner's Profile - Learnable</title>
+    <title>Payment Dashboard - Learn at Home</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="https://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="http://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -192,7 +136,7 @@ function getclass() {
     </div>
     <!-- End Header Top Area -->
     <!-- Mobile Menu start -->
-<?php include "nav.html"; ?>
+     <?php include "nav.html"; ?>
     <!-- Main Menu area End-->
 	<!-- Breadcomb area Start-->
 	<div class="breadcomb-area">
@@ -201,43 +145,18 @@ function getclass() {
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="breadcomb-list">
 						<div class="row">
-							<div class="col-lg-9 col-md-6 col-sm-6 col-xs-12">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 								<div class="breadcomb-wp">
-								    
 									<div class="breadcomb-icon">
-										<i class="notika-icon notika-windows"></i>
+										<i class="notika-icon notika-support"></i>
 									</div>
 									<div class="breadcomb-ctn">
-										<h2> School Fees Payment and Records for <?php
-
-include "config.php";
-
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
-}
-
-$sql = "SELECT classname FROM `lhpclass` WHERE `classid` = '$cclass'";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-      $dclass = $row["classname"];
-      
-    echo $dclass;
-  }
-} 
-
-mysqli_close($conn);
-?>
-
-								</h2>
-										<p><span class="bread-ntd"></span></p>
+										<h2>Welcome Admin</h2>
+										<p>.<span class="bread-ntd"></span></p>
 									</div>
 								</div>
 							</div>
-							<div class="col-lg-3 col-md-6 col-sm-6 col-xs-3">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
 								<div class="breadcomb-report">
 									<button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i class="notika-icon notika-sent"></i></button>
 								</div>
@@ -248,43 +167,25 @@ mysqli_close($conn);
 			</div>
 		</div>
 	</div>
-	
-
-	 <div class="breadcomb-area">
-        <div class="container">
-            <div class="row">
-                
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="form-element-list">
-                        <div class="basic-tb-hd">
-                              
-                            <h2><image src="images/profilepix/<?php echo $pix; ?>" width ="100"/></h2>
-                            <h5>Welcome <?php echo $stname; ?></h5>
-						<h2>	 <?php
-							
-    if (isset($_SESSION['message']) && $_SESSION['message'])
-    {
-      printf('<b>%s</b>', $_SESSION['message']);
-      unset($_SESSION['message']);
-    }
-  ?></h2>
-                        </div>
-					</div>
-				</div>
-                  </div>      
-                      
-					
-                </div>
-			</div>	
-<div class="breadcomb-area">
-        <div class="notika-status-area">
+	 <!-- Start Status area -->
+    <div class="notika-status-area">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2>&#8358;<span class="counter"> <?php echo $bill; ?> </span></h2>
-                          <h4><strong>Total Amount Billed for <?php echo $term; ?></strong></h4>
+                            <h2>&#8358;<span class="counter">
+                                <?php
+                                
+                              	include_once './conf.php';
+                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee` where `status` = 1 and term = '$term'";
+                                  $result=mysqli_query($con,$sql);
+                                 $row=mysqli_fetch_array($result);
+                                 echo "$row[total_bill]";
+                             
+                                ?>
+                                </span></h2>
+                         <a href="#">   <h4><strong>Expected Income</strong></h4></a>
                         </div>
                         <div class="sparkline-bar-stats1">1,2,3,4,5</div>
                     </div>
@@ -293,9 +194,17 @@ mysqli_close($conn);
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
                             <h2>&#8358;<span class="counter">
-                              <?php echo $paid; ?>
+                             <?php
+                                
+                              	include_once './conf.php';
+                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction` where `status` = 1  and term = '$term'";
+                         $result=mysqli_query($con,$sql);
+                        $row=mysqli_fetch_array($result);
+                        echo "$row[total_payment]";
+                             
+                                ?>
                             </span></h2>
-                           <h4><strong>Total Amount Paid For <?php echo $term; ?></strong></h4>
+                         <a href="#">   <h4><strong>Actual Income</strong></h4></a>
                         </div>
                         <div class="sparkline-bar-stats2">1,2,3,4,5</div>
                     </div>
@@ -303,10 +212,18 @@ mysqli_close($conn);
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2>-&#8358;<span class="counter">
-                                <?php echo $out; ?>
+                            <h2><span class="counter">
+                                
+                                 <?php
+                                
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee` where `status` = 1  and term = '$term'";
+                                $result=mysqli_query($con,$sql);
+                               $row=mysqli_fetch_array($result);
+                               echo "$row[num_bill]";
+                             
+                                ?>
                             </span></h2>
-                     <h4><strong>Previous Term Outstanding Payment</strong></h4>
+                           <a href="#"> <h4><strong>Number of Students</strong></h4></a>
                         </div>
                         <div class="sparkline-bar-stats3">1,2,3,4,5</div>
                     </div>
@@ -314,10 +231,15 @@ mysqli_close($conn);
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2>-&#8358;<span class="counter">
-                                <?php echo -1 * (($paid - $bill) - $out); ?>
-                                 </span></h2>
-                        <h4><strong>Total Outstanding Payment</strong></h4>
+                            <h2><span class="counter"><?php
+                                
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction` where `status` = 1 and term = '$term'";
+                                $result=mysqli_query($con,$sql);
+                               $row=mysqli_fetch_array($result);
+                               echo "$row[num_payment]";
+                             
+                                ?> </span></h2>
+                          <a href="#">  <h4><strong>Paying Students</strong></h4></a>
                         </div>
                         <div class="sparkline-bar-stats4">1,2,3,4,5</div>
                     </div>
@@ -325,30 +247,36 @@ mysqli_close($conn);
             </div>
         </div>
     </div>
-   </div>
-    <!-- Data Table area Start-->
-     <div class="breadcomb-area">
-    <div id="doc" class="data-table-area">
+    
+    <div class="breadcomb-area">
+		<div class="container">
+			<div class="row">
+             </div>
+        </div>
+    </div>
+    
+	<div id="doc" class="data-table-area">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
-                            <h2>Your School Bills
+                           
+                            <h2>Payment Records By Class 
 							
 						</h2>
-                            <p>This table contains all school fees due for payment.</p>
+                            <p>A breakdown of payment expected and received by class</p>
                         </div>
                         <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-striped">
+                            <table id="data-table-basic" class="table table-bordered">
                                 <thead>
                                     <tr>
-                                          <th>S/N</th>
-										<th>Term </th>
-										<th> Due Date</th>
-										<th> Fee Description</th>
-									   
-										<th> Amount Payable</th>
+                      <th>S/N</th>
+                      <th>Class </th>
+					<th>Total Amount Expected</th>
+                    <th>Total Payment Received</th>
+                    <th>Number of Billed Students</th>	
+                    <th>Learners that have made Payment</th>
                                     </tr>
                                 </thead>
                                
@@ -358,54 +286,37 @@ mysqli_close($conn);
 				
 				
 				 <?php
-			$lname = $_SESSION['studnamed'];
-			$val = "1";
+			
+			
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("select * from lhpassignedfee WHERE stdid = '$lname' AND status = '$val' ORDER BY due");
+            $query=$conn->prepare("SELECT lhpclass.classid, lhpclass.classname, lhpassignedfee.cnt_bill, lhptransaction.cnt_pay,
+             IFNULL(lhpassignedfee.classbill, 0) AS classbill, IFNULL(lhptransaction.classrev, 0) AS classrev FROM lhpclass
+             LEFT JOIN ( SELECT classid, sum(amount) AS classbill , 
+             COUNT(DISTINCT lhpassignedfee.stdid) as cnt_bill FROM lhpassignedfee where lhpassignedfee.status = 1  and term = '$term' GROUP BY classid ) 
+             lhpassignedfee ON (lhpclass.classid = lhpassignedfee.classid) 
+            LEFT JOIN ( SELECT classid, sum(amount) AS classrev, 
+            COUNT(DISTINCT lhptransaction.stdid) as cnt_pay FROM lhptransaction where lhptransaction.status = 1  and term = '$term' GROUP BY classid ) 
+            lhptransaction ON (lhpclass.classid = lhptransaction.classid)");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
             {
+              $classname = $row->classname;
+              $classbill = $row->classbill;
+              $classrev = $row->classrev;     
+              $cntbill = $row->cnt_bill; 
+              $cntpay = $row->cnt_pay;
               
             ?>
-            <?php 
-            
-             $term = $row->term;
-             $feeid = $row->feeid;
-             $discount = $row->discount;
-             $due = $row->due;
-             
-               $sql = "SELECT * FROM `lhpfeelist` WHERE feeid = '$feeid'  AND status = 1 ";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_array($result);
-                        
-                        $fnamed = $row['feename']; 
-                        $price = $row['amount'];
-                        $cname = $row['classid'];
-                        
-                        $sql = "SELECT * FROM lhpclass WHERE classid  = '$cname'";
-				$result=mysqli_query($con,$sql);
-				 $row=mysqli_fetch_array($result);
-               if ($row['classname'] != ""){
-               $feeclass = $row['classname'];
-               }
-               else {
-                 $feeclass = $cname;  
-                   
-               }
-               $fee =  $term." " .$feeclass." ". $fnamed;
-             ?>
             <tr>
-                <td><?php echo $count++ ?></td>
-				
-				<td><strong>?php echo $term ?></strong></td>
-				<td><strong><?php echo $due ?> </strong></td>
-				<td><strong> &#8358;<?php echo $fee; ?></strong> </td>
-			    <td> &#8358;<?php echo $price; ?> </strong></td>
-          <strong>
-			   
+            <td><?php echo $count++ ?></td>
+            <td><strong><?php echo $classname?></strong></td>
+            <td><strong>&#8358;<?php echo intval($classbill) ?></strong></td>
+            <td><strong>&#8358;<?php echo intval($classrev) ?></strong></td>
+			<td><strong><?php echo intval($cntbill) ?></strong></td>	
+            <td><strong><?php echo intval($cntpay) ?></strong></td>   
             </tr>
             <?php }?>
             </tbody>
@@ -413,12 +324,13 @@ mysqli_close($conn);
                                 </tbody>
                                 <tfoot>
                                     <tr>
-										<th>S/N</th>
-										<th>Term </th>
-										<th> Due Date</th>
-										<th> Fee Description</th>
-										<th> Amount Payable</th>
-										
+                                    <th>S/N</th>
+                      <th>Class </th>
+					<th>Total Amount Expected</th>
+                    <th>Total Payment Received</th>
+                    <th>Number of Billed Students</th>	
+                    <th>Learners that have made Payment</th>
+						
                                     </tr>
                                 </tfoot>
                             </table>
@@ -428,13 +340,11 @@ mysqli_close($conn);
             </div>
         </div>
     </div>
-    </div>
-    <!-- Data Table area End-->
  
-   
+	 
+    <!-- Data Table area End-->
     <!-- Start Footer area-->
-    <?php include "foot.php"; ?>
-  
+   <?php include "foot.html"; ?>
     <!-- End Footer area-->
     <!-- jquery
 		============================================ -->
@@ -499,7 +409,23 @@ mysqli_close($conn);
     <!-- main JS
 		============================================ -->
     <script src="js/main.js"></script>
-	
+	<!-- tawk chat JS
+		============================================ -->
+   <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/59ea285dc28eca75e4627337/default';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
 </body>
 
 </html>
+
+
