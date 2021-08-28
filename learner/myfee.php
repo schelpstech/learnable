@@ -402,9 +402,9 @@ mysqli_close($conn);
 				
 				<td><strong><?php echo $term ?></strong></td>
 				<td><strong><?php echo $due ?> </strong></td>
-				<td><strong> &#8358;<?php echo $fee; ?></strong> </td>
-			    <td> &#8358;<?php echo $price; ?> </strong></td>
-          <strong>
+				<td><strong> <?php echo $fee; ?></strong> </td>
+			    <td> <strong>&#8358;<?php echo $price; ?> </strong></td>
+          
 			   
             </tr>
             <?php }?>
