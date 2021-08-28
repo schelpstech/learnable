@@ -28,7 +28,7 @@ $term = "$row[term]";
                              
                                 ?>
                                 </span></h2>
-                         <a href="#">   <h4><strong>Expected Income </strong></h4></a>
+                         <a href="#">   <h4><strong><?php echo $term." "; ?>Expected Income </strong></h4></a>
                         </div>
                         
                     </div>
@@ -47,7 +47,7 @@ $term = "$row[term]";
                         echo intval($row['total_payment']);     
                                 ?>
                             </span></h2>
-                         <a href="#">   <h4><strong>Actual Income</strong></h4></a>
+                         <a href="#">   <h4><strong><?php echo $term." "; ?>Actual Income</strong></h4></a>
                         </div>
                     
                     </div>
@@ -66,7 +66,7 @@ $term = "$row[term]";
                              
                                 ?>
                             </span></h2>
-                           <a href="#"> <h4><strong>Number of Students</strong></h4></a>
+                           <a href="#"> <h4><strong><?php echo $term." "; ?>Number of Students</strong></h4></a>
                         </div>
                   
                     </div>
@@ -82,7 +82,7 @@ $term = "$row[term]";
                                
                                echo intval($row['num_payment']);
                                 ?> </span></h2>
-                          <a href="#">  <h4><strong>Paying Students</strong></h4></a>
+                          <a href="#">  <h4><strong><?php echo $term." "; ?>Paying Students</strong></h4></a>
                         </div>
                         
                     </div>
