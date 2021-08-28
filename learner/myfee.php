@@ -395,7 +395,7 @@ mysqli_close($conn);
                  $feeclass = $cname;  
                    
                }
-               $fee =  $term." " .$feeclass." ". $fnamed;
+               $fee =  $feeclass." ". $fnamed;
              ?>
             <tr>
                 <td><?php echo $count++ ?></td>
