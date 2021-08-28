@@ -3,8 +3,8 @@ include "conf.php";
 
 if(!empty($_GET['class_id'])) {         
     $classid = $_GET["class_id"];
-    
 }
+$_SESSION['termed'] = $term;
 ?>
 
 <div class="notika-status-area">
@@ -16,14 +16,14 @@ if(!empty($_GET['class_id'])) {
                             <h2>&#8358;<span class="counter">
                                 <?php
                               	include_once './conf.php';
-                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee` where classid = '$classid' and where `status` = 1";
+                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee` where classid = '$classid' and `status` = 1 and term = '$term'";
                                   $result=mysqli_query($con,$sql);
                                  $row=mysqli_fetch_array($result);
                                  echo intval($row['total_bill']);
                              
                                 ?>
                                 </span></h2>
-                         <a href="#">   <h4><strong>Expected Income </strong></h4></a>
+                         <a href="#">   <h4><strong><?php echo $term." "; ?>Expected Income </strong></h4></a>
                         </div>
                         
                     </div>
@@ -35,14 +35,14 @@ if(!empty($_GET['class_id'])) {
                              <?php
                                 
                               	include_once './conf.php';
-                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction` where classid = '$classid' and where `status` = 1";
+                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction` where classid = '$classid' and  `status` = 1 and term = '$term'";
                          $result=mysqli_query($con,$sql);
                         $row=mysqli_fetch_array($result);
                         
                         echo intval($row['total_payment']);     
                                 ?>
                             </span></h2>
-                         <a href="#">   <h4><strong>Actual Income</strong></h4></a>
+                         <a href="#">   <h4><strong><?php echo $term." "; ?>Actual Income</strong></h4></a>
                         </div>
                     
                     </div>
@@ -54,14 +54,14 @@ if(!empty($_GET['class_id'])) {
                                 
                                  <?php
                                 
-                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee` where classid = '$classid' and where `status` = 1";
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee` where classid = '$classid' and  `status` = 1 and term = '$term'";
                                 $result=mysqli_query($con,$sql);
                                $row=mysqli_fetch_array($result);
                                echo intval($row['num_bill']);
                              
                                 ?>
                             </span></h2>
-                           <a href="#"> <h4><strong>Number of Students</strong></h4></a>
+                           <a href="#"> <h4><strong><?php echo $term." "; ?>Number of Students</strong></h4></a>
                         </div>
                   
                     </div>
@@ -71,13 +71,13 @@ if(!empty($_GET['class_id'])) {
                         <div class="website-traffic-ctn">
                             <h2><span class="counter"><?php
                                 
-                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction` where classid = '$classid' and where `status` = 1";
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction` where classid = '$classid' and  `status` = 1 and term = '$term'";
                                 $result=mysqli_query($con,$sql);
                                $row=mysqli_fetch_array($result);
                                
                                echo intval($row['num_payment']);
                                 ?> </span></h2>
-                          <a href="#">  <h4><strong>Paying Students</strong></h4></a>
+                          <a href="#">  <h4><strong><?php echo $term." "; ?>Paying Students</strong></h4></a>
                         </div>
                         
                     </div>
@@ -146,12 +146,12 @@ if(!empty($_GET['class_id'])) {
            $row=mysqli_fetch_array($result);
            $classname = "$row[classname]";
 
-            $sql = " SELECT Sum(`amount`) as tbill FROM `lhpassignedfee` where stdid = '$uname' and where `status` = 1";
+            $sql = " SELECT Sum(`amount`) as tbill FROM `lhpassignedfee` where stdid = '$uname' and  `status` = 1 and term = '$term'";
             $result=mysqli_query($con,$sql);
            $row=mysqli_fetch_array($result);
            $tbill = "$row[tbill]";
 
-           $sql = " SELECT Sum(`amount`) as trev FROM `lhptransaction` where stdid = '$uname' and where `status` = 1";
+           $sql = " SELECT Sum(`amount`) as trev FROM `lhptransaction` where stdid = '$uname' and  `status` = 1 and term = '$term'";
             $result=mysqli_query($con,$sql);
            $row=mysqli_fetch_array($result);
            $trev = "$row[trev]";

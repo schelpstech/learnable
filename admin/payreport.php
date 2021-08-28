@@ -5,6 +5,12 @@ include "conf.php";
 if(!isset($_SESSION['unamed'])){
    header('Location: ../index.php');
 }
+
+
+$sql = "SELECT term from lpterm where `status` = 1";
+$result=mysqli_query($con,$sql);
+$row=mysqli_fetch_array($result);
+$term = "$row[term]";
 ?>
 <!doctype html>
 <html class="no-js" lang="">
@@ -172,7 +178,7 @@ function getclass() {
                                 <?php
                                 
                               	include_once './conf.php';
-                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee` where `status` = 1";
+                                  $sql = " SELECT Sum(`amount`) as total_bill FROM `lhpassignedfee` where `status` = 1 and term = '$term'";
                                   $result=mysqli_query($con,$sql);
                                  $row=mysqli_fetch_array($result);
                                  echo "$row[total_bill]";
@@ -191,7 +197,7 @@ function getclass() {
                              <?php
                                 
                               	include_once './conf.php';
-                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction` where `status` = 1";
+                          $sql = " SELECT Sum(amount)  as total_payment FROM `lhptransaction` where `status` = 1  and term = '$term'";
                          $result=mysqli_query($con,$sql);
                         $row=mysqli_fetch_array($result);
                         echo "$row[total_payment]";
@@ -210,7 +216,7 @@ function getclass() {
                                 
                                  <?php
                                 
-                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee` where `status` = 1";
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_bill FROM `lhpassignedfee` where `status` = 1  and term = '$term'";
                                 $result=mysqli_query($con,$sql);
                                $row=mysqli_fetch_array($result);
                                echo "$row[num_bill]";
@@ -227,7 +233,7 @@ function getclass() {
                         <div class="website-traffic-ctn">
                             <h2><span class="counter"><?php
                                 
-                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction` where `status` = 1";
+                                $sql = " SELECT COUNT(DISTINCT stdid)  as num_payment FROM `lhptransaction` where `status` = 1 and term = '$term'";
                                 $result=mysqli_query($con,$sql);
                                $row=mysqli_fetch_array($result);
                                echo "$row[num_payment]";
@@ -288,10 +294,10 @@ function getclass() {
             $query=$conn->prepare("SELECT lhpclass.classid, lhpclass.classname, lhpassignedfee.cnt_bill, lhptransaction.cnt_pay,
              IFNULL(lhpassignedfee.classbill, 0) AS classbill, IFNULL(lhptransaction.classrev, 0) AS classrev FROM lhpclass
              LEFT JOIN ( SELECT classid, sum(amount) AS classbill , 
-             COUNT(DISTINCT lhpassignedfee.stdid) as cnt_bill FROM lhpassignedfee GROUP BY classid ) 
+             COUNT(DISTINCT lhpassignedfee.stdid) as cnt_bill FROM lhpassignedfee where lhpassignedfee.status = 1  and term = '$term' GROUP BY classid ) 
              lhpassignedfee ON (lhpclass.classid = lhpassignedfee.classid) 
             LEFT JOIN ( SELECT classid, sum(amount) AS classrev, 
-            COUNT(DISTINCT lhptransaction.stdid) as cnt_pay FROM lhptransaction GROUP BY classid ) 
+            COUNT(DISTINCT lhptransaction.stdid) as cnt_pay FROM lhptransaction where lhptransaction.status = 1  and term = '$term' GROUP BY classid ) 
             lhptransaction ON (lhpclass.classid = lhptransaction.classid)");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
