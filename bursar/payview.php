@@ -5,6 +5,12 @@ include "conf.php";
 if(!isset($_SESSION['unamed'])){
    header('Location: ../index.php');
 }
+
+$sql = "SELECT term from lpterm where `status` = 1";
+$result=mysqli_query($con,$sql);
+$row=mysqli_fetch_array($result);
+$term = "$row[term]";
+$_SESSION['termed'] = $term;
 ?>
 <!doctype html>
 <html class="no-js" lang="">
@@ -182,7 +188,7 @@ function viewrecord() {
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Record Weekly Assessment Scores  <br>	 <?php
+                            <h2><?php echo $term;?>Payment Analysis By Class  <br>	 <?php
 							
     if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
     {

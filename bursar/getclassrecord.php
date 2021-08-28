@@ -3,13 +3,8 @@ include "conf.php";
 
 if(!empty($_GET['class_id'])) {         
     $classid = $_GET["class_id"];
-    
 }
-
-$sql = "SELECT term from lpterm where `status` = 1";
-$result=mysqli_query($con,$sql);
-$row=mysqli_fetch_array($result);
-$term = $row['term'];
+$_SESSION['termed'] = $term;
 ?>
 
 <div class="notika-status-area">
