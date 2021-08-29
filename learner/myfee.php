@@ -62,7 +62,7 @@ $sql = "SELECT SUM(amount) AS pay FROM `lhptransaction` WHERE stdid = '$lname' A
                         $row=mysqli_fetch_assoc($result);
                        $paid = $row["pay"];
                        
- $sql = "SELECT SUM(amount) AS outs FROM `lhpassignedfee` WHERE stdid = '$lname' AND term != '$term' AND status = 1";
+ $sql = "SELECT SUM(amount) AS outs FROM `lhpassignedfee` WHERE stdid = '$lname' AND term = '$term' AND feeid = 'PreviousBalance' AND status = 1";
                          $result=mysqli_query($con,$sql);
                         $row=mysqli_fetch_assoc($result);
                        $out = $row["outs"];
@@ -315,7 +315,7 @@ mysqli_close($conn);
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
                         <div class="website-traffic-ctn">
                             <h2>-&#8358;<span class="counter">
-                                <?php echo -1 * (($paid - $bill) - $out); ?>
+                                <?php echo  (($paid - $bill) - $out); ?>
                                  </span></h2>
                         <h4><strong>Total Outstanding Payment</strong></h4>
                         </div>
@@ -376,13 +376,12 @@ mysqli_close($conn);
              $feeid = $row->feeid;
              $discount = $row->discount;
              $due = $row->due;
-             
-               $sql = "SELECT * FROM `lhpfeelist` WHERE feeid = '$feeid'  AND status = 1 ";
+             $feeamount = $row->amount;
+               $sql = "SELECT * FROM `lhpfeelist` WHERE feeid = '$feeid'  AND status = '$val' ";
                          $result=mysqli_query($con,$sql);
                         $row=mysqli_fetch_array($result);
                         
                         $fnamed = $row['feename']; 
-                        $price = $row['amount'];
                         $cname = $row['classid'];
                         
                         $sql = "SELECT * FROM lhpclass WHERE classid  = '$cname'";
@@ -396,14 +395,21 @@ mysqli_close($conn);
                    
                }
                $fee =  $feeclass." ". $fnamed;
+
+               if($feeid == "PreviousBalance"){
+                $usename = "PREVIOUS TERM BALANCE";
+              }
+              else{
+                $usename = $fee;
+              }
              ?>
             <tr>
                 <td><?php echo $count++ ?></td>
 				
 				<td><strong><?php echo $term ?></strong></td>
 				<td><strong><?php echo $due ?> </strong></td>
-				<td><strong> <?php echo $fee; ?></strong> </td>
-			    <td> <strong>&#8358;<?php echo $price; ?> </strong></td>
+				<td><strong> <?php echo $usename; ?></strong> </td>
+			    <td> <strong>&#8358;<?php echo $feeamount; ?> </strong></td>
           
 			   
             </tr>

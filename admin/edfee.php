@@ -23,34 +23,29 @@ if (isset($_POST['editfee']))
 	  $fename = strtoupper($fname);  
 	  $nref = preg_replace("/\s+/", "", $fename);
     $feename = str_replace("/", "", $nref);
-	  $stat = 0;
+	  
             
-	     $sql = "SELECT count('feeid') FROM lhpfeelist WHERE term  = '$term' AND classid = '$feeclass' AND feename = '$feename'";
-			$result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_array($result);
-                        $count = "$row[0]";
-
-        if($count == $stat){
+	    
             
 	
 	
 		 
  $sql= "UPDATE  lhpfeelist SET feename = '$feename', amount = '$feeamount' WHERE feeid = '$ref'";
 		if(mysqli_query($con, $sql)){	
-		
+    }
+    $sql= "UPDATE  lhpassignedfee SET  amount = '$feeamount' WHERE feeid = '$ref'";
+		if(mysqli_query($con, $sql)){	
+    
+
 		$feemessage = 'Status : Successfully modified  '. $feename. ' fee for selected class.';
-		}
+  }
 
       else 
       {
         $feemessage = 'Error Modifying Fee' ;
       }
       
-        }
-	else 
-      {
-        $feemessage = 'Fee already exist. Kindly check selected class or Fee name' ;
-      }
+    
     }
 	else 
       {

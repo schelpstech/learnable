@@ -8,8 +8,10 @@ if(!empty($_GET['ref'])) {
 
 $sql = "UPDATE lhpfeelist SET status = 0 WHERE feeid = '$ref'";
 	if(mysqli_query($con, $sql)){	
-		
-		$feemessage = 'Status : Successfully deleted fee.';
+  }
+  $sql = "UPDATE lhpassignedfee SET status = 0 WHERE feeid = '$ref'";
+	if(mysqli_query($con, $sql)){	
+		$feemessage = 'Status : Successfully deleted fee for all students with assigned fee.';
 		}
 
       else 
