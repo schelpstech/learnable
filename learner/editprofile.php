@@ -6,18 +6,22 @@ if (isset($_POST['profile']) && $_POST['profile'] == 'Change Log in Password')
 {
 	
 	$edit = mysqli_real_escape_string($con,$_POST['edpwd']);  
+  $edgender = mysqli_real_escape_string($con,$_POST['edgender']); 
+  $eddob = mysqli_real_escape_string($con,$_POST['eddob']); 
+  $edfone = mysqli_real_escape_string($con,$_POST['edfone']); 
 
-	 $sql= "UPDATE lhpuser SET upwd = '$edit' WHERE uname = '$lname'";
+
+	 $sql= "UPDATE lhpuser SET upwd = '$edit', gender = '$edgender', dob = '$eddob', numb = '$edfone' WHERE uname = '$lname'";
 	 
 	 
 		if(mysqli_query($con, $sql)){	
 		
-		$mes = 'Status : Successfully changed login password.';
+		$mes = 'Status : Successfully changed modified learners account.';
 		}
 
       else 
       {
-        $mes ='Status : Unable to changed login password.';
+        $mes ='Status : Unable to modify learners account';
       }
     }
 	

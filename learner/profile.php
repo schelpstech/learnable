@@ -44,6 +44,8 @@ if (mysqli_num_rows($result) > 0) {
       $pass = $row["upwd"];
       $cclass = $row["classid"];
       $pix = $row["picture"];
+      $dob = $row["dob"];
+      $gender = $row["gender"];
 
   }
 } 
@@ -290,7 +292,7 @@ function getclass() {
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" class="form-control" required="yes" maxlength="100" name ="topic" disabled value =  
+                                        <input type="text" class="form-control" required="yes" maxlength="100"  disabled value =  
                                         "<?php
 
 include "config.php";
@@ -318,7 +320,35 @@ mysqli_close($conn);
                                 </div>
                             </div>
                             
-                            
+                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label> Gender</label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-edit"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <select type="text" class="form-control" required="yes" name ="edgender"  >
+                                        <option value = "<?php echo $gender; ?>"><?php echo $gender; ?></option>
+                                        <option value = "Male">Male</option>
+                                        <option value = "Female">Femsale</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label> Date of Birth</label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-edit"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <input type="date" class="form-control" required="yes" name ="eddob" value = "<?php echo $dob; ?>" >
+                                    </div>
+                                </div>
+                            </div>
                             
                              <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
                                 <label> Phone Number</label>
@@ -328,7 +358,7 @@ mysqli_close($conn);
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" class="form-control" required="yes" maxlength="10" name ="edfone" disabled value = "<?php echo $fone; ?>" >
+                                        <input type="text" class="form-control" required="yes" maxlength="10" name ="edfone" value = "<?php echo $fone; ?>" >
                                     </div>
                                 </div>
                             </div>
