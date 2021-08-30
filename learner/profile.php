@@ -358,7 +358,7 @@ mysqli_close($conn);
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" class="form-control" required="yes" maxlength="10" name ="edfone" value = "<?php echo $fone; ?>" >
+                                        <input type="text" class="form-control" required="yes" maxlength="11" name ="edfone" value = "<?php echo $fone; ?>" >
                                     </div>
                                 </div>
                             </div>
