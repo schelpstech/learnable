@@ -2,8 +2,8 @@
 
 // Check user login or not
 include "conf.php";
-if(!isset($_SESSION['stnamed'])){
-     header('Location: ../index.php');
+if(!isset($_SESSION['studnamed'])){
+  header('Location: ../index.php');
 }
 if(!empty($_GET['typ'])) {         
   $type = $_GET["typ"];  
@@ -13,7 +13,7 @@ if(!empty($_GET['typ'])) {
 
 
 <?php
-$lname = $_SESSION['stnamed'];
+$lname = $_SESSION['studnamed'];
 if(!empty($_GET['id'])) {         
         $viewid = $_GET["id"];
         $_SESSION['viewid'] = $viewid;
@@ -130,57 +130,6 @@ function printPage(id)
       }
     </script>
 
-    
-<script>
-      function recordvet (){
-               
-                var userid="<?php echo $lname ?>";
-                 var noteid="<?php echo $viewid ?>";
-                   var msg=$("#msg").val();
-                    
-                    
-                    
-                    
-                $.ajax({
-                    url:'submitvet.php',
-                    method:'POST',
-                    data:{
-                        user:userid,
-                        note:noteid,
-                        message:msg
-                        
-                    },
-                   success:function(data){
-                       alert(data);
-                       $("#msg").val("");
-                      
-                   }
-                });
-                $(document).ready(function(){
-		
-		$.ajax({
-			url: 'getvet.php',
-			success: function(data){
-				
-				$("#vetdata").html(data);
-			}
-		})
-	});
-              }
-              </script>
-
-<script>
-            $(document).ready(function(){
-		
-		$.ajax({
-			url: 'getvet.php',
-			success: function(data){
-				
-				$("#vetdata").html(data);
-			}
-		})
-	});
-  </script>
 
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
@@ -205,7 +154,7 @@ function printPage(id)
     </div>
     <!-- End Header Top Area -->
     <!-- Mobile Menu start -->
-   <?php include ("nav.php"); ?>
+   <?php include ("nav.html"); ?>
     <!-- Main Menu area End-->
 	<!-- Breadcomb area Start-->
 	<div class="breadcomb-area">
@@ -223,7 +172,6 @@ function printPage(id)
 										<h2>Welcome
 
 <?php
-$lname = $_SESSION['stnamed'];
 
 include "config.php";
 
@@ -231,18 +179,10 @@ if (!$conn) {
   die("Connection failed: " . mysqli_connect_error());
 }
 
-$sql = "SELECT `staffname` FROM `lhpstaff` WHERE `sname` = '".$lname."'";
+$sql = "SELECT `fname` FROM `lhpuser` WHERE `uname` = '".$lname."'";
 $result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-	echo $row["staffname"];
-  }
-} else {
-  echo ".$lname.";
-}
+$row = mysqli_fetch_assoc($result);  
+	echo $row["fname"];
 
 mysqli_close($conn);
 ?>													</h2>
@@ -360,13 +300,13 @@ mysqli_close($conn);
                         <div class="view-mail-atn">
                            <br>
                            <?php if($type == "file"){
-       echo '<iframe src="noteoflesson/'.$notebook.'" width="100%" height="800" embed="true" allowfullscreen></iframe>';
+       echo '<iframe src="../instructor/noteoflesson/'.$notebook.'" width="100%" height="800" embed="true" allowfullscreen></iframe>';
     }
     elseif($type == "online"){
       echo '<iframe width="100%" height="600" src="'. $notebook.'" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
     }
     elseif($type == "media"){
-      echo '<iframe src="noteoflesson/'.$notebook.'" width="100%" height="800" embed="true" allowfullscreen></iframe>';
+      echo '<iframe src="../instructor/noteoflesson/'.$notebook.'" width="100%" height="800" embed="true" allowfullscreen></iframe>';
     }
     elseif($type == "text"){
       echo $notebook;
@@ -387,48 +327,7 @@ mysqli_close($conn);
         </div>
     </div>
    
-    <div class="breadcomb-area">
-		<div class="container">
-			<div class="row">   
-<div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
-<div class="notika-chat-list notika-shadow mg-t-30 tb-res-ds-n dk-res-ds">
-<div class="realtime-ctn">
-<div class="realtime-title">
-<h2>Lesson Note Vetting Feedback</h2>
-</div>
-</div>
-<div class="card-box">
-<div class="chat-conversation">
-<div id ="vetdata" class="widgets-chat-scrollbar">
-
-</div>
-<br>
-<br>
-<div class="chat-widget-input">
-<div class="row">
-<div class="col-sm-12 col-md-12 col-sm-12 col-xs-12 chat-inputbar">
-<div class="form-group todo-flex">
-<div class="nk-int-st">
-<input type="text" id="msg" class="form-control chat-input" placeholder="Enter your text">
-</div>
-
-<div class="chat-send">     
-<button type="submit" id="submitmsg" onclick = "recordvet ()"class="btn btn-md btn-primary btn-block notika-chat-btn">Send</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div> 
+   
     <!-- Start Footer area-->
     
    <?php include ("foot.php"); ?>

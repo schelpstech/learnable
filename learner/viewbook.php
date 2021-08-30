@@ -304,7 +304,7 @@ foreach ($book as $booked) {
 				</td>
 				
 				<td>
-				<a href="viewn.php?id=<?php echo $row->noteid?>&typ=<?php echo $row->type?>&rec=<?php echo $row->rectime?>" type="button"  class="btn btn-success" >View this Learning Material</a>
+				<a href="noteview.php?id=<?php echo $row->noteid?>&typ=<?php echo $row->type?>" type="button"  class="btn btn-success" >View this Learning Material</a>
 				    
 				</td>
                 

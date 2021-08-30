@@ -565,6 +565,7 @@ foreach ($book as $booked) {
 				</td>
 				
 				<td>
+          
 				<a href="noteview.php?id=<?php echo $row->noteid?>&typ=<?php echo $row->type?>" type="button"  class="btn btn-success" >View this Learning Material</a>
 				    
 				</td>

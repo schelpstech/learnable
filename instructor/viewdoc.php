@@ -300,7 +300,7 @@ mysqli_close($conn);
                         </div>
                         <div class="view-mail-atn">
                            <br>
-                           <iframe src="<?php echo"$notebook";?>" width="100%" height="600" embed="true" allowfullscreen></iframe>
+                           <iframe src="<?php echo"$notebook";?>" width="100%" height="800" embed="true" allowfullscreen></iframe>
                            
                             
 	
