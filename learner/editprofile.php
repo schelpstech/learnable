@@ -36,9 +36,11 @@ if (isset($_POST['profile']) && $_POST['profile'] == 'Change Log in Password')
     $fileType = $_FILES['picx']['type'];
     $fileNameCmps = explode(".", $fileName);
     $fileExtension = strtolower(end($fileNameCmps));
+
+    $nref = preg_replace("/\s+/", "", $lname);
+    $nname = str_replace("/", "", $nref);
     
-    
-    $neoFileName = $lname.".".$fileExtension;
+    $neoFileName = $nname.".".$fileExtension;
 	 
 	 
     // check if file has one of the following extensions

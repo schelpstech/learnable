@@ -331,7 +331,7 @@ mysqli_close($conn);
                                         <select type="text" class="form-control" required="yes" name ="edgender"  >
                                         <option value = "<?php echo $gender; ?>"><?php echo $gender; ?></option>
                                         <option value = "Male">Male</option>
-                                        <option value = "Female">Femsale</option>
+                                        <option value = "Female">Female</option>
                                         </select>
                                     </div>
                                 </div>
