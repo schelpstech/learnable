@@ -160,6 +160,25 @@ function getfeelist() {
         		$("#fee-list").html(data);
         	}
 	});
+ 
+  
+var type = document.getElementById("class-list");
+var selectedValue = type.options[type.selectedIndex].value;
+if (selectedValue=="PreviousBalance"){
+  $('#byout').show();
+  $('#bynoout').hide();
+  $('#amountb').attr('required', '');
+$('#amountb').attr('data-error', 'Enter Outstanding Balance.');
+}
+
+else if (selectedValue!=="PreviousBalance"){
+  $('#bynoout').show();
+$('#byout').hide();
+$('#amounta').attr('required', '');
+$('#amounta').attr('data-error', 'Error Fetching Fee.');
+}
+
+
 }
 </script>
 
@@ -223,6 +242,8 @@ $('#byclass').hide();
 }
 
 </script>		
+
+		
 </head>
 
 <body>
@@ -397,7 +418,7 @@ foreach ($feeresult as $termd) {
                                     <div class="nk-int-st">
                                         <select type="text" class="form-control" name="feeclass" id="class-list" onChange="getfeelist();" >
 										<option value="">Select Fee Type</option>
-							
+                   
 										</select>
                                     </div>
                                 </div>
@@ -415,24 +436,37 @@ foreach ($feeresult as $termd) {
 									<div class="nk-int-st">
                                      <select type="text" required="yes" class="form-control" name="feeid" id="fee-list" onChange="getfeeamount();">
 											<option value="">Select Fee Name</option>
+                      
 									</select>
 									</div>
                                 </div>
                             </div>
 
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" id = "bynoout" >
                                 <label>Fee Amount </label>
 								<div class="form-group ic-cmp-int">
                                     <div class="form-ic-cmp">
                                         <i class="notika-icon notika-wifi"></i>
                                     </div>
                                     <div class="nk-int-st">
-                                         <select type="text" required="yes" class="form-control" name="feeamount" id="amount" >
+                                         <select type="text"  class="form-control" name="feeamount" id="amounta" >
 											<option value="">Amount of Assigned Fee </option>
 									</select>
                                     </div>
                                 </div>
-                            </div>
+                                </div>
+                                <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" id = "byout" hidden>
+                                <label>Enter Fee Amount </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-wifi"></i>
+                                    </div>
+                                    <div class="nk-int-st">
+                                         <input type="text" required="yes" class="form-control" name="feeamount" id="amountb" />
+									
+                                    </div>
+                                </div>
+                            </div>                
                             
                             <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
                                 <label>Payment Due Date </label>
@@ -526,7 +560,7 @@ foreach ($feeresult as $termd) {
                 $discount =  $row->discount;
                 $type =  $row->type;
                 $status =  $row->status;
-                
+                $feeamount = $row->amount;
                 $sql = "SELECT * FROM lhpclass WHERE classid  = '$classid'";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
@@ -548,8 +582,13 @@ foreach ($feeresult as $termd) {
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
                $feename = $row['feename'];
-                $feeamount = $row['amount'];
                 
+               if($feeid == "PreviousBalance"){
+                 $usename = "PREVIOUS TERM BALANCE";
+               }
+               else{
+                 $usename = $feename;
+               }
                  if ($status == 1){
                $feestatus = '<a href="deactfee.php?ref='.$assid.'" type="button"  class="btn btn-success" >Active. Click to De-activate</a>';
                }
@@ -565,7 +604,7 @@ foreach ($feeresult as $termd) {
 				<td><?php echo $feeclass ?></td>
 				<td><?php echo $std ?></td>
 				<td><?php echo $type ?></td>
-				<td><?php echo $feename ?></td>
+				<td><?php echo  $usename ?></td>
 				<td><?php echo $feeamount ?></td>
 				<td><?php echo $discount ?></td>
 				<td><?php echo $pay = $feeamount -$discount;  ?></td>

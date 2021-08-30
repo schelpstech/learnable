@@ -280,19 +280,30 @@ mysqli_close($conn);
         <div class="notika-status-area">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter"> <?php echo $bill; ?> </span></h2>
+                            <h2>&#8358;<span class="counter"> <?php echo $bill; ?> </span></h2>
                           <h4><strong>Total Amount Billed for <?php echo $term; ?></strong></h4>
                         </div>
                         <div class="sparkline-bar-stats1">1,2,3,4,5</div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
+                        <div class="website-traffic-ctn">
+                            <h2>-&#8358;<span class="counter">
+                                <?php echo $out; ?>
+                            </span></h2>
+                     <h4><strong>Previous Term Outstanding Payment</strong></h4>
+                        </div>
+                        <div class="sparkline-bar-stats3">1,2,3,4,5</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">
+                            <h2>&#8358;<span class="counter">
                               <?php echo $paid; ?>
                             </span></h2>
                            <h4><strong>Total Amount Paid For <?php echo $term; ?></strong></h4>
@@ -300,24 +311,14 @@ mysqli_close($conn);
                         <div class="sparkline-bar-stats2">1,2,3,4,5</div>
                     </div>
                 </div>
+            
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">
-                                <?php echo $out; ?>
-                            </span></h2>
-               <h4><strong>Previous Term Outstanding Payment</strong></h4>
-                        </div>
-                        <div class="sparkline-bar-stats3">1,2,3,4,5</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2><span class="counter">
-                                <?php echo ($paid - $bill) - $out; ?>
+                            <h2>&#8358;<span class="counter">
+                                <?php echo  (($paid - $bill) -$out); ?>
                                  </span></h2>
-            <h4><strong>Total Outstanding Payment</strong></h4>
+                        <h4><strong>Total Outstanding Payment</strong></h4>
                         </div>
                         <div class="sparkline-bar-stats4">1,2,3,4,5</div>
                     </div>

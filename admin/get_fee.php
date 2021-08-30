@@ -46,8 +46,8 @@ if(!empty($_GET['feel'])) {
 	       $sql = "SELECT * FROM lhpclass WHERE classid  = '$cname'";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
-               if ($row[classname] != ""){
-               $feeclass = $row[classname];
+               if ($row['classname'] != ""){
+               $feeclass = $row['classname'];
                }
                else {
                  $feeclass = $cname;
