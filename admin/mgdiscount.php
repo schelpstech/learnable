@@ -376,7 +376,7 @@ echo '<option value="'.$cname.'">'.$classname.'</option>';
 									    <th>Amount </th>
 									    <th> Discount</th>
 									    <th> Payable</th>
-										<th> Status</th>
+									
 										
                                     </tr>
                                 </thead>
@@ -434,13 +434,7 @@ echo '<option value="'.$cname.'">'.$classname.'</option>';
                else{
                  $usename = $feename;
                }
-                 if ($status == 1){
-               $feestatus = '<a href="deactfee.php?ref='.$assid.'" type="button"  class="btn btn-success" >Active. Click to De-activate</a>';
-               }
-               else {
-                $feestatus = '<a href="activatefee.php?ref='.$assid.'" type="button"  class="btn btn-danger" >Inactive - Click to Activate</a>';  
-                   
-               }
+                
                 
             ?>
             <tr><strong>
@@ -453,7 +447,7 @@ echo '<option value="'.$cname.'">'.$classname.'</option>';
 				<td><?php echo $feeamount ?></td>
 				<td><?php echo $discount ?></td>
 				<td><?php echo $pay = $feeamount -$discount;  ?></td>
-				<td><?php echo $feestatus ?></td>
+				
 				
                 </strong>
             </tr>
@@ -472,7 +466,7 @@ echo '<option value="'.$cname.'">'.$classname.'</option>';
 									    <th>Amount </th>
 									    <th> Discount</th>
 									    <th> Payable</th>
-										<th> Status</th>
+									
 										
                                     </tr>
                                 </tfoot>
