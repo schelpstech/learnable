@@ -2,89 +2,25 @@
 
 // Check user login or not
 include "conf.php";
-if(!isset($_SESSION['studnamed'])){
-     header('Location: ../index.php');
-     
-}
-
-?>
-
-
-
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
-$termed = $db_handle->runQuery($query);
-foreach ($termed as $td) {
-    $term = $td["term"]; 
+if(!isset($_SESSION['unamed'])){
+   header('Location: ../index.php');
 }
 ?>
 
-<?php
-$lname = $_SESSION['studnamed'];
 
-include "config.php";
 
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
-}
-
-$sql = "SELECT * FROM `lhpuser` WHERE `uname` = '$lname'";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-      $stname = $row["fname"];
-      
-      $cclass = $row["classid"];
-      $pix = $row["picture"];
-	
-  }
-} 
-
-mysqli_close($conn);
-?>			
-
- <?php
- $lname = $_SESSION['studnamed']; 
- 
- $sql = "SELECT SUM(amount) AS billed FROM `lhpassignedfee` WHERE stdid = '$lname' AND term = '$term' AND feeid != 'PreviousBalance' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $bill = $row["billed"];
-                       
-                       
-$sql = "SELECT SUM(amount) AS pay FROM `lhptransaction` WHERE stdid = '$lname' AND term = '$term' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $paid = $row["pay"];
-                       
- $sql = "SELECT SUM(amount) AS outs FROM `lhpassignedfee` WHERE stdid = '$lname' AND term = '$term' AND feeid = 'PreviousBalance' AND status = 1";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_assoc($result);
-                       $out = $row["outs"];
-
- $sql = "SELECT SUM(discount) AS disc FROM `lhpassignedfee` WHERE stdid = '$lname' AND term = '$term' AND status = 1";
-                       $result=mysqli_query($con,$sql);
-                      $row=mysqli_fetch_assoc($result);
-                     $discounted = $row["disc"];
-
-?>	
 <!doctype html>
 <html class="no-js" lang="">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Learner's Profile - Learnable</title>
+    <title>Manage Reportsheets - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="https://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -150,13 +86,11 @@ $sql = "SELECT SUM(amount) AS pay FROM `lhptransaction` WHERE stdid = '$lname' A
           
       }
     </script>
-    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-	
-		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
-<script>
-function getclass() {
+   
+    <script>
+function getstudent() {
         var str='';
-        var val=document.getElementById('class-list');
+        var val=document.getElementById('classd');
         for (i=0;i< val.length;i++) { 
             if(val[i].selected){
                 str += val[i].value + ','; 
@@ -166,14 +100,65 @@ function getclass() {
         
 	$.ajax({          
         	type: "GET",
-        	url: "get_state.php",
-        	data:'class_id='+str,
+        	url: "getdisc.php",
+        	data:'classid='+str,
         	success: function(data){
-        		$("#sbj-list").html(data);
+        		$("#learnerid").html(data);
         	}
 	});
 }
 </script>
+
+    <script>
+function getfeelist() {
+        var str='';
+        var val=document.getElementById('learnerid');
+        for (i=0;i< val.length;i++) { 
+            if(val[i].selected){
+                str += val[i].value + ','; 
+            }
+        }         
+        var str=str.slice(0,str.length -1);
+        
+	$.ajax({          
+        	type: "GET",
+        	url: "getdisc.php",
+        	data:'lid='+str,
+        	success: function(data){
+        		$("#feelist").html(data);
+        	}
+	});
+
+}
+</script>
+
+    <script>
+function getfeeamount() {
+        var str='';
+        var val=document.getElementById('fee-list');
+        for (i=0;i< val.length;i++) { 
+            if(val[i].selected){
+                str += val[i].value + ','; 
+            }
+        }         
+        var str=str.slice(0,str.length -1);
+        
+	$.ajax({          
+        	type: "GET",
+        	url: "get_fee.php",
+        	data:'feeid='+str,
+        	success: function(data){
+        		$("#amount").html(data);
+        	}
+	});
+}
+</script>
+
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+	
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+		
+
 </head>
 
 <body>
@@ -197,7 +182,7 @@ function getclass() {
     </div>
     <!-- End Header Top Area -->
     <!-- Mobile Menu start -->
-<?php include "nav.html"; ?>
+ <?php include "nav.html"; ?>
     <!-- Main Menu area End-->
 	<!-- Breadcomb area Start-->
 	<div class="breadcomb-area">
@@ -208,36 +193,19 @@ function getclass() {
 						<div class="row">
 							<div class="col-lg-9 col-md-6 col-sm-6 col-xs-12">
 								<div class="breadcomb-wp">
-								    
 									<div class="breadcomb-icon">
-										<i class="notika-icon notika-windows"></i>
+										<i class="notika-icon notika-support"></i>
 									</div>
 									<div class="breadcomb-ctn">
-										<h2> School Fees Payment and Records for <?php
-
-include "config.php";
-
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
-}
-
-$sql = "SELECT classname FROM `lhpclass` WHERE `classid` = '$cclass'";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-      $dclass = $row["classname"];
-      
-    echo $dclass;
-  }
-} 
-
-mysqli_close($conn);
-?>
-
-								</h2>
+										<h2>Welcome Admin</h2>
+			<h2>	 <?php
+							
+    if (isset($_SESSION['feemessage']) && $_SESSION['feemessage'])
+    {
+      printf('<b>%s</b>', $_SESSION['feemessage']);
+      unset($_SESSION['feemessage']);
+    }
+  ?></h2>
 										<p><span class="bread-ntd"></span></p>
 									</div>
 								</div>
@@ -255,106 +223,161 @@ mysqli_close($conn);
 	</div>
 	
 
-	 <div class="breadcomb-area">
+ <div class="form-element-area">
         <div class="container">
             <div class="row">
                 
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                              
-                            <h2><image src="images/profilepix/<?php echo $pix; ?>" width ="100"/></h2>
-                            <h5>Welcome <?php echo $stname; ?></h5>
-						<h2>	 <?php
-							
-    if (isset($_SESSION['message']) && $_SESSION['message'])
-    {
-      printf('<b>%s</b>', $_SESSION['message']);
-      unset($_SESSION['message']);
-    }
-  ?></h2>
+                            <h2>Award Discounts</h2>
+                     
+			
                         </div>
 					</div>
 				</div>
                   </div>      
-                      
+                        <br>
+                        <br>
+                        <br>
+						<div class="row">
+						<form method="POST" action="discassign.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+                         
+							 
+						
+                            	<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>Select Class</label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <select type="text" class="form-control" name="classname" id="classd"  onChange= "getstudent()">
+										<option value="">Select Class</option>
+								
+                    <?php
+
+$sql = "SELECT DISTINCT classid FROM `lhpassignedfee` WHERE `status` = 1";
+      $result = mysqli_query($con, $sql);
+
+          if (mysqli_num_rows($result) > 0) {
+           // output data of each row
+          while($row = mysqli_fetch_assoc($result)) {
+          $cname =  $row["classid"];
+
+          $sql = "SELECT classname FROM lhpclass WHERE classid  = '$cname'";
+          $result=mysqli_query($con,$sql);
+           $row=mysqli_fetch_array($result);
+           $classname = $row['classname'];
+echo '<option value="'.$cname.'">'.$classname.'</option>';
+          }
+      }
+      ?>
+										</select>
+                                    </div>
+                                </div>
+                            </div>
+							
+                          
+							
+							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" id = "bylearner">
+                                <label>Select Learner</label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="nk-int-st">
+                                        <select type="text" class="form-control" name="learnerid" id="learnerid" onChange="getfeelist()">
+											<option value="">Select Learner</option>
+										</select>
+                                    </div>
+                                </div>
+                            </div>
+							
 					
+                        
+							
+						
+						
+							
+							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>Select Fee Name</label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-wifi"></i>
+                                    </div>
+									<div class="nk-int-st">
+                                     <select type="text" required="yes" class="form-control" name="feeid" id="feelist" onChange="getamount();">
+											<option value="">Select Fee Name</option>
+                      
+									</select>
+									</div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" >
+                                <label>Enter Discount Amount </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-wifi"></i>
+                                    </div>
+                                    <div class="nk-int-st">
+                                         <input type="text" required="yes" class="form-control" name="discount"  />
+									
+                                    </div>
+                                </div>
+                            </div>                
+               
+							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                
+								<div class="form-group ic-cmp-int">
+                                    
+                                    <div class="nk-int-st">
+                                       <input type="submit" class="form-control" name="assign" value="Award Discount to Selected Customer"/> 
+                                    </div>
+                                </div>
+                            </div>
+							
+                    
+				</form>
+				
+				</div>
                 </div>
 			</div>	
-<div class="breadcomb-area">
-        <div class="notika-status-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2>&#8358;<span class="counter"> <?php echo $bill - $discounted; ?> </span></h2>
-                          <h4><strong>Total Amount Billed for <?php echo $term; ?></strong></h4>
-                        </div>
-                        <div class="sparkline-bar-stats1">1,2,3,4,5</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2>-&#8358;<span class="counter">
-                                <?php echo $out; ?>
-                            </span></h2>
-                     <h4><strong>Previous Term Outstanding Payment</strong></h4>
-                        </div>
-                        <div class="sparkline-bar-stats3">1,2,3,4,5</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2>&#8358;<span class="counter">
-                              <?php echo $paid; ?>
-                            </span></h2>
-                           <h4><strong>Total Amount Paid For <?php echo $term; ?></strong></h4>
-                        </div>
-                        <div class="sparkline-bar-stats2">1,2,3,4,5</div>
-                    </div>
-                </div>
-            
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2>&#8358;<span class="counter">
-                                <?php echo  (($paid - $bill ) -$out) + $discounted; ?>
-                                 </span></h2>
-                        <h4><strong>Total Outstanding Payment</strong></h4>
-                        </div>
-                        <div class="sparkline-bar-stats4">1,2,3,4,5</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-   </div>
+			
+		</div>
+	</div>
+	
+	<!-- Breadcomb area End-->
     <!-- Data Table area Start-->
-     <div class="breadcomb-area">
     <div id="doc" class="data-table-area">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
-                            <h2>Your School Bills
+                            <h2>Assigned Fee Table
 							
 						</h2>
-                            <p>This table contains all school fees due for payment.</p>
+                            <p>Here is a list of all the fees assigned to learners </p>
                         </div>
                         <div class="table-responsive">
                             <table id="data-table-basic" class="table table-striped">
                                 <thead>
                                     <tr>
                                           <th>S/N</th>
-										<th>Term </th>
-										<th> Due Date</th>
-										<th> Fee Description</th>
-									   
-										<th> Amount Payable</th>
+										  <th>Term</th>
+										<th>Class</th>
+										<th>Full name</th>
+										<th> Fee Type</th>
+										<th> Fee Name</th>
+									    <th>Amount </th>
+									    <th> Discount</th>
+									    <th> Payable</th>
+										<th> Status</th>
+										
                                     </tr>
                                 </thead>
                                
@@ -364,61 +387,75 @@ mysqli_close($conn);
 				
 				
 				 <?php
-			$lname = $_SESSION['studnamed'];
-			$val = "1";
+			
+			
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("select * from lhpassignedfee WHERE stdid = '$lname' AND status = '$val' ORDER BY due");
+            $query=$conn->prepare("select * from lhpassignedfee where discount > 0 ORDER BY status ASC");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
             {
-              
-            ?>
-            <?php 
-            
-             $term = $row->term;
-             $feeid = $row->feeid;
-             $discount = $row->discount;
-             $due = $row->due;
-             $feeamount = $row->amount;
-             
-               $sql = "SELECT * FROM `lhpfeelist` WHERE feeid = '$feeid'  AND status = '$val' ";
-                         $result=mysqli_query($con,$sql);
-                        $row=mysqli_fetch_array($result);
-                        
-                        $fnamed = $row['feename']; 
-                        $cname = $row['classid'];
-                        
-                        $sql = "SELECT * FROM lhpclass WHERE classid  = '$cname'";
+                $assid =  $row->assid;
+                $term =  $row->term;
+                $stdid =  $row->stdid;
+                $feeid =  $row->feeid;
+                $classid =  $row->classid;
+                $discount =  $row->discount;
+                $type =  $row->type;
+                $status =  $row->status;
+                $feeamount = $row->amount;
+                $sql = "SELECT * FROM lhpclass WHERE classid  = '$classid'";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
                if ($row['classname'] != ""){
                $feeclass = $row['classname'];
                }
                else {
-                 $feeclass = $cname;  
+                 $feeclass = $classid;  
                    
                }
-               $fee =  $feeclass." - ". $fnamed;
-
+               
+               $sql = "SELECT * FROM lhpuser WHERE uname  = '$stdid'";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+               $std = $row['fname'];
+                
+               
+               $sql = "SELECT * FROM lhpfeelist WHERE feeid  = '$feeid'";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+               $feename = $row['feename'];
+                
                if($feeid == "PreviousBalance"){
-                $usename = "PREVIOUS TERM BALANCE";
-              }
-              else{
-                $usename = $fee;
-              }
-             ?>
-            <tr>
+                 $usename = "PREVIOUS TERM BALANCE";
+               }
+               else{
+                 $usename = $feename;
+               }
+                 if ($status == 1){
+               $feestatus = '<a href="deactfee.php?ref='.$assid.'" type="button"  class="btn btn-success" >Active. Click to De-activate</a>';
+               }
+               else {
+                $feestatus = '<a href="activatefee.php?ref='.$assid.'" type="button"  class="btn btn-danger" >Inactive - Click to Activate</a>';  
+                   
+               }
+                
+            ?>
+            <tr><strong>
                 <td><?php echo $count++ ?></td>
+				<td><?php echo $term?></td>
+				<td><?php echo $feeclass ?></td>
+				<td><?php echo $std ?></td>
+				<td><?php echo $type ?></td>
+				<td><?php echo  $usename ?></td>
+				<td><?php echo $feeamount ?></td>
+				<td><?php echo $discount ?></td>
+				<td><?php echo $pay = $feeamount -$discount;  ?></td>
+				<td><?php echo $feestatus ?></td>
 				
-				<td><strong><?php echo $term ?></strong></td>
-				<td><strong><?php echo $due ?> </strong></td>
-				<td><strong> <?php echo $usename; ?></strong> </td>
-			    <td> <strong>&#8358;<?php echo $feeamount - $discount; ?> </strong></td>
-          
-			   
+                </strong>
             </tr>
             <?php }?>
             </tbody>
@@ -426,11 +463,16 @@ mysqli_close($conn);
                                 </tbody>
                                 <tfoot>
                                     <tr>
-										<th>S/N</th>
-										<th>Term </th>
-										<th> Due Date</th>
-										<th> Fee Description</th>
-										<th> Amount Payable</th>
+                                         <th>S/N</th>
+										  <th>Term</th>
+										<th>Class</th>
+										<th>Full name</th>
+										<th> Fee Type</th>
+										<th> Fee Name</th>
+									    <th>Amount </th>
+									    <th> Discount</th>
+									    <th> Payable</th>
+										<th> Status</th>
 										
                                     </tr>
                                 </tfoot>
@@ -441,14 +483,12 @@ mysqli_close($conn);
             </div>
         </div>
     </div>
-    </div>
     <!-- Data Table area End-->
- 
-   
     <!-- Start Footer area-->
-    <?php include "foot.php"; ?>
-  
+  <?php include "foot.html"; ?>
     <!-- End Footer area-->
+    
+    
     <!-- jquery
 		============================================ -->
     <script src="js/vendor/jquery-1.12.4.min.js"></script>
@@ -512,7 +552,9 @@ mysqli_close($conn);
     <!-- main JS
 		============================================ -->
     <script src="js/main.js"></script>
-	
+	<!-- tawk chat JS
+		============================================ -->
+    <script src="js/tawk-chat.js"></script>
 </body>
 
-</html>
+</html>s
