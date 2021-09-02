@@ -257,22 +257,23 @@ function getfeeamount() {
 										<option value="">Select Class</option>
 								
                     <?php
+require_once("DBController.php");
+$db_handle = new DBController();
 
-$sql = "SELECT DISTINCT classid FROM `lhpassignedfee` WHERE `status` = 1";
-      $result = mysqli_query($con, $sql);
+$query = "SELECT DISTINCT classid FROM `lhpassignedfee` WHERE `status` = 1";
+$result = $db_handle->runQuery($query);
 
-          if (mysqli_num_rows($result) > 0) {
-           // output data of each row
-          while($row = mysqli_fetch_assoc($result)) {
-          $cname =  $row["classid"];
-
-          $sql = "SELECT classname FROM lhpclass WHERE classid  = '$cname'";
+            foreach($result as $row) {
+          $sql = "SELECT * FROM lhpclass WHERE classid  = '$row[classid]'";
           $result=mysqli_query($con,$sql);
            $row=mysqli_fetch_array($result);
+           $cid = $row['classid'];
            $classname = $row['classname'];
-echo '<option value="'.$cname.'">'.$classname.'</option>';
+           ?>
+<option value="<?php echo $cid ?>"><?php echo $classname ?></option>';
+<?php
           }
-      }
+      
       ?>
 										</select>
                                     </div>
