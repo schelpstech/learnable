@@ -4,6 +4,22 @@ include "conf.php";
 if(!isset($_SESSION['unamed'])){
    header('Location: ../index.php');
 }
+
+       //School Information
+       $sql = "SELECT * FROM lhpschool ";
+       $result=mysqli_query($con,$sql);
+        $row=mysqli_fetch_array($result);
+             
+              $schname = $row["schname"];
+              $schmotto = $row["motto"];
+              $schyear = $row["founded"];
+              $schphone = $row["phone"];
+              $schemail = $row["email"];
+              $schweb = $row["website"];
+              $schaddress = $row["address"];
+              $schlogo = $row["logo"];
+              $schowner = $row["proprietor"];
+       
 ?>
 
 <!doctype html>
@@ -151,7 +167,7 @@ if(!isset($_SESSION['unamed'])){
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="schname"  value="">
+                                        <input type="text" required="yes" class="form-control" name="schname"  value="<?php echo $schname; ?>">
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +179,7 @@ if(!isset($_SESSION['unamed'])){
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="schowner" />
+                                        <input type="text" required="yes" class="form-control" name="schowner"  value="<?php echo $schowner; ?>" />
                                                                     
                                     </div>
                                 </div>
@@ -176,7 +192,7 @@ if(!isset($_SESSION['unamed'])){
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="schmotto" />
+                                        <input type="text" required="yes" class="form-control" name="schmotto"  value="<?php echo $schmotto; ?>" />
                                                                     
                                     </div>
                                 </div>
@@ -189,7 +205,7 @@ if(!isset($_SESSION['unamed'])){
                                     </div>
 									
                                     <div class="nk-int-st">
-                                         <input type="text" required="yes" class="form-control" name="schaddress" />
+                                         <input type="text" required="yes" class="form-control" name="schaddress"  value="<?php echo $schaddress; ?>" />
    
                                     </div>
                                 </div>
@@ -205,7 +221,7 @@ if(!isset($_SESSION['unamed'])){
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="tel" required="yes" class="form-control" name="schphone" />
+                                        <input type="tel" required="yes" class="form-control" name="schphone"  value="<?php echo $schphone; ?>" />
                                       
                                     </div>
                                 </div>
@@ -219,7 +235,7 @@ if(!isset($_SESSION['unamed'])){
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="email" required="yes" class="form-control" name="schemail" />
+                                        <input type="email" required="yes" class="form-control" name="schemail"  value="<?php echo $schemail; ?>"/>
                                    
                                     </div>
                                 </div>
@@ -233,7 +249,7 @@ if(!isset($_SESSION['unamed'])){
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input  type="url" required="yes" class="form-control" name="schweb">
+                                        <input  type="url" required="yes" class="form-control" name="schweb"  value="<?php echo $schweb; ?>">
 
                                     </div>
                                 </div>
@@ -248,7 +264,19 @@ if(!isset($_SESSION['unamed'])){
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input  type="date" required="yes" class="form-control" name="schyear">
+                                        <input  type="number" required="yes" class="form-control" max ="2021" min ="1990" minlength ="4" maxlength ="4" name="schyear"  value="<?php echo $schyear; ?>">
+ 
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>School Logo</label>
+								                    <div class="form-group ic-cmp-int">
+                                   
+									
+                                    <div class="nk-int-st">
+                                    <image  src="../admin/images/<?php echo $schlogo; ?>" width="150" height="150"/>
 
                                     </div>
                                 </div>

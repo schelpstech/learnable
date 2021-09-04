@@ -259,9 +259,7 @@ $row=mysqli_fetch_array($result);
                         <table class="table table-bordered" style="width:100%">
                                 <thead>
                                     <tr>
-                                    <th style ="text-align: center;"></th>
-                                        <th style ="text-align: center;"></th>
-									
+                                    
                                     </tr>
                                 </thead>
                                
