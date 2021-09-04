@@ -76,6 +76,21 @@ $result=mysqli_query($con,$sql);
        $opendays = $row["sch_open"];
        $sign = $row["signature"];
 
+       //School Information
+$sql = "SELECT * FROM lhpschool ";
+$result=mysqli_query($con,$sql);
+ $row=mysqli_fetch_array($result);
+      
+       $schname = $row["schname"];
+       $schmotto = $row["motto"];
+       $schyear = $row["founded"];
+       $schphone = $row["phone"];
+       $schemail = $row["email"];
+       $schweb = $row["website"];
+       $schaddress = $row["address"];
+       $schlogo = $row["logo"];
+       $schowner = $row["proprietor"];
+
 //Get Affective Domain
        $sql = "SELECT *  from lhpaffective WHERE uname = '$lname' AND term = '$term'";
 $result=mysqli_query($con,$sql);
@@ -232,35 +247,59 @@ $row=mysqli_fetch_array($result);
 	<!-- Breadcomb area Start-->
 <div id="doc" >
   
-	<div class="breadcomb-area">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="breadcomb-list">
-						<div class="row">
-							<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-								<div class="breadcomb-wp">
-								    
-									<div class="breadcomb-icon">
-									<image  src="images/profilepix/logo.png"/>
-									</div>
-									
-								</div>
-							</div>
-							<div class="col-lg-8 col-md-6 col-sm-6 col-xs-12">
-              <h1 style ="text-align: center;"> DWAT College </h1>
-					<h3 style ="text-align: center;"> <?php echo $term." "?> Academic Reportsheets for <?php echo $dclass?></h3>
-				
-							</div>
-					
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+
     <!-- Data Table area Start-->
-    <div id="doc" class="data-table-area" style ="text-align: center;">
+    <div  class="data-table-area" style ="text-align: center;">
+        <div class="container">
+            <div class="row">
+                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="normal-table-list mg-t-30">
+                      
+                        <div class="bsc-tbl-bdr">
+                        <table class="table table-bordered" style="width:100%">
+                                <thead>
+                                    <tr>
+                                    <th style ="text-align: center;"></th>
+                                        <th style ="text-align: center;"></th>
+									
+                                    </tr>
+                                </thead>
+                               
+                                    
+                                     <tbody>
+				
+				
+				
+
+           
+            <tr>
+            <td><image  src="../admin/images/<?php echo $schlogo; ?>" width="150" height="150"/><br>
+                  <strong>Founded: <?php echo $schyear; ?></strong></td>     
+				<td>
+        
+              <h1 style ="text-align: center;"> <?php echo $schname; ?> </h1>
+              <h5 style ="text-align: center;"> <?php echo $schmotto; ?> </h5>
+              <h5 style ="text-align: center;"> <?php echo $schaddress; ?> </h5>
+              <h5 style ="text-align: center;"> <?php echo $schphone; ?> |  <?php echo $schemail; ?> | <?php echo $schweb ?> </h5>
+              <h4 style ="text-align: center;"> <?php echo $term." "?> Academic Reportsheets for <?php echo $dclass?></h4>
+            </td>
+				
+            </tr>
+           
+            </tbody>
+                                   
+                                </tbody>
+                                
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><br>
+    
+				
+    <div  class="data-table-area" style ="text-align: center;">
         <div class="container">
             <div class="row">
                   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -663,7 +702,7 @@ $row=mysqli_fetch_array($result);
 								    
 									<div class="breadcomb-icon">
                   <image  src="../admin/archive/<?php echo $sign; ?>"  height="100" width="100"/>
-                  <h3 style ="text-align: left;"> Mr Bankole Akinola </h3>
+                  <h3 style ="text-align: left;"> <?php echo $schowner; ?> </h3>
                   <h4 style ="text-align: left;"> Chief Learning Officer </h4>
                   
                 </div>
@@ -675,7 +714,7 @@ $row=mysqli_fetch_array($result);
 					</div>
 				</div>
 			</div>
-      </div>
+     
     <div  class="breadcomb-area">
 		<div class="container">
 			<div class="row">
@@ -694,7 +733,7 @@ $row=mysqli_fetch_array($result);
         </div>
     </div>
    
-   
+    </div>
 		
   
     

@@ -79,6 +79,18 @@ if (mysqli_num_rows($result) > 0) {
 }
 
 mysqli_close($conn);
+
+
+   //School Information
+   $sql = "SELECT * FROM lhpschool ";
+   $result=mysqli_query($con,$sql);
+    $row=mysqli_fetch_array($result);
+         
+          $schname = $row["schname"];
+          $schphone = $row["phone"];
+          $schemail = $row["email"];
+          $schaddress = $row["address"];
+          $schowner = $row["proprietor"];
 ?>			
 
 	
@@ -225,22 +237,22 @@ function getclass() {
 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 <div class="invoice-cmp-ds ivc-frm">
 <div class="invoice-frm">
-<span>Invoice from</span>
+<span>Receipt issued by</span>
 </div>
 <div class="comp-tl">
-<h2>DWAT College</h2>
-<p>2/3 Orange street, ECWA Side, Ifo, Ogun State</p>
+<h2><?php echo $schname; ?></h2>
+<p><?php echo $schaddress; ?></p>
 </div>
 <div class="cmp-ph-em">
-<span>+234 803 584 8598</span>
-<span>bursary@dwatschools.com.ng</span>
+<span><?php echo $schphone; ?></span>
+<span><?php echo $schemail; ?></span>
 </div>
 </div>
 </div>
 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 <div class="invoice-cmp-ds ivc-to">
 <div class="invoice-frm">
-<span>Invoice to</span>
+<span>Receipt issued to</span>
 </div>
 <div class="comp-tl">
 <h2><?php echo $lname. ' - '.$stname; ?></h2>
@@ -313,7 +325,7 @@ function getclass() {
 <div class="invoice-ds-int invoice-last">
 <h2>Signature</h2>
 <p class="tab-mg-b-0">School Bursar </p>
-<p class="tab-mg-b-0">DWAT COLLEGE </p>
+<p class="tab-mg-b-0"><?php echo $schname; ?> </p>
 </div>
 </div>
 </div>

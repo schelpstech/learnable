@@ -198,7 +198,7 @@ function getfeeamount() {
         	url: "get_fee.php",
         	data:'feeid='+str,
         	success: function(data){
-        		$("#amount").html(data);
+        		$("#amounta").html(data);
         	}
 	});
 }
