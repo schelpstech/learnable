@@ -462,7 +462,7 @@ foreach ($feeresult as $termd) {
                                         <i class="notika-icon notika-wifi"></i>
                                     </div>
                                     <div class="nk-int-st">
-                                         <input type="text" required="yes" class="form-control" name="feeamount" id="amountb" />
+                                         <input type="text"  class="form-control" name="feeamount" id="amountb" />
 									
                                     </div>
                                 </div>
