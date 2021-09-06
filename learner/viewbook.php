@@ -291,7 +291,7 @@ foreach ($book as $booked) {
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("SELECT * from lhpnote  WHERE (topicid = '$viewid' AND status = 1) ORDER BY rectime ASC ");
+            $query=$conn->prepare("SELECT * from lhpnote  WHERE (topicid = '$viewid' AND status = 1 AND vet = 1) ORDER BY rectime ASC ");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
