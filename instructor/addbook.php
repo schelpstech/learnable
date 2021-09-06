@@ -472,7 +472,7 @@ foreach ($book as $booked) {
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" class="form-control" name="online" id="online" placeholder="Enter  link to your online learning material here" >
+                                        <input type="url" class="form-control" name="online" id="online" placeholder="Enter  link to your online learning material here" >
                                     </div>
                                 </div>
                             </div>

@@ -327,7 +327,7 @@ foreach ($book as $booked) {
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <select type="text" class="form-control" name="subject"  required="yes"  >
+                                        <select type="url" class="form-control" name="subject"  required="yes"  >
 <?php
 foreach ($book as $booked) {
     $sbj = $booked["subject"];

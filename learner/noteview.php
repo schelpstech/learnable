@@ -24,7 +24,7 @@ if(!empty($_GET['id'])) {
                $notebook = $row['content'];
                $topicid = $row['topicid'];
                $rectime = $row['rectime']; 
-
+               $staffid = $row['staffid'];
 require_once ("DBController.php");
 $db_handle = new DBController();
 $query = "SELECT * FROM lhpscheme where schmid ='$topicid'";
@@ -277,7 +277,7 @@ if (!$conn) {
   die("Connection failed: " . mysqli_connect_error());
 }
 
-$sql = "SELECT `staffname` FROM `lhpstaff` WHERE `sname` = '".$lname."'";
+$sql = "SELECT `staffname` FROM `lhpstaff` WHERE `sname` = '".$staffid."'";
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
