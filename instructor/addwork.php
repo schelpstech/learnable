@@ -307,7 +307,7 @@ foreach ($book as $booked) {
   $sql = "SELECT * FROM lhpclass WHERE classid  = '$cname'";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
-               $viewc = $row[classname];
+               $viewc = $row['classname'];
     ?>
 <option value="<?php echo $booked["classname"]; ?>"><?php echo $viewc; ?></option>
 <?php
@@ -334,7 +334,7 @@ foreach ($book as $booked) {
   $sql = "SELECT * FROM lhpsubject WHERE sbjid  = '$sbj'";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
-               $views = $row[sbjname];
+               $views = $row['sbjname'];
     ?>
 <option value="<?php echo $sbj; ?>"><?php echo $views; ?></option>
 <?php
@@ -480,7 +480,7 @@ foreach ($book as $booked) {
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="url" class="form-control" name="online" id="online" placeholder="Enter  link to your online questions here" >
+                                        <input type="text" class="form-control" name="online" id="online" placeholder="Enter  link to your online questions here" >
                                     </div>
                                 </div>
                             </div>
