@@ -114,6 +114,7 @@ $term = $_SESSION['termed'];
 					<th>Full Name</th>
                     <th>Contact Phone</th>
                     <th>Total Amount Billed</th>
+                    <th>Total Discount Allowed</th>
                     <th>Total Amount Paid</th>	
                     <th>Total Amount Owing</th>
                     <th>Status</th>
@@ -152,6 +153,11 @@ $term = $_SESSION['termed'];
            $row=mysqli_fetch_array($result);
            $tbill = "$row[tbill]";
 
+           $sql = " SELECT Sum(`discount`) as tdiscount FROM `lhpassignedfee` where stdid = '$uname' and  `status` = 1 and term = '$term'";
+           $result=mysqli_query($con,$sql);
+          $row=mysqli_fetch_array($result);
+          $discount = "$row[tdiscount]";
+
            $sql = " SELECT Sum(`amount`) as trev FROM `lhptransaction` where stdid = '$uname' and  `status` = 1 and term = '$term'";
             $result=mysqli_query($con,$sql);
            $row=mysqli_fetch_array($result);
@@ -163,11 +169,12 @@ $term = $_SESSION['termed'];
             <td><strong><?php echo $fname ?></strong></td>
             <td><strong><?php echo $phone ?></strong></td>
             <td><strong>&#8358;<?php echo intval($tbill) ?></strong></td>
+            <td><strong>&#8358;<?php echo intval($discount) ?></strong></td>
 			<td><strong>&#8358;<?php echo intval($trev) ?></strong></td>	
-            <td><strong>&#8358;<?php echo intval($trev) - intval($tbill)?></strong></td>  
+            <td><strong>&#8358;<?php echo intval($tbill) - (intval($trev) + intval($discount))?></strong></td>  
             <td><?php 
             
-            $balance = intval($trev) - intval($tbill);
+            $balance = intval($trev) - (intval($tbill) + intval($discount));
             if( $balance >= 0){
                 echo '<button type="button"  class="btn btn-success" ><strong>Full Paid</strong></button>';
             }
@@ -189,6 +196,7 @@ $term = $_SESSION['termed'];
 					<th>Full Name</th>
                     <th>Contact Phone</th>
                     <th>Total Amount Billed</th>
+                    <th>Total Discount Allowed</th>
                     <th>Total Amount Paid</th>	
                     <th>Total Amount Owing</th>
                     <th>Status</th>

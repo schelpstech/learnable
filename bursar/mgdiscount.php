@@ -15,7 +15,7 @@ if(!isset($_SESSION['unamed'])){
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Manage Reportsheets - LearnAble</title>
+    <title>Manage Discounts- LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
@@ -378,6 +378,7 @@ $result = $db_handle->runQuery($query);
 									    <th> Discount</th>
 									    <th> Payable</th>
 									
+										
                                     </tr>
                                 </thead>
                                
@@ -434,7 +435,7 @@ $result = $db_handle->runQuery($query);
                else{
                  $usename = $feename;
                }
-              
+                
                 
             ?>
             <tr><strong>
@@ -447,6 +448,7 @@ $result = $db_handle->runQuery($query);
 				<td><?php echo $feeamount ?></td>
 				<td><?php echo $discount ?></td>
 				<td><?php echo $pay = $feeamount -$discount;  ?></td>
+				
 				
                 </strong>
             </tr>
@@ -465,6 +467,7 @@ $result = $db_handle->runQuery($query);
 									    <th>Amount </th>
 									    <th> Discount</th>
 									    <th> Payable</th>
+									
 										
                                     </tr>
                                 </tfoot>

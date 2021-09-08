@@ -274,6 +274,7 @@ function getclass() {
                       <th>S/N</th>
                       <th>Class </th>
 					<th>Total Amount Expected</th>
+          <th>Total Discount Allowed</th>
                     <th>Total Payment Received</th>
                     <th>Number of Billed Students</th>	
                     <th>Learners that have made Payment</th>
@@ -292,8 +293,8 @@ function getclass() {
 				
             $count=1;
             $query=$conn->prepare("SELECT lhpclass.classid, lhpclass.classname, lhpassignedfee.cnt_bill, lhptransaction.cnt_pay,
-             IFNULL(lhpassignedfee.classbill, 0) AS classbill, IFNULL(lhptransaction.classrev, 0) AS classrev FROM lhpclass
-             LEFT JOIN ( SELECT classid, sum(amount) AS classbill , 
+             IFNULL(lhpassignedfee.classbill, 0) AS classbill,  IFNULL(lhpassignedfee.disc, 0) AS disc, IFNULL(lhptransaction.classrev, 0) AS classrev FROM lhpclass
+             LEFT JOIN ( SELECT classid, sum(amount) AS classbill , sum(discount) AS disc , 
              COUNT(DISTINCT lhpassignedfee.stdid) as cnt_bill FROM lhpassignedfee where lhpassignedfee.status = 1  and term = '$term' GROUP BY classid ) 
              lhpassignedfee ON (lhpclass.classid = lhpassignedfee.classid) 
             LEFT JOIN ( SELECT classid, sum(amount) AS classrev, 
@@ -305,6 +306,7 @@ function getclass() {
             {
               $classname = $row->classname;
               $classbill = $row->classbill;
+              $classdisc = $row->disc;
               $classrev = $row->classrev;     
               $cntbill = $row->cnt_bill; 
               $cntpay = $row->cnt_pay;
@@ -313,7 +315,9 @@ function getclass() {
             <tr>
             <td><?php echo $count++ ?></td>
             <td><strong><?php echo $classname?></strong></td>
-            <td><strong>&#8358;<?php echo intval($classbill) ?></strong></td>
+            <td><strong>&#8358;<?php echo intval($classbill) ?></strong></td>   
+              <td><strong>&#8358;<?php echo intval($classdisc) ?></strong></td>
+
             <td><strong>&#8358;<?php echo intval($classrev) ?></strong></td>
 			<td><strong><?php echo intval($cntbill) ?></strong></td>	
             <td><strong><?php echo intval($cntpay) ?></strong></td>   

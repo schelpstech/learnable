@@ -15,7 +15,7 @@ if(!isset($_SESSION['unamed'])){
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Manage Reportsheets - LearnAble</title>
+    <title>Manage Discounts- LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
