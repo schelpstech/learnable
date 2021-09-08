@@ -23,7 +23,9 @@ if (mysqli_num_rows($result) > 0) {
   while($row = mysqli_fetch_assoc($result)) {
     
       $stname = $row["fname"];
-      
+      $gender = $row["gender"]; 
+      $dob = $row["dob"];
+
       $cclass = $row["classid"];
       $pix = $row["picture"];
 	
@@ -62,11 +64,12 @@ if (mysqli_num_rows($result) > 0) {
 }
 
 // Class Population
-$sql = "SELECT COUNT(id) AS pop FROM `lhpuser` WHERE `classid` = '$cclass' ";
+$sql = "SELECT COUNT( DISTINCT lid) AS pop FROM lhpresultrecord WHERE `classid` = '$cclass' AND term = '$term'";
                $result=mysqli_query($con,$sql);
                 $row=mysqli_fetch_array($result);
                      
                       $pop = $row["pop"];
+                      
 //Result Configuration
 $sql = "SELECT * FROM lhpresultconfig WHERE term = '$term' ";
 $result=mysqli_query($con,$sql);
@@ -314,7 +317,7 @@ $row=mysqli_fetch_array($result);
                                     <th style ="text-align: center;">Learners ID</th>
                                         <th style ="text-align: center;">Fullname</th>
 										<th style ="text-align: center;"> Gender</th>
-                      <th style ="text-align: center;">Age</th>
+                      <th style ="text-align: center;">Date of Birth</th>
                         <th style ="text-align: center;">Current Class </th>
 						<th style ="text-align: center;"> Class Teacher</th>
 						 <th style ="text-align: center;"> Class Population</th>
@@ -332,8 +335,8 @@ $row=mysqli_fetch_array($result);
             <tr>
             <td><strong><p style ="text-align: center;"><?php echo $lname ?></p></strong></td>
 	<td><strong><h4 style ="text-align: center;">  <?php echo $stname ?></h4></strong></td>
-	<td><strong><p style ="text-align: center;">Male</p></strong></td>      
-				<td><strong><p style ="text-align: center;">4 years</p></strong></td>
+	<td><strong><p style ="text-align: center;"><?php echo $gender ?></p></strong></td>      
+				<td><strong><p style ="text-align: center;"><?php echo $dob ?></p></strong></td>
 				<td><strong><p style ="text-align: center;"><?php echo $dclass; ?></p></strong></td>
 				<td><strong><p style ="text-align: center;"><?php echo $tutorname; ?></p></strong></td>
 				<td><strong><p style ="text-align: center;"><?php echo $pop; ?></p></strong></td>
