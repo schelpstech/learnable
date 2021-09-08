@@ -6,18 +6,11 @@ if(!isset($_SESSION['studnamed'])){
      header('Location: ../index.php');
      
 }
+if(!empty($_GET['term'])) {
+  $term = $_GET["term"]; 
+}
 $lname = $_SESSION['studnamed'];
-$sql = "SELECT * FROM `lpterm` WHERE `status` = 1";
-$result = mysqli_query($con, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-      $term = $row["term"];
-	
-  }
-} 
+ 
 ?>
 <?php
 
