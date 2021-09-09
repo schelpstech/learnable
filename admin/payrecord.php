@@ -490,7 +490,7 @@ foreach ($classresult as $classd) {
               
                 
                  if ($status == 1){
-               $feestatus = '<a href="#" type="button"  class="btn btn-success" >Successfully Confirmed</a>';
+               $feestatus = '<a href="receipt.php?term='.$term.'&lid='.$stdid.'&classid='.$classid.'" type="button"  class="btn btn-success" >Successfully Confirmed</a>';
                }
                elseif ($status == 2){
                 $feestatus = '<a href="#" type="button"  class="btn btn-warning" >Pending Confirmation</a>';  
