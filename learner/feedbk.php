@@ -3,6 +3,20 @@
 $stdid = $_SESSION['studnamed'];
 $quest = $_SESSION['viewid'];
 $grade = $_SESSION['grade'];
+$subjectid = $_SESSION['subject'];
+
+$sql = "SELECT * FROM `lpterm` WHERE `status` = 1";
+$result = mysqli_query($con, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    
+      $term = $row["term"];
+	
+  }
+} 
+
 $sql = "SELECT * FROM `lhpfeedback` WHERE `stdid` = '$stdid' AND qid = '$quest'";
 $result = mysqli_query($con, $sql);
 
@@ -59,14 +73,7 @@ echo '
 									
                                     <div class="nk-int-st">
                                         <input type="text" class="form-control" name="term"  required="yes" 
-                                        value="<?php
-foreach ($book as $booked) {
-    ?>
-<?php echo $booked["term"]; ?>
-<?php
-}
-?>"
-                                        >
+                                        value="'.$term.'">
                                     </div>
                                     
                                 </div>
@@ -82,14 +89,7 @@ foreach ($book as $booked) {
 									
                                     <div class="nk-int-st">
                                         <input type="text" class="form-control" name="subjectid"  required="yes" 
-                                        value="<?php
-foreach ($book as $booked) {
-    ?>
-<?php echo $booked["subject"]; ?>
-<?php
-}
-?>"
-                                        >
+                                        value="'.$subjectid.'">
                                     </div>
                                     
                                 </div>
@@ -125,7 +125,7 @@ foreach ($book as $booked) {
                               
 									 <div class="cmp-int-box mg-t-20">
                                     
-                                        <textarea class="form-control" name="lesson"  placeholder="Enter your note here" rows="10" id="editor2"  style="background-color:white; border: 1px solid #ccc;"></textarea>
+                                        <textarea class="form-control" name="response"  placeholder="Enter your note here" rows="10" id="editor2"  style="background-color:white; border: 1px solid #ccc;"></textarea>
                                     
                                     </div>
                                 </div>
