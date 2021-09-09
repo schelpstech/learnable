@@ -490,14 +490,14 @@ foreach ($classresult as $classd) {
               
                 
                  if ($status == 1){
-               $feestatus = '<a href="deactfee.php?ref='.$tid.'" type="button"  class="btn btn-success" >Successfully Confirmed</a>';
+               $feestatus = '<a href="#" type="button"  class="btn btn-success" >Successfully Confirmed</a>';
                }
                elseif ($status == 2){
-                $feestatus = '<a href="activatefee.php?ref='.$tid.'" type="button"  class="btn btn-warning" >Pending Confirmation</a>';  
+                $feestatus = '<a href="#" type="button"  class="btn btn-warning" >Pending Confirmation</a>';  
                    
                }
                elseif ($status == 0){
-                $feestatus = '<a href="activatefee.php?ref='.$tid.'" type="button"  class="btn btn-danger" >Unsuccessful Transaction</a>';  
+                $feestatus = '<a href="#" type="button"  class="btn btn-danger" >Unsuccessful Transaction</a>';  
                    
                }
                 
