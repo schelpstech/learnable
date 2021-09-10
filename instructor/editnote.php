@@ -17,6 +17,7 @@ if(!empty($_GET['id'])) {
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
                $noted = $row['content'];
+               $type = $row['type'];
 }
 
 require_once ("DBController.php");
@@ -357,8 +358,9 @@ foreach ($book as $booked) {
                         
                  
 						
-				
-                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+                            <?php 
+                            if($type =='text'){
+                         echo '    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
                                  <label> Note of Lesson </label>
 								<div class="form-group ic-cmp-int">
                                 
@@ -369,29 +371,71 @@ foreach ($book as $booked) {
                               
 									 <div class="cmp-int-box mg-t-20">
                                     
-                                        <textarea class="form-control" name="content" rows="10" id="editor2"  style="background-color:white; border: 1px solid #ccc;"><?php echo $noted;?></textarea>
+                                        <textarea class="form-control" name="content" rows="10" id="editor2"  style="background-color:white; border: 1px solid #ccc;">'.$noted.'</textarea>
                                     
                                     </div>
                                 </div>
                             </div>
+                            <br>
+                            <br>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                              
+                              <div class="form-group ic-cmp-int">
+                                                  
+                                                  <div class="nk-int-st">
+                                                     <input type="submit" class="form-control" name="updatenote" value="Update this Note of Lesson"/> 
+                                                  </div>
+                                              </div>
+                                          </div>
+                            ';
                             
+                            }  
                             
-                            
-                         
-                            
+                            elseif($type =='online'){
+                              echo '    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+                                      <label> Note of Lesson </label>
+                     <div class="form-group ic-cmp-int">
+                                     
+                       <div class="form-ic-cmp">
+                                             <i class="notika-icon notika-calendar"></i>
+                                         </div>
+                                         
+                                   
+                        <div class="cmp-int-box mg-t-20">
+                                         
+                                             <input type="url" class="form-control" name="content" value="'.$noted.'"/>
+                                         
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <br>
+                                 <br>
+                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                   
+                                   <div class="form-group ic-cmp-int">
+                                                       
+                                                       <div class="nk-int-st">
+                                                          <input type="submit" class="form-control" name="updatenote" value="Update this Note of Lesson"/> 
+                                                       </div>
+                                                   </div>
+                                               </div>
+                                 ';
+                                 
+                                 } 
+
+                                else{
+                                  echo '    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+                                        
+                                             
+                                                 <button  type="button" class="btn btn-danger btn-lg btn-block">Learning Material is in an uneditable format. Kindly used the delete option</button>
+                                            
+                                     </div>';
+                                     
+                                     } 
+                     ?>       
                           
                          
-							<br>
-							<br>
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                
-								<div class="form-group ic-cmp-int">
-                                    
-                                    <div class="nk-int-st">
-                                       <input type="submit" class="form-control" name="updatenote" value="Update this Note of Lesson"/> 
-                                    </div>
-                                </div>
-                            </div>
+						
 							
                     
 				</form>

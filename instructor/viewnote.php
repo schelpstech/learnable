@@ -5,17 +5,25 @@ include "conf.php";
 if(!isset($_SESSION['stnamed'])){
      header('Location: ../index.php');
 }
-
+if(!empty($_GET['typ'])) {         
+  $type = $_GET["typ"];  
+} 
 ?>
 
 
 
 <?php
-
-$topicid = $_SESSION['topicid'];
-$notebook = $_SESSION['notebook'];
-$rectime = $_SESSION['rectime'];
-$viewid = $_SESSION['viewid'];
+$lname = $_SESSION['stnamed'];
+if(!empty($_GET['id'])) {         
+        $viewid = $_GET["id"];
+        $_SESSION['viewid'] = $viewid;
+}      
+ $sql = "SELECT * FROM lhpnote WHERE noteid  = '$viewid'";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_array($result);
+               $notebook = $row['content'];
+               $topicid = $row['topicid'];
+               $rectime = $row['rectime']; 
 
 require_once ("DBController.php");
 $db_handle = new DBController();
@@ -90,6 +98,7 @@ $book = $db_handle->runQuery($query);
 	<script src="js/html2pdf.bundle.min.js"></script>
     <script src="js/hide-show-fields-form.js"></script>
     <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
 function printPage(id)
 {
@@ -120,6 +129,59 @@ function printPage(id)
           
       }
     </script>
+
+    
+<script>
+      function recordvet (){
+               
+                var userid="<?php echo $lname ?>";
+                 var noteid="<?php echo $viewid ?>";
+                   var msg=$("#msg").val();
+                    
+                    
+                    
+                    
+                $.ajax({
+                    url:'submitvet.php',
+                    method:'POST',
+                    data:{
+                        user:userid,
+                        note:noteid,
+                        message:msg
+                        
+                    },
+                   success:function(data){
+                       alert(data);
+                       $("#msg").val("");
+                      
+                   }
+                });
+                $(document).ready(function(){
+		
+		$.ajax({
+			url: 'getvet.php',
+			success: function(data){
+				
+				$("#vetdata").html(data);
+			}
+		})
+	});
+              }
+              </script>
+
+<script>
+            $(document).ready(function(){
+		
+		$.ajax({
+			url: 'getvet.php',
+			success: function(data){
+				
+				$("#vetdata").html(data);
+			}
+		})
+	});
+  </script>
+
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
@@ -209,7 +271,7 @@ mysqli_close($conn);
                     <div class="view-mail-list sm-res-mg-t-30">
                         <div class="view-mail-hd">
                             <div class="view-mail-hrd">
-                                <h2>Note of Lesson / Question View </h2>
+                                <h2> Question View </h2>
                             </div>
                             <div class="view-ml-rl">
                                 <p>Posted on : 
@@ -267,7 +329,7 @@ foreach ($book as $booked) {
 	</p>
 	          <p class="first-ph"><b>Instructor: </b>
                <?php
-$lname = $_SESSION['stnamed'];
+
 
 include "config.php";
 
@@ -297,10 +359,20 @@ mysqli_close($conn);
                         </div>
                         <div class="view-mail-atn">
                            <br>
-                           
-                            <?php echo $notebook; ?><br>
+                           <?php if($type == "file"){
+       echo '<iframe src="noteoflesson/'.$notebook.'" width="100%" height="800" embed="true" allowfullscreen></iframe>';
+    }
+    elseif($type == "online"){
+      echo '<iframe width="100%" height="600" src="'. $notebook.'" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+    }
+    elseif($type == "media"){
+      echo '<iframe src="noteoflesson/'.$notebook.'" width="100%" height="800" embed="true" allowfullscreen></iframe>';
+    }
+    elseif($type == "text"){
+      echo $notebook;
+    } ?><br>
                             
-	
+                        
                         </div>
                         
                         <div class="vw-ml-action-ls text-right mg-t-20">
@@ -315,7 +387,7 @@ mysqli_close($conn);
         </div>
     </div>
    
-   
+    
     <!-- Start Footer area-->
     
    <?php include ("foot.php"); ?>
