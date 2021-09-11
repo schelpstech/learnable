@@ -6,19 +6,6 @@ if(!isset($_SESSION['unamed'])){
    header('Location: ../index.php');
 }
 ?>
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpclass";
-$classresult = $db_handle->runQuery($query);
-?>
-
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
-$termresult = $db_handle->runQuery($query);
-?>
 
 <!doctype html>
 <html class="no-js" lang="">
@@ -97,6 +84,29 @@ $termresult = $db_handle->runQuery($query);
           
       }
     </script>
+ <script>
+   //Get class with published result
+function getclass() {
+        var str='';
+        var val=document.getElementById('term');
+        for (i=0;i< val.length;i++) { 
+            if(val[i].selected){
+                str += val[i].value + ','; 
+            }
+        }         
+        var str=str.slice(0,str.length -1);
+        
+	$.ajax({          
+        	type: "GET",
+        	url: "get_std.php",
+        	data:'termid='+str,
+        	success: function(data){
+        		$("#classtn").html(data);
+        	}
+	});
+}
+</script>
+
     <script>
 function getstd() {
         var str='';
@@ -118,6 +128,30 @@ function getstd() {
 	});
 }
 </script>
+
+
+<script>
+function linkresult() {
+var termref = document.getElementById('term');
+var termid = termref.options[termref.selectedIndex].value;
+
+var classref = document.getElementById('classtn');
+var classid = classref.options[classref.selectedIndex].value;
+var lref = document.getElementById("std-list");
+var lid = lref.options[lref.selectedIndex].value;
+
+if (termid!==""&classid!=="" &lid !==""){
+  window.location.href = "viewresult.php?term="+termid+"&lid="+lid;
+}
+
+else {
+
+    alert('Select Term , Class and Learner to check Result');
+}
+}
+</script>
+
+
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
@@ -185,8 +219,8 @@ function getstd() {
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Upload Report sheets</h2>
-                            <p>Use the form below to upload learner's report sheets </p>
+                            <h2>Check Report sheets</h2>
+                            <p>Select term, class and learner's name to check result. </p>
 						<h2>	 <?php
 							
     if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
@@ -203,7 +237,7 @@ function getstd() {
                         <br>
                         <br>
 						<div class="row">
-						<form method="POST" action="upresult.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+						<form method="POST" action="linkresult.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
                          
 							 
 							
@@ -216,15 +250,22 @@ function getstd() {
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <select type="text" required="yes" class="form-control" name="term" >
-										
+                                        <select type="text" required="yes" class="form-control" name="term"  id="term" onChange="getclass();" >
+                                        <option value="">Select Term</option>
 										<?php
-foreach ($termresult as $termd) {
+$sql = "SELECT DISTINCT(term) FROM `lhpresultconfig` WHERE `status` = 1";
+$result = mysqli_query($con, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  // output data of each row
+  while($row = mysqli_fetch_assoc($result)) {
+    echo '<option value="'.$row["term"].'">'.$row["term"].'</option>';
+     
+  }
+} 
     ?>
-<option value="<?php echo $termd["term"]; ?>"><?php echo $termd["term"]; ?></option>
-<?php
-}
-?>
+
+
 										</select>
                                     </div>
                                 </div>
@@ -267,26 +308,13 @@ foreach ($classresult as $classed) {
                                 </div>
                             </div>
 							
+					
 							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Select Report Sheet File</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-wifi"></i>
-                                    </div>
-                                    <div class="nk-int-st">
-                                        <input type="file" required="yes" class="form-control" name="resultfile">
-                                    </div>
-                                </div>
-                            </div>
-							
-							<br>
-							<br>
-							<div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
                                 
 								<div class="form-group ic-cmp-int">
                                     
                                     <div class="nk-int-st">
-                                       <input type="submit" class="form-control" name="uploadresult" value="Upload Learner Result"/> 
+                                    <button  type="button" class="btn btn-danger btn-lg btn-block" onclick="linkresult();">Check Result</button>
                                     </div>
                                 </div>
                             </div>
