@@ -316,7 +316,7 @@ $row=mysqli_fetch_array($result);
                         </div>
                 
                         <div class="bsc-tbl-bdr">
-                        <table   class="table table-bordered" style="width:100%;"border="2">
+                        <table   class="table table-bordered" style="width:100%;"border="1">
                                 <thead>
                                     <tr>
                                     <th style ="text-align: center;">Learners ID</th>
@@ -372,7 +372,7 @@ $row=mysqli_fetch_array($result);
                         </div>
                 
                         <div class="bsc-tbl-bdr">
-                        <table class="table table-hover" style="width:100%">
+                        <table class="table table-hover" style="width:100%" border="1">
                                 <thead>
                                     <tr>
                                     <th style ="text-align: center;">School Open</th>
@@ -428,7 +428,7 @@ $row=mysqli_fetch_array($result);
                         </div>
                 
                         <div class="bsc-tbl-bdr">
-<table class="table table-bordered" style="width:100%">
+<table class="table table-bordered" style="width:100%" border="1">
                                 <thead>
                                     <tr>
                                          <th>Subject</th>
@@ -649,7 +649,7 @@ $row=mysqli_fetch_array($result);
                         </div>
                 
                         <div class="bsc-tbl-bdr">
-<table class="table table-bordered" >
+<table class="table table-bordered" border="1">
                                 <thead>
                                     <tr>
                                     <th style ="text-align: center;">CA Cumuative</th>
