@@ -7,18 +7,12 @@ if(!isset($_SESSION['stnamed'])){
 }
 if(!empty($_GET['typ'])) {         
   $type = $_GET["typ"];  
-} 
-?>
 
-
-
-<?php
-$lname = $_SESSION['stnamed'];
 if(!empty($_GET['id'])) {         
         $viewid = $_GET["id"];
         $_SESSION['viewid'] = $viewid;
 }      
- $sql = "SELECT * FROM lhpquetion WHERE questid  = '$viewid'";
+ $sql = "SELECT * FROM lhpquestion WHERE questid  = '$viewid'";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
                $notebook = $row['content'];
