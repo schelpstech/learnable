@@ -7,7 +7,7 @@ if(!isset($_SESSION['stnamed'])){
 }
 if(!empty($_GET['typ'])) {         
   $type = $_GET["typ"];  
-
+}
 if(!empty($_GET['id'])) {         
         $viewid = $_GET["id"];
         $_SESSION['viewid'] = $viewid;
