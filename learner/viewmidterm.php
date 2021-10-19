@@ -9,10 +9,7 @@ if(!empty($_GET['term'])) {
   $term = $_GET["term"]; 
   $_SESSION['term']  = $term; 
 }
-if(!empty($_GET['lid'])) {
-  $lname = $_GET["lid"]; 
-  $_SESSION['lname']  = $lname; 
-}
+$lname = $_SESSION['studnamed'];
 ?>
 
 
@@ -199,6 +196,8 @@ $row=mysqli_fetch_array($result);
           
       }
     </script>
+
+  
           
      
     <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -569,7 +568,7 @@ elseif($totalscore >= 19.5){
    
     <button id="cmd" onclick="generatePDF()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i><h3>Download Results</h3> </button>
     <!-- Start Footer area-->
-    <?php include "foot.html"; ?>
+    <?php include "foot.php"; ?>
     
     <!-- End Footer area-->
     <!-- jquery

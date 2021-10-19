@@ -179,31 +179,7 @@ function getclass() {
 										<i class="notika-icon notika-windows"></i>
 									</div>
 									<div class="breadcomb-ctn">
-										<h2> Academic Reportsheets for <?php
-
-include "config.php";
-
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
-}
-
-$sql = "SELECT classname FROM `lhpclass` WHERE `classid` = '$cclass'";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    
-      $dclass = $row["classname"];
-      
-    echo $dclass;
-  }
-} 
-
-mysqli_close($conn);
-?>
-
-								</h2>
+										<h2> Your Academic Reportsheets </h2>
 										<p><span class="bread-ntd"></span></p>
 									</div>
 								</div>
@@ -223,13 +199,100 @@ mysqli_close($conn);
 
 
     <!-- Data Table area Start-->
-    <div id="doc" class="      ol-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="breadcomb-area">
+		<div class="container">
+			<div class="row">
+    <div id="doc" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
-                            <h2>Your Report Sheets
+                            <h2>Your Mid Term Continuous Assessment Report Sheets
 							
 						</h2>
-                            <p>This table contains all your published reportssheets.</p>
+                            <p>This table contains all your published Mid Term Continuous Assessment reports sheets.</p>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="data-table-basic" class="table table-striped">
+                                <thead>
+                                    <tr>
+                   <th>S/N</th>
+										<th>Term </th>
+										<th> Status </th>
+										
+										
+                                    </tr>
+                                </thead>
+                               
+                                    
+                                     <tbody>
+				
+				
+				
+				 <?php
+			$lname = $_SESSION['studnamed'];
+			$val = "1";
+			include_once './conn.php';
+				
+            $count=1;
+            $query=$conn->prepare("select * FROM lhpresultconfig ");
+           $query->setFetchMode(PDO::FETCH_OBJ);
+           $query->execute();
+            while($row=$query->fetch())
+            {
+              $termname = $row->term;
+              $termstatus = $row->midterm;
+
+              if ($termstatus == 1){
+                  $action = '<a href="viewmidterm.php?term='.$termname.'" type="button"  class="btn btn-success" ><strong>Mid-Term Result has been published. Click to View Result</strong></a>';
+
+              }
+              elseif($termstatus == 0){
+                $action = '<button  class="btn btn-danger" >Mid-Term Result is unavailable at the moment. Check back later.</button>';
+
+            }
+            ?>
+            <tr>
+                <td><?php echo $count++ ?></td>
+				
+				<td><?php echo $termname ?></td>
+				<td><?php echo $action ?></td>
+				<td>
+				    
+				</td>
+            </tr>
+            <?php }?>
+            </tbody>
+                                   
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                     
+										
+                    <th>S/N</th>
+										<th>Term </th>
+										<th> Status </th>
+										
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                    </div>
+                </div> 
+    <!-- Data Table area End-->
+ 
+     <!-- Data Table area Start-->
+     <div class="breadcomb-area">
+		<div class="container">
+			<div class="row">
+     <div id="doc" class="      col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="data-table-list">
+                        <div class="basic-tb-hd">
+                            <h2>Your End of the Term Report Sheets
+							
+						</h2>
+                            <p>This table contains all your published reports sheets.</p>
                         </div>
                         <div class="table-responsive">
                             <table id="data-table-basic" class="table table-striped">
@@ -298,9 +361,9 @@ mysqli_close($conn);
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                </div>
+                    </div>
+                </div>
     <!-- Data Table area End-->
  
     

@@ -1,5 +1,4 @@
 <?php
-
 // Check user login or not
 include "conf.php";
 if(!isset($_SESSION['unamed'])){
@@ -7,18 +6,20 @@ if(!isset($_SESSION['unamed'])){
 }
 ?>
 <?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpclass";
-$classresult = $db_handle->runQuery($query);
+if(!empty($_GET['term'])) {         
+        $term = $_GET["term"];
+ 
+}
+if(!empty($_GET['type'])) {         
+    $type = $_GET["type"];
+
+}
+if(!empty($_GET['val'])) {         
+    $val = $_GET["val"];
+
+}
 ?>
 
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
-$termresult = $db_handle->runQuery($query);
-?>
 
 <!doctype html>
 <html class="no-js" lang="">
@@ -26,12 +27,12 @@ $termresult = $db_handle->runQuery($query);
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Manage Reportsheets - LearnAble</title>
+    <title>Change Result Status - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="https://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -97,27 +98,7 @@ $termresult = $db_handle->runQuery($query);
           
       }
     </script>
-    <script>
-function getstd() {
-        var str='';
-        var val=document.getElementById('classtn');
-        for (i=0;i< val.length;i++) { 
-            if(val[i].selected){
-                str += val[i].value + ','; 
-            }
-        }         
-        var str=str.slice(0,str.length -1);
-        
-	$.ajax({          
-        	type: "GET",
-        	url: "get_std.php",
-        	data:'cld='+str,
-        	success: function(data){
-        		$("#std-list").html(data);
-        	}
-	});
-}
-</script>
+    
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 	
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
@@ -146,37 +127,10 @@ function getstd() {
     </div>
     <!-- End Header Top Area -->
     <!-- Mobile Menu start -->
-  <?php include "nav.html"; ?> 
+  <?php include "nav.html"; ?>
     <!-- Main Menu area End-->
 	<!-- Breadcomb area Start-->
-	<div class="breadcomb-area">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="breadcomb-list">
-						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-								<div class="breadcomb-wp">
-									<div class="breadcomb-icon">
-										<i class="notika-icon notika-support"></i>
-									</div>
-									<div class="breadcomb-ctn">
-										<h2>Welcome Admin</h2>
-										<p>.<span class="bread-ntd"></span></p>
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
-								<div class="breadcomb-report">
-									<button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i class="notika-icon notika-sent"></i></button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+
 	
 	 <div class="form-element-area">
         <div class="container">
@@ -185,14 +139,14 @@ function getstd() {
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Termly Report Sheet Configuration</h2>
-                            <p>Use the form below to configure this term's  report sheet</p>
+                            <h2>Change Result Status </h2>
+                            <p>Use the form below to change  Term status </p>
 						<h2>	 <?php
 							
-    if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
+    if (isset($_SESSION['eds']) && $_SESSION['eds'])
     {
-      printf('<b>%s</b>', $_SESSION['remessage']);
-      unset($_SESSION['remessage']);
+      printf('<b>%s</b>', $_SESSION['eds']);
+      unset($_SESSION['eds']);
     }
   ?></h2>
                         </div>
@@ -203,98 +157,81 @@ function getstd() {
                         <br>
                         <br>
 						<div class="row">
-						<form method="POST" action="configres.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+						<form method="POST" action="chgstatus.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
                          
-							 
-							
-							
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Current Term</label>
+							 	<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" >
+                                <label> Term</label>
 								<div class="form-group ic-cmp-int">
                                     <div class="form-ic-cmp">
                                         <i class="notika-icon notika-support"></i>
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <select type="text" required="yes" class="form-control" name="term" >
-										
-										<?php
-foreach ($termresult as $termd) {
-    ?>
-<option value="<?php echo $termd["term"]; ?>"><?php echo $termd["term"]; ?></option>
-<?php
-}
-?>
-										</select>
-                                    </div>
-                                </div>
-                            </div>
-							
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>CA Score Obtainable</label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <input type="number" required="yes" class="form-control" min="0" name="cascore" >
-			
+                                    <select  type="text"  required="yes" class="form-control" name="term">
+                                        <option  selected value="<?php echo $term; ?>"><?php echo $term; ?></option>
+                                    </select>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Exam Score Obtainable</label>
+                                <label> Result Type</label>
 								<div class="form-group ic-cmp-int">
                                     <div class="form-ic-cmp">
                                         <i class="notika-icon notika-support"></i>
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="number" required="yes" class="form-control" min="0" name="examscore" >
-			
+                                    <select  type="text"  required="yes" class="form-control" name="type">
+                                        <option  selected value="<?php echo $type; ?>"><?php echo $type; ?></option>
+                                    </select>
                                     </div>
                                 </div>
                             </div>
-							
-						<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Number of School Open Days <?php echo date("d/m/Y");?> </label>
-								<div class="form-group ic-cmp-int">
-                                    <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-									
-                                    <div class="nk-int-st">
-                                        <input type="number" required="yes" class="form-control" min="0" name="opendays"  >
-			
-                                    </div>
-                                </div>
-                            </div>
+						
 							
 							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Next Term Begins</label>
+                                <label>Current Status</label>
 								<div class="form-group ic-cmp-int">
                                     <div class="form-ic-cmp">
                                         <i class="notika-icon notika-support"></i>
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="date" required="yes" class="form-control" name="resume" 
-                                      min ="<?php echo date("Y-m-d");?>">
-			
+                                        <select  type="text" disabled required="yes" class="form-control">
+<?php
+
+	 if ($val == 1){
+        $statmsg = "Active";
+    }
+    
+    else {
+        $statmsg = "In-active";
+    }
+	
+    ?>
+<option ><?php echo $statmsg; ?></option>
+
+
+                            </select>
                                     </div>
                                 </div>
                             </div>
                             
-							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Signature Line</label>
+                            	<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                                <label>Change Status</label>
 								<div class="form-group ic-cmp-int">
                                     <div class="form-ic-cmp">
-                                        <i class="notika-icon notika-wifi"></i>
+                                        <i class="notika-icon notika-support"></i>
                                     </div>
+									
                                     <div class="nk-int-st">
-                                        <input type="file" required="yes" class="form-control" name="signature">
+                                        <select  type="text" required="yes" class="form-control" name="status">
+<option value="">Change Status</option>
+<option value="0">De-Activate</option>
+<option value="1">Activate</option>
+
+                            </select>
                                     </div>
                                 </div>
                             </div>
@@ -306,11 +243,11 @@ foreach ($termresult as $termd) {
 								<div class="form-group ic-cmp-int">
                                     
                                     <div class="nk-int-st">
-                                       <input type="submit" class="form-control" name="configresult" value="Save Result Configuration"/> 
+                                       <input type="submit" class="form-control" name="chg" value="Change Status"/> 
                                     </div>
                                 </div>
                             </div>
-							
+					
                     
 				</form>
 				
@@ -320,116 +257,11 @@ foreach ($termresult as $termd) {
 			
 		</div>
 	</div>
-	
-	<!-- Breadcomb area End-->
-    <!-- Data Table area Start-->
-    <div id="doc" class="data-table-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="data-table-list">
-                        <div class="basic-tb-hd">
-                            <h2>
-                                Report Sheet Configurations
-						</h2>
-                         
-                        </div>
-                        <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-striped">
-                                <thead>
-                                    <tr>
-                        <th>S/N</th>
-										  <th>Term</th>
-										<th>CA Score Obtainable</th>
-										<th>Exam Score Obtainable</th>
-										<th>Total School Open Days</th>
-										<th>Next Term Resumes</th>
-										<th>Signature Line</th>
-										<th>Mid-Term</th>
-										<th>End of the Term</th>
-                                    </tr>
-                                </thead>
-                               
-                                    
-                                     <tbody>
-				
-				
-				
-				 <?php
-			
-			
-			include_once './conn.php';
-				
-            $count=1;
-            $query=$conn->prepare("select * from lhpresultconfig ORDER BY id DESC ");
-           $query->setFetchMode(PDO::FETCH_OBJ);
-           $query->execute();
-            while($row=$query->fetch())
-            {
-                
-                $term = $row->term;
-                $ca = $row->ca_score;
-                $exam = $row->exam_score;
-                $schopens = $row->sch_open;
-                $resume = $row->resumption;
-                $sign = $row->signature;
-                $status = $row->status;
-                $midterm = $row->midterm;
-if ($status == 1){
-    $butt = '<a href="resultstatus.php?term='.$term.'&type=Termly Result&val=1" type="button"  class="btn btn-success" >Termly Results Activated</button>';
-}
-if ($status == 0){
-    $butt = '<a href="resultstatus.php?term='.$term.'&type=Termly Result&val=0" type="button"  class="btn btn-warning" >Termly Result Inactive</button>';
-}
-if ($midterm == 1){
-  $midbuttn = '<a href="resultstatus.php?term='.$term.'&type=Midterm Result&val=1" type="button"  class="btn btn-success" >Termly Results Activated</button>';
-}
-if ($midterm == 0){
-  $midbuttn = '<a href="resultstatus.php?term='.$term.'&type=Midterm Result&val=0" type="button"  class="btn btn-warning" >Termly Result Inactive</button>';
-}
- ?>
-            <tr>
-        <td><?php echo $count++ ?></td>
-				<td><?php echo $term  ?></td>
-				<td><?php echo $ca ?></td>
-				<td><?php echo $exam ?></td>
-				<td><?php echo $schopens ?></td>
-				<td><?php echo $resume ?></td>
-				<td><a href="archive/<?php echo $sign ?>">Authorised Signature Line </a></td>
-        
-        <td><?php echo $midbuttn ?></td>
-        <td><?php echo $butt ?></td>
-			
-				
-                
-            </tr>
-            <?php }?>
-            </tbody>
-                                   
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                    <th>S/N</th>
-										<th>Term</th>
-										<th>CA Score Obtainable</th>
-										<th>Exam Score Obtainable</th>
-										<th>Total School Open Days</th>
-										<th>Next Term Resumes</th>
-										<th>Signature Line</th>
-                    <th>Mid-Term</th>
-										<th>End of the Term</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <!-- Data Table area End-->
     <!-- Start Footer area-->
    <?php include "foot.html"; ?>
+ 
     <!-- End Footer area-->
     
     
