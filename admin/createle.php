@@ -26,7 +26,7 @@ if (isset($_POST['createl']) && $_POST['createl'] == 'Create Learner Account')
 
       else 
       {
-        $lsmessaged = 'Learner Creating Staff Account' ;
+        $lsmessaged = 'Status : Error Creating Learning. Seems Username exist already.' ;
       }
     }
 	

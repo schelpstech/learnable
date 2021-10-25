@@ -228,7 +228,14 @@ mysqli_close($conn);
                         <div class="basic-tb-hd">
                        <h4 style="text-align:center;"><?php echo $term ?> Weekly Assessment Scoresheet for <?php echo $subject. ' in '. $classname ?>.</h4><br>
 					     
-                            
+                       <h2 style="color: red;">	 <?php
+							
+              if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
+              {
+                printf('<b>%s</b>', $_SESSION['remessage']);
+                unset($_SESSION['remessage']);
+              }
+            ?></h2>   
                         </div>
                         
                         <button id="btnPrint" class="btn btn-default" onclick="generatePF()"><strong>Print</strong></button>
@@ -266,6 +273,7 @@ mysqli_close($conn);
                  $studentid =  $row->lid;
                   $score =  $row->score;
                   $week =  $row->week;
+                  $ref =  $row->id;
                   
              $sql = "SELECT fname FROM lhpuser WHERE uname  = '$studentid' ";
 				$result=mysqli_query($con,$sql);
@@ -286,7 +294,9 @@ mysqli_close($conn);
     <button class="btn btn-default"><strong><?php echo $score ?></strong></button>
              </td>
        
-            
+             <td> 
+    <a href="deleteweekly.php?id=<?php echo $id?>&ref=<?php echo $ref?>&term=<?php echo $term?>&sbjid=<?php echo $sbjid?>&cid=<?php echo $cid?>" type="button" class="btn btn-danger"><strong>RESET</strong></a>
+             </td>
             </tr>
             <?php }?>
             </tbody>

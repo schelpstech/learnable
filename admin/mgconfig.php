@@ -382,10 +382,10 @@ if ($status == 0){
     $butt = '<a href="resultstatus.php?term='.$term.'&type=Termly Result&val=0" type="button"  class="btn btn-warning" >Termly Result Inactive</button>';
 }
 if ($midterm == 1){
-  $midbuttn = '<a href="resultstatus.php?term='.$term.'&type=Midterm Result&val=1" type="button"  class="btn btn-success" >Termly Results Activated</button>';
+  $midbuttn = '<a href="resultstatus.php?term='.$term.'&type=Midterm Result&val=1" type="button"  class="btn btn-success" >Mid Term Results Activated</button>';
 }
 if ($midterm == 0){
-  $midbuttn = '<a href="resultstatus.php?term='.$term.'&type=Midterm Result&val=0" type="button"  class="btn btn-warning" >Termly Result Inactive</button>';
+  $midbuttn = '<a href="resultstatus.php?term='.$term.'&type=Midterm Result&val=0" type="button"  class="btn btn-warning" >Mid Term Result Inactive</button>';
 }
  ?>
             <tr>
