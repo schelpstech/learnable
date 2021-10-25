@@ -15,7 +15,12 @@ if (isset($_POST['createl']) && $_POST['createl'] == 'Create Learner Account')
 	$gender = mysqli_real_escape_string($con,$_POST['gender']);  
 	$dob = mysqli_real_escape_string($con,$_POST['dob']);  
 	
-
+	$sql = "SELECT COUNT(`uname`) as CNT FROM lhpuser WHERE uname = '$stuname' ";
+	$result=mysqli_query($con,$sql);
+	 $row=mysqli_fetch_assoc($result);
+	$exist = $row["CNT"];
+	
+if($exist == 0){
 
 		 
 		  $sql= "INSERT INTO lhpuser (fname, uname, upwd, email, classid, gender, dob)  VALUES ('$stname', '$stuname', '$stpwd', '$stmail', '$stclass', '$gender', '$dob')";
@@ -26,10 +31,19 @@ if (isset($_POST['createl']) && $_POST['createl'] == 'Create Learner Account')
 
       else 
       {
-        $lsmessaged = 'Status : Error Creating Learning. Seems Username exist already.' ;
+        $lsmessaged = 'Status : Error Creating Learning.' ;
       }
     }
-	
+	else 
+	{
+	  $lsmessaged = 'Status : Error Creating Learning. Username exist already.' ;
+	}
+}	
+
+else 
+	{
+	  $lsmessaged = 'Status : Unknown request denied by firewall.' ;
+	}
 $_SESSION['lsmessaged'] = $lsmessaged;
 header("Location: mglearners.php");
 
