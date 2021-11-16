@@ -276,7 +276,7 @@ $row=mysqli_fetch_array($result);
                <?php echo $schphone; ?> |  <?php echo $schemail; ?> <br> <?php echo $schweb ?> </p>
               <h4 style ="text-align: center;"> <?php echo $term." "?> <br>Mid - Term Academic Reportsheets for <?php echo $dclass?></h4>
             </td>
-            <td><image  src="../admin/images/<?php echo $pix?>" width="150" height="150"/><br>
+            <td><image  src="../learner/images/profilepix/<?php echo $pix?>" width="150" height="150"/><br>
                   <strong>Learners ID : <?php echo $lname; ?></strong></td> 
             </tr>
            
