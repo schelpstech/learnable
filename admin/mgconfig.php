@@ -346,6 +346,7 @@ foreach ($termresult as $termd) {
 										<th>Next Term Resumes</th>
 										<th>Signature Line</th>
 										<th>Mid-Term</th>
+										<th>Populate CA</th>
 										<th>End of the Term</th>
                                     </tr>
                                 </thead>
@@ -375,6 +376,13 @@ foreach ($termresult as $termd) {
                 $sign = $row->signature;
                 $status = $row->status;
                 $midterm = $row->midterm;
+?>
+<?php
+    $sql = "SELECT COUNT('id') as numrec FROM lhpweekrecord WHERE `term` = '$term'";
+    $result=mysqli_query($con,$sql);
+    $row=mysqli_fetch_array($result);
+     
+    $numca = $row["numrec"];
 if ($status == 1){
     $butt = '<a href="resultstatus.php?term='.$term.'&type=Termly Result&val=1" type="button"  class="btn btn-success" >Termly Results Activated</button>';
 }
@@ -387,6 +395,13 @@ if ($midterm == 1){
 if ($midterm == 0){
   $midbuttn = '<a href="resultstatus.php?term='.$term.'&type=Midterm Result&val=0" type="button"  class="btn btn-warning" >Mid Term Result Inactive</button>';
 }
+
+if ($midterm == 1 && $numca >= 100){
+  $popca = '<a href="popca.php?term='.$term.'" type="button"  class="btn btn-success" >  Populate CA scores</button>';
+}
+if ($midterm == 0 && $numca < 100){
+  $popca = '<a  type="button"  class="btn btn-warning" disabled> Unable to Populate</button>';
+}
  ?>
             <tr>
         <td><?php echo $count++ ?></td>
@@ -398,6 +413,7 @@ if ($midterm == 0){
 				<td><a href="archive/<?php echo $sign ?>">Authorised Signature Line </a></td>
         
         <td><?php echo $midbuttn ?></td>
+        <td><?php echo $popca ?></td>
         <td><?php echo $butt ?></td>
 			
 				
@@ -417,6 +433,7 @@ if ($midterm == 0){
 										<th>Next Term Resumes</th>
 										<th>Signature Line</th>
                     <th>Mid-Term</th>
+                    <th>Populate CA</th>
 										<th>End of the Term</th>
                                     </tr>
                                 </tfoot>

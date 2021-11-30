@@ -8,6 +8,7 @@ if (isset($_POST['chg']) && $_POST['chg'] == 'Change Status')
     
     if ($type == 'Termly Result'){
         $sql= "UPDATE lhpresultconfig SET `status` = '$status' WHERE term = '$term'";
+        
        if(mysqli_query($con, $sql)){	
 		$remessage = 'Status : Successfully Changed Termly Result Status.';
     

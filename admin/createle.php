@@ -23,7 +23,7 @@ if (isset($_POST['createl']) && $_POST['createl'] == 'Create Learner Account')
 if($exist == 0){
 
 		 
-		  $sql= "INSERT INTO lhpuser (fname, uname, upwd, email, classid, gender, dob)  VALUES ('$stname', '$stuname', '$stpwd', '$stmail', '$stclass', '$gender', '$dob')";
+		  $sql= "INSERT INTO lhpuser (fname, uname, upwd, email, classid, gender, dob, `status`)  VALUES ('$stname', '$stuname', '$stpwd', '$stmail', '$stclass', '$gender', '$dob', 1)";
 		if(mysqli_query($con, $sql)){	
 		
 		$lsmessaged = 'Status : Learner Account successfully created.';
