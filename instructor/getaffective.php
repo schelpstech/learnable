@@ -35,6 +35,7 @@ include "conf.php";
                                         <th>Neatness  Ratings</th>
                                         <th>Creativity  Ratings</th>
                                         <th>Responsiveness  Ratings</th>
+                                        <th>Edit</th>
                                     </tr>
                                 </thead>
                                
@@ -58,6 +59,7 @@ include "conf.php";
             ?>
             <?php
                
+                 $affid =  $row->affid;
                  $studentid =  $row->uname;
                   $present =  $row->total_present;
                   $lead =  $row->rating1;
@@ -95,6 +97,9 @@ include "conf.php";
              <td> 
     <button class="btn btn-basic"><strong><?php echo $response ?></strong></button>
              </td>
+             <td> 
+    <a href="editaffective.php?recordid=<?php echo $affid?>" type="button" class="btn btn-primary"><strong>Edit</strong></a>
+             </td>
             </tr>
             <?php }?>
             </tbody>
@@ -110,6 +115,7 @@ include "conf.php";
                                         <th>Neatness  Ratings</th>
                                         <th>Creativity  Ratings</th>
                                         <th>Responsiveness  Ratings</th>
+                                        <th>Edit</th>
                                     </tr>
                                 </tfoot>
                             </table>
