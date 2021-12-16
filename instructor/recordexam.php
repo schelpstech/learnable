@@ -130,7 +130,7 @@ $studentlist = $db_handle->runQuery($query);
                   var termid="<?php echo $term ?>";
                    var examscore=$("#examscores").val();
                     var learnerid=$("#learnerid").val();
-                    
+                    if (learnerid != ""){
                     
                     
                 $.ajax({
@@ -160,7 +160,13 @@ $studentlist = $db_handle->runQuery($query);
 			}
 		})
 	});
-            };
+            }
+          
+            else{
+              alert("Select Learner")
+             }
+            }
+            ;
     </script>
     <script>
 	function loadtable(){

@@ -62,6 +62,6 @@ else
 }
 else 
 {
-    echo "Continuous Assessment Score entered - ".$examscore." can't be greater than Continuous Assessment Score Obtainable - ".$maxscore;
+    echo "Continuous Assessment Score entered - ".$cascore." can't be greater than Continuous Assessment Score Obtainable - ".$maxscore;
 }
 ?>

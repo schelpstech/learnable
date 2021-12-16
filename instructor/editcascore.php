@@ -7,20 +7,13 @@ if(!isset($_SESSION['stnamed'])){
 }
 
 
-if(!empty($_GET['sbj'])) {         
-        $sbjid = $_GET["sbj"];
-        $_SESSION['ssid'] =$sbjid;
+if(!empty($_GET['recordid'])) {         
+        $recordid = $_GET["recordid"];
+      
 }
-if(!empty($_GET['term'])) {         
-        $term = $_GET["term"];
-        $_SESSION['ttid'] =$term;
-}
-if(!empty($_GET['classid'])) {         
-        $classid = $_GET["classid"];
-        $_SESSION['ccid'] =$classid;
-}
-
-
+$sbjid = $_SESSION['ssid'];
+$term = $_SESSION['ttid'];
+$classid = $_SESSION['ccid'];
 
 $sql = "SELECT * FROM lhpalloc WHERE sbjid = '$sbjid' AND classid  = '$classid' AND term  = '$term' ";
 				$result=mysqli_query($con,$sql);
@@ -34,12 +27,19 @@ $sql = "SELECT ca_score FROM lhpresultconfig WHERE term  = '$term' ";
               
                $max = $row["ca_score"];
                $_SESSION['maxca'] = $max;
+
+$sql = "SELECT * FROM lhpresultrecord WHERE id  = '$recordid' ";
+   $result=mysqli_query($con,$sql);
+  $row=mysqli_fetch_array($result);
+             
+              $lid = $row["lid"];
+              $score = $row["score"];
 ?>
 
 <?php
 require_once ("DBController.php");
 $db_handle = new DBController();
-$query = "SELECT * FROM `lhpuser` where classid = '$classid' ";
+$query = "SELECT * FROM `lhpuser` where uname = '$lid' ";
 $studentlist = $db_handle->runQuery($query);
 ?>
 
@@ -126,26 +126,29 @@ $studentlist = $db_handle->runQuery($query);
     	  <script>
       function recordcascores (){
                
+                var recordid ="<?php echo $recordid ?>";
                 var subjectid="<?php echo $sbjid ?>";
                  var classid="<?php echo $classid ?>";
                   var termid="<?php echo $term ?>";
                    var cascore=$("#cascore").val();
                     var learnerid=$("#learnerid").val();
-                    if (learnerid != ""){
+                    
+                    
                     
                 $.ajax({
-                    url:'submitca.php',
+                    url:'updateca.php',
                     method:'POST',
                     data:{
                         nameid:learnerid,
                         cascore:cascore,
                         subject:subjectid,
                         classid:classid,
-                        term:termid
+                        term:termid,
+                        recordid:recordid
                     },
                    success:function(data){
                        alert(data);
-                       $("#cascore").val("");
+                      
                       
                    }
                 });
@@ -160,12 +163,7 @@ $studentlist = $db_handle->runQuery($query);
 			}
 		})
 	});
-            }
-            else{
-              alert("Select Learner")
-             }
-            }
-            ;
+            };
     </script>
     <script>
 		function loadtable(){
@@ -300,11 +298,11 @@ mysqli_close($conn);
 									
                                     <div class="nk-int-st">
                                         <select type="text" required="yes" class="form-control" id="learnerid" >
-											<option value="">Select Learner Id</option>
+											
 										<?php
 foreach ($studentlist as $stlist) {
     ?>
-<option value="<?php echo $stlist["uname"]; ?>"><?php echo $stlist["uname"]." - ".$stlist["fname"]; ?></option>
+<option selected value="<?php echo $stlist["uname"]; ?>"><?php echo $stlist["uname"]." - ".$stlist["fname"]; ?></option>
 <?php
 }
 ?>
@@ -321,7 +319,7 @@ foreach ($studentlist as $stlist) {
                                     </div>
 									
                                     <div class="nk-int-st">
-                            <input type="number" required="yes" class="form-control" min="0"  max = "<?php echo $max?>" id="cascore" >
+                            <input type="number" required="yes" class="form-control"  value="<?php echo $score?>" min="0"  max = "<?php echo $max?>" id="cascore" >
 			
                                     </div>
                                 </div>

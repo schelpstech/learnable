@@ -40,7 +40,12 @@ include "conf.php";
 				
 				
 				 <?php
-		
+		$sql = "SELECT `status` FROM lhpresultconfig WHERE term  = '$term' ";
+        $result=mysqli_query($con,$sql);
+         $row=mysqli_fetch_array($result);
+      
+       $status = $row["status"];
+  
 			include_once './conn.php';
 
             $count=1;
@@ -53,7 +58,7 @@ include "conf.php";
                 
             ?>
             <?php
-               
+                 $id =  $row->id;
                  $studentid =  $row->lid;
                   $score =  $row->score;
                   
@@ -62,6 +67,7 @@ include "conf.php";
 				 $row=mysqli_fetch_array($result);
               
                $studentname = $row["fname"];   
+
                 ?>
             <tr>
                 <td><?php echo $count++ ?></td>
@@ -72,7 +78,18 @@ include "conf.php";
              <td> 
     <button class="btn btn-basic"><strong><?php echo $score ?></strong></button>
              </td>
-            
+             <td> 
+               <?php
+               
+               if($status == 0){
+                echo
+                '<a href="editcascore.php?recordid='.$id.'" type="button" class="btn btn-primary"><strong>Edit</strong></a>';
+            }
+            else{
+                echo '<button disabled type="button" class="btn btn-danger">Edit Locked</button>';
+            }
+             ?>
+             </td>
             </tr>
             <?php }?>
             </tbody>

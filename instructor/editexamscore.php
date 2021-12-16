@@ -6,19 +6,13 @@ if(!isset($_SESSION['stnamed'])){
      header('Location: ../index.php');
 }
 
-
-if(!empty($_GET['sbj'])) {         
-        $sbjid = $_GET["sbj"];
-        $_SESSION['ssid'] =$sbjid;
+if(!empty($_GET['recordid'])) {         
+    $recordid = $_GET["recordid"];
+  
 }
-if(!empty($_GET['term'])) {         
-        $term = $_GET["term"];
-        $_SESSION['ttid'] =$term;
-}
-if(!empty($_GET['classid'])) {         
-        $classid = $_GET["classid"];
-        $_SESSION['ccid'] =$classid;
-}
+$sbjid = $_SESSION['ssid'];
+$term = $_SESSION['ttid'];
+$classid = $_SESSION['ccid'];
 
 
 
@@ -28,18 +22,26 @@ $sql = "SELECT * FROM lhpalloc WHERE sbjid = '$sbjid' AND classid  = '$classid' 
                $subject = $row['subject'];
                $classname = $row["classname"];
                
-$sql = "SELECT ca_score FROM lhpresultconfig WHERE term  = '$term' ";
+$sql = "SELECT exam_score FROM lhpresultconfig WHERE term  = '$term' ";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
               
-               $max = $row["ca_score"];
-               $_SESSION['maxca'] = $max;
+               $max = $row["exam_score"];
+               $_SESSION['maxexam'] = $max;
+
+
+ $sql = "SELECT * FROM lhpresultrecord WHERE id  = '$recordid' ";
+                $result=mysqli_query($con,$sql);
+              $row=mysqli_fetch_array($result);
+                         
+                          $lid = $row["lid"];
+                          $examscore = $row["examscore"];
 ?>
 
 <?php
 require_once ("DBController.php");
 $db_handle = new DBController();
-$query = "SELECT * FROM `lhpuser` where classid = '$classid' ";
+$query = "SELECT * FROM `lhpuser` where uname = '$lid' ";
 $studentlist = $db_handle->runQuery($query);
 ?>
 
@@ -110,42 +112,43 @@ $studentlist = $db_handle->runQuery($query);
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
       function generatePDF() {
-        var divContents = $("#cadata").html();
+     var divContents = $("#examdata").html();
             var printWindow = window.open('', '', 'height=400,width=800');
-            printWindow.document.write('<html><head><title>CA Scoresheet</title>');
+            printWindow.document.write('<html><head><title>Examination Scoresheet</title>');
             printWindow.document.write('</head><body >');
             printWindow.document.write(divContents);
             printWindow.document.write('</body></html>');
             printWindow.document.close();
             printWindow.print();
           
-          
       }
     </script>
     
     	  <script>
-      function recordcascores (){
-               
+      function recordexamscores (){
+                  var recordid ="<?php echo $recordid ?>";
                 var subjectid="<?php echo $sbjid ?>";
                  var classid="<?php echo $classid ?>";
                   var termid="<?php echo $term ?>";
-                   var cascore=$("#cascore").val();
+                   var examscore=$("#examscores").val();
                     var learnerid=$("#learnerid").val();
-                    if (learnerid != ""){
+                    
+                    
                     
                 $.ajax({
-                    url:'submitca.php',
+                    url:'updatexam.php',
                     method:'POST',
                     data:{
                         nameid:learnerid,
-                        cascore:cascore,
+                        examscore:examscore,
                         subject:subjectid,
                         classid:classid,
-                        term:termid
+                        term:termid,
+                        recordid:recordid
                     },
                    success:function(data){
                        alert(data);
-                       $("#cascore").val("");
+                       
                       
                    }
                 });
@@ -153,28 +156,23 @@ $studentlist = $db_handle->runQuery($query);
              	$(document).ready(function(){
 		
 		$.ajax({
-			url: 'getcascore.php',
+			url: 'getexamscore.php',
 			success: function(data){
 				
-				$("#cadata").html(data);
+				$("#examdata").html(data);
 			}
 		})
 	});
-            }
-            else{
-              alert("Select Learner")
-             }
-            }
-            ;
+            };
     </script>
     <script>
-		function loadtable(){
+	function loadtable(){
 		
 		$.ajax({
-			url: 'getcascore.php',
+			url: 'getexamscore.php',
 			success: function(data){
 				
-				$("#cadata").html(data);
+				$("#examdata").html(data);
 			}
 		})
 	};
@@ -274,7 +272,7 @@ mysqli_close($conn);
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Record Continuous Assessment Scores  <br>	 <?php
+                            <h2>Record Examination Scores  <br>	 <?php
 							
     if (isset($_SESSION['remessage']) && $_SESSION['remessage'])
     {
@@ -300,11 +298,11 @@ mysqli_close($conn);
 									
                                     <div class="nk-int-st">
                                         <select type="text" required="yes" class="form-control" id="learnerid" >
-											<option value="">Select Learner Id</option>
+											
 										<?php
 foreach ($studentlist as $stlist) {
     ?>
-<option value="<?php echo $stlist["uname"]; ?>"><?php echo $stlist["uname"]." - ".$stlist["fname"]; ?></option>
+<option selected value="<?php echo $stlist["uname"]; ?>"><?php echo $stlist["uname"]." - ".$stlist["fname"]; ?></option>
 <?php
 }
 ?>
@@ -314,14 +312,14 @@ foreach ($studentlist as $stlist) {
                             </div>
 							
 							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Enter CA Score - Maximum score obtainable =  <?php echo $max ?> </label>
+                                <label>Enter Examination Score - Maximum score obtainable =  <?php echo $max ?> </label>
 								<div class="form-group ic-cmp-int">
                                     <div class="form-ic-cmp">
                                         <i class="notika-icon notika-support"></i>
                                     </div>
 									
                                     <div class="nk-int-st">
-                            <input type="number" required="yes" class="form-control" min="0"  max = "<?php echo $max?>" id="cascore" >
+                            <input type="number" value="<?php echo $examscore?>" required="yes" class="form-control" min="0"  max = "<?php echo $max?>" id="examscores" >
 			
                                     </div>
                                 </div>
@@ -337,7 +335,7 @@ foreach ($studentlist as $stlist) {
 								<div class="form-group ic-cmp-int">
                                     
                       <div class="nk-int-st">
-                          <button type="submit" class="form-control" id="saveca"class="btn btn-success" onclick="recordcascores()" > <strong>RECORD Continuous Assessment SCORE</strong></button> 
+                          <button type="submit" class="form-control" id="saveexam"class="btn btn-success" onclick="recordexamscores()" > <strong>RECORD Examination SCORE</strong></button> 
                                     </div>
                                 </div>
                             </div>
@@ -350,7 +348,7 @@ foreach ($studentlist as $stlist) {
 	<!-- Breadcomb area End-->
     <!-- Data Table area Start-->
  
-<div id="cadata" >
+<div id="examdata" >
         
     </div>
     <!-- Data Table area End-->
