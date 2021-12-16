@@ -81,7 +81,7 @@ include "conf.php";
                
                if($status == 0){
                 echo
-                '<a href="editcascore.php?recordid='.$id.'" type="button" class="btn btn-primary"><strong>Edit</strong></a>';
+                '<a href="editexamscore.php?recordid='.$id.'" type="button" class="btn btn-primary"><strong>Edit</strong></a>';
             }
             else{
                 echo '<button disabled type="button" class="btn btn-danger">Edit Locked</button>';
