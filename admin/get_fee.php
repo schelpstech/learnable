@@ -23,55 +23,21 @@ if(!empty($_GET['classid'])) {
 ?>
 
 
-<?php
-
-require_once("DBController.php");
-$db_handle = new DBController();
-if(!empty($_GET['feel'])) {
-        $term = $_GET["feel"];    
-	    $_SESSION['term'] = $term;
-	$query ="SELECT DISTINCT classid FROM lhpfeelist WHERE term = '$term'  AND status = 1";
-	$results = $db_handle->runQuery($query);
-?>
-	
-<option value="">Select Fee Type From List of Fees</option>
-<option value="PreviousBalance">Previous Term Outstanding</option>
-<?php
-	foreach($results as $std) {
-	    
-	    $cname = $std["classid"];
-	    $dname = $std["classid"];
-	  
-	    
-	       $sql = "SELECT * FROM lhpclass WHERE classid  = '$cname'";
-				$result=mysqli_query($con,$sql);
-				 $row=mysqli_fetch_array($result);
-               if ($row['classname'] != ""){
-               $feeclass = $row['classname'];
-               }
-               else {
-                 $feeclass = $cname;
-               }
-	   
-	   
-?>
-
-<option value="<?php echo $dname; ?>"><?php echo $feeclass; ?> FEE </option>
-<?php
-	}
-}
-?>
 
 
 
 
 <?php
-$termd = $_SESSION['term'];
+$sql = "SELECT sessionid FROM lhpsession WHERE `status`  = 1 ";
+$result=mysqli_query($con,$sql);
+ $row=mysqli_fetch_array($result);
+$sess = $row['sessionid'];
+
 require_once("DBController.php");
 $db_handle = new DBController();
 if(!empty($_GET['feetype'])) {
         $feetype = $_GET["feetype"];   
-	$query ="SELECT * FROM `lhpfeelist` WHERE `classid` = '$feetype' AND `term` = '$termd' AND status = 1 ";
+	$query ="SELECT * FROM `lhpfeelist` WHERE `classid` = '$feetype' AND `session` = '$sess' AND status = 1 ";
 	$results = $db_handle->runQuery($query);
 ?>
 	

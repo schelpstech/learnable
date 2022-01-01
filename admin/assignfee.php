@@ -14,9 +14,14 @@ $classresult = $db_handle->runQuery($query);
 ?>
 
 <?php
+$sql = "SELECT sessionid FROM lhpsession WHERE `status`  = 1 ";
+$result=mysqli_query($con,$sql);
+ $row=mysqli_fetch_array($result);
+$sess = $row['sessionid'];
+
 require_once ("DBController.php");
 $db_handle = new DBController();
-$query = "SELECT DISTINCT term FROM lhpfeelist";
+$query = "SELECT term FROM lpterm Order by `status` DESC ";
 $feeresult = $db_handle->runQuery($query);
 ?>
 
@@ -97,27 +102,7 @@ $feeresult = $db_handle->runQuery($query);
           
       }
     </script>
-    <script>
-function getclass() {
-        var str='';
-        var val=document.getElementById('term');
-        for (i=0;i< val.length;i++) { 
-            if(val[i].selected){
-                str += val[i].value + ','; 
-            }
-        }         
-        var str=str.slice(0,str.length -1);
-        
-	$.ajax({          
-        	type: "GET",
-        	url: "get_fee.php",
-        	data:'feel='+str,
-        	success: function(data){
-        		$("#class-list").html(data);
-        	}
-	});
-}
-</script>
+   
 
     <script>
 function getstudent() {
@@ -246,7 +231,7 @@ $('#byclass').hide();
 		
 </head>
 
-<body>
+<body >
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -394,8 +379,8 @@ foreach ($classresult as $classd) {
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <select type="text" required="yes" class="form-control" name="term" id="term" onChange="getclass();" >
-                                            	<option value="" > Select Term</option>
+                                        <select type="text" required="yes" class="form-control" name="term" id="term"  >
+                                            
 										<?php
 foreach ($feeresult as $termd) {
     ?>
@@ -418,7 +403,43 @@ foreach ($feeresult as $termd) {
                                     <div class="nk-int-st">
                                         <select type="text" class="form-control" name="feeclass" id="class-list" onChange="getfeelist();" >
 										<option value="">Select Fee Type</option>
-                   
+                    <?php
+
+require_once("DBController.php");
+$db_handle = new DBController();
+
+	$query ="SELECT DISTINCT classid FROM lhpfeelist WHERE `session` = '$sess' AND status = 1;";
+	$results = $db_handle->runQuery($query);
+?>
+	
+<option value="">Select Fee Type From List of Fees</option>
+<option value="PreviousBalance">Previous Term Outstanding</option>
+<?php
+	foreach($results as $std) {
+	    
+	    $cname = $std["classid"];
+	    $dname = $std["classid"];
+	  
+	    
+	       
+			   if(is_numeric($cname) == true){
+				$sql = "SELECT classname FROM lhpclass WHERE classid  = '$cname'";
+				$result=mysqli_query($con,$sql);
+				 $row=mysqli_fetch_assoc($result);
+				 $feeclass = $row['classname'];
+			  }
+			 else {
+			   $feeclass = $cname;  
+				 
+			 }
+	   
+	   
+?>
+
+<option value="<?php echo $dname; ?>"><?php echo $feeclass; ?> FEE </option>
+<?php
+	}
+?>
 										</select>
                                     </div>
                                 </div>
@@ -561,15 +582,18 @@ foreach ($feeresult as $termd) {
                 $type =  $row->type;
                 $status =  $row->status;
                 $feeamount = $row->amount;
-                $sql = "SELECT * FROM lhpclass WHERE classid  = '$classid'";
-				$result=mysqli_query($con,$sql);
-				 $row=mysqli_fetch_array($result);
-               if ($row['classname'] != ""){
-               $feeclass = $row['classname'];
-               }
+           
+
+
+               if(is_numeric($classid) == true){
+                $sql = "SELECT classname FROM lhpclass WHERE classid  = '$classid'";
+                $result=mysqli_query($con,$sql);
+                 $row=mysqli_fetch_assoc($result);
+                 $feeclass = $row['classname'];
+                }
                else {
                  $feeclass = $classid;  
-                   
+                 
                }
                
                $sql = "SELECT * FROM lhpuser WHERE uname  = '$stdid'";
@@ -578,15 +602,16 @@ foreach ($feeresult as $termd) {
                $std = $row['fname'];
                 
                
-               $sql = "SELECT * FROM lhpfeelist WHERE feeid  = '$feeid'";
-				$result=mysqli_query($con,$sql);
-				 $row=mysqli_fetch_array($result);
-               $feename = $row['feename'];
+               
                 
                if($feeid == "PreviousBalance"){
                  $usename = "PREVIOUS TERM BALANCE";
                }
                else{
+                $sql = "SELECT * FROM lhpfeelist WHERE feeid  = '$feeid'";
+                $result=mysqli_query($con,$sql);
+                 $row=mysqli_fetch_array($result);
+                       $feename = $row['feename'];
                  $usename = $feename;
                }
                  if ($status == 1){

@@ -16,7 +16,7 @@ $classresult = $db_handle->runQuery($query);
 <?php
 require_once ("DBController.php");
 $db_handle = new DBController();
-$query = "SELECT * FROM lpterm WHERE status = 1";
+$query = "SELECT * FROM lhpsession WHERE status = 1";
 $termresult = $db_handle->runQuery($query);
 ?>
 
@@ -224,18 +224,18 @@ $('#classb').hide();
 							
 							
 							<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                                <label>Select Term</label>
+                                <label>Select Session</label>
 								<div class="form-group ic-cmp-int">
                                     <div class="form-ic-cmp">
                                         <i class="notika-icon notika-support"></i>
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <select type="text" required="yes" class="form-control" name="term" >
+                                        <select type="text" required="yes" class="form-control" name="session" >
 										<?php
 foreach ($termresult as $termd) {
     ?>
-<option value="<?php echo $termd["term"]; ?>"><?php echo $termd["term"]; ?></option>
+<option value="<?php echo $termd["sessionid"]; ?>"><?php echo $termd["session"]; ?></option>
 <?php
 }
 ?>
@@ -362,7 +362,7 @@ foreach ($classresult as $classed) {
                                 <thead>
                                     <tr>
                                           <th>S/N</th>
-										  <th>Term</th>
+										  <th>Session</th>
 										<th>Class</th>
 										<th>Fee Name</th>
 										<th>Amount</th>
@@ -387,17 +387,21 @@ foreach ($classresult as $classed) {
             while($row=$query->fetch())
             {
                  $ref = $row->feeid;
-                $term = $row->term;
+                $session = $row->session;
                 $cname = $row->classid;
                 $feename = $row->feename;
                 $amount = $row->amount;
-                
-                 $sql = "SELECT * FROM lhpclass WHERE classid  = '$cname'";
-				$result=mysqli_query($con,$sql);
-				 $row=mysqli_fetch_array($result);
-               if ($row['classname'] != ""){
-               $feeclass = $row['classname'];
-               }
+                $sql = "SELECT * FROM lhpsession WHERE sessionid  = '$session'";
+                $result=mysqli_query($con,$sql);
+                 $row=mysqli_fetch_array($result);
+                $sess = $row['session'];
+
+                if(is_numeric($cname) == true){
+                  $sql = "SELECT classname FROM lhpclass WHERE classid  = '$cname'";
+                  $result=mysqli_query($con,$sql);
+                   $row=mysqli_fetch_assoc($result);
+                   $feeclass = $row['classname'];
+                }
                else {
                  $feeclass = $cname;  
                    
@@ -405,7 +409,7 @@ foreach ($classresult as $classed) {
             ?>
             <tr>
                 <td><?php echo $count++ ?></td>
-				<td><?php echo $term ?></td>
+				<td><?php echo $sess ?></td>
 				<td><?php echo $feeclass ?></td>
 				<td><?php echo $feename ?></td>
 				<td><?php echo $amount ?></td>
@@ -419,7 +423,7 @@ foreach ($classresult as $classed) {
                                 <tfoot>
                                     <tr>
                                         <th>S/N</th>
-										  <th>Term</th>
+										  <th>Session</th>
 										<th>Class</th>
 										<th>Fee Name</th>
 										<th>Amount</th>
