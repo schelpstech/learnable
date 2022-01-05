@@ -253,7 +253,7 @@ else {
                                         <select type="text" required="yes" class="form-control" name="term"  id="term" onChange="getclass();" >
                                         <option value="">Select Term</option>
 										<?php
-$sql = "SELECT DISTINCT(term) FROM `lhpresultconfig` WHERE `status` = 1";
+$sql = "SELECT DISTINCT(term) FROM `lhpresultconfig` ";
 $result = mysqli_query($con, $sql);
 
 if (mysqli_num_rows($result) > 0) {
