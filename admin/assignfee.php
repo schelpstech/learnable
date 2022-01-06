@@ -568,7 +568,7 @@ $db_handle = new DBController();
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("select * from lhpassignedfee ORDER BY status and rectime DESC");
+            $query=$conn->prepare("select * from lhpassignedfee ORDER BY status and term  DESC");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
