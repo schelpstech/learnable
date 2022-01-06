@@ -456,7 +456,7 @@ foreach ($classresult as $classd) {
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("select * from lhptransaction ORDER BY status ASC");
+            $query=$conn->prepare("select * from lhptransaction ORDER BY status and term DESC");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
