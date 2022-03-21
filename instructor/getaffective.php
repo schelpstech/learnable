@@ -35,6 +35,7 @@ include "conf.php";
                                         <th>Neatness  Ratings</th>
                                         <th>Creativity  Ratings</th>
                                         <th>Responsiveness  Ratings</th>
+                                        <th>Teacher's Comment</th>
                                         <th>Edit</th>
                                     </tr>
                                 </thead>
@@ -67,6 +68,7 @@ include "conf.php";
                   $neat =  $row->rating3;
                   $create =  $row->rating4;
                   $response =  $row->rating5;
+                  $comment =  $row->comment;
              $sql = "SELECT fname FROM lhpuser WHERE uname  = '$studentid' ";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
@@ -98,6 +100,9 @@ include "conf.php";
     <button class="btn btn-basic"><strong><?php echo $response ?></strong></button>
              </td>
              <td> 
+    <button class="btn btn-basic"><strong><?php echo $comment ?></strong></button>
+             </td>
+             <td> 
     <a href="editaffective.php?recordid=<?php echo $affid?>" type="button" class="btn btn-primary"><strong>Edit</strong></a>
              </td>
             </tr>
@@ -115,6 +120,7 @@ include "conf.php";
                                         <th>Neatness  Ratings</th>
                                         <th>Creativity  Ratings</th>
                                         <th>Responsiveness  Ratings</th>
+                                        <th>Teacher's Comment</th>
                                         <th>Edit</th>
                                     </tr>
                                 </tfoot>

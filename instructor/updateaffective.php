@@ -12,12 +12,14 @@ $elo=$_POST['ratinge'];
 $neat = $_POST['ratingn'];
 $create = $_POST['ratingc'];
 $response = $_POST['ratingr'];
+$comment = $_POST['comment'];
 
 
 
 
 $sql="UPDATE `lhpaffective` SET  total_present = '$present', 
-rating1 = '$lead', 
+comment = '$comment', 
+rating1 = '$lead',
 rating2 = '$elo', 
 rating3 = '$neat', 
 rating4 = '$create' , 

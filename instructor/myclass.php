@@ -127,6 +127,7 @@ $row = mysqli_fetch_array($result);
                     var neatr=$("#neat").val();
                     var creater=$("#creative").val();
                     var respond=$("#response").val();
+                    var comment=$("#comment").val();
                 $.ajax({
                     url:'submitaffect.php',
                     method:'POST',
@@ -139,7 +140,8 @@ $row = mysqli_fetch_array($result);
                         ratinge:eloquentr,
                         ratingn:neatr,
                         ratingc:creater,
-                        ratingr:respond
+                        ratingr:respond,
+                        comment:comment
                     },
                    success:function(data){
                        alert(data);
@@ -150,6 +152,7 @@ $row = mysqli_fetch_array($result);
                        $("#neat").val("");
                        $("#creative").val("");
                        $("#response").val("");
+                       $("#comment").val("");
                    }
                 });
                 $(document).ready(function(){
@@ -525,7 +528,20 @@ echo '<option value="'.$id.'">'.$id." - ".$fullname.'</option>';
                                 </div>
                             </div>
 
-                            
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <label>Affective Domain - Class Teacher's Comment  </label>
+								<div class="form-group ic-cmp-int">
+                                    <div class="form-ic-cmp">
+                                        <i class="notika-icon notika-support"></i>
+                                    </div>
+									
+                                    <div class="cmp-int-box mg-t-20">
+                                    
+                                        <textarea  class="form-control" name="comment" id ='comment' placeholder="Enter your comment here" rows="3"  style="background-color:white; border: 1px solid #ccc;"></textarea>
+                                    
+                                    </div>
+                                </div>
+                            </div>
                            
 							
 					
