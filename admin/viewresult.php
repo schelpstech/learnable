@@ -689,11 +689,11 @@ $tutorname = $row["staffname"];
                               <th style="text-align: center;"> Grade</th>
                               <th style="text-align: center;"> Remarks</th>
                               <th style="text-align: center;"> Performance Remarks</th>
-                              <?php if(!is_null($comment)){
-                                 echo '<th style="text-align: center;"> Teacher'."'s".' Comment</th>';
+                              <?php if (!is_null($comment)) {
+                                echo '<th style="text-align: center;"> Teacher' . "'s" . ' Comment</th>';
                               }
                               ?>
-                              
+
                               <th style="text-align: center;"> School Resumes</th>
 
 
@@ -723,16 +723,16 @@ $tutorname = $row["staffname"];
                               <td><strong>
                                   <h4 style="text-align: center;"><?php echo $cremarks ?></h4>
                                 </strong></td>
-                                <td>
+                              <td>
                                 <h5 style="text-align: center;"><?php echo $tremarks ?></h5>
                               </td>
-                              <?php if(!is_null($comment)){
-                                 echo '<td><strong>
-                                 <h5 style="text-align: center;">'.$comment.'</h5>
+                              <?php if (!is_null($comment)) {
+                                echo '<td><strong>
+                                 <h5 style="text-align: center;">' . $comment . '</h5>
                                  </strong></td>';
                               }
                               ?>
-                              
+
                               <td><strong>
                                   <p style="text-align: center;"><?php echo $resumedate ?></p>
                                 </strong></td>

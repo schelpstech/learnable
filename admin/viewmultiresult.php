@@ -1,5 +1,9 @@
 <?php
 include "conf.php";
+if (!isset($_SESSION['unamed'])) {
+    header('Location: ../index.php');
+  }
+  
 require_once("DBController.php");
 include 'headerresult.php';
 $db_handle = new DBController();
