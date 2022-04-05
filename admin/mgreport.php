@@ -166,6 +166,7 @@ if (!isset($_SESSION['unamed'])) {
       var lid = lref.options[lref.selectedIndex].value;
 
       if (termid !== "" & classid !== "" & lid !== "") {
+        $("#term").val("");
         window.location.href = "viewresult.php?term=" + termid + "&lid=" + lid;
       } else {
 
@@ -184,6 +185,8 @@ if (!isset($_SESSION['unamed'])) {
 
 
       if (bulk_termid !== "" & bulk_classid !== "") {
+        
+        $("#bulk_term").val("");
         window.location.href = "viewmultiresult.php?term=" + bulk_termid + "&class_id=" + bulk_classid;
       } else {
 
