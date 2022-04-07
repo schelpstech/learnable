@@ -441,7 +441,7 @@ $serial = $seriala.$serialb;
                                                         <th style="text-align: center;"> Grade</th>
                                                         <th style="text-align: center;"> Remarks</th>
                                                         <th style="text-align: center;"> Performance Remarks</th>
-                                                        <?php if (!is_null($comment)) {
+                                                        <?php if (!is_null($comment)&& !empty($comment) && $comment != "") {
                                                             echo '<th style="text-align: center;"> Teacher' . "'s" . ' Comment</th>';
                                                         }
                                                         ?>
@@ -478,7 +478,7 @@ $serial = $seriala.$serialb;
                                                         <td>
                                                             <h5 style="text-align: center;"><?php echo $tremarks ?></h5>
                                                         </td>
-                                                        <?php if (!is_null($comment)) {
+                                                        <?php if (!is_null($comment) && !empty($comment) && $comment != ""){
                                                             echo '<td><strong>
                                  <h5 style="text-align: center;">' . $comment . '</h5>
                                  </strong></td>';
@@ -530,23 +530,6 @@ $serial = $seriala.$serialb;
         </div>
     </div>
 
-    <div class="breadcomb-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <style type="text/css">
-                        #chart-container {
-                            width: auto;
-                            height: auto;
-                        }
-                    </style>
-                    <div id="chart-container">
-                        <canvas id="mycanvas"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 </div>
 <button id="cmd" onclick="generatePDF<?php echo $serial ?>()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i>
