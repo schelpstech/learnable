@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html>
 
@@ -64,23 +65,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.0/chart.min.js" integrity="sha512-asxKqQghC1oBShyhiBwA+YgotaSYKxGP1rcSYTDrB0U6DxwlJjU59B67U8+5/++uFjcuVM8Hh5cokLjZlhm3Vg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script type="text/javascript" src="./chartload.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.2.0/jspdf.umd.min.js"></script>
-
-  <script>
-    function generatePDF() {
-
-
-      var divContents = $("#doc").html();
-      var printWindow = window.open('', '', 'height=800,width=1600');
-      printWindow.document.write('<html><head><title>Academic Reportsheets for <?php echo $stname . "   " . $dclass ?></title>');
-      printWindow.document.write('</head><body >');
-      printWindow.document.write(divContents);
-      printWindow.document.write('</body></html>');
-      printWindow.document.close();
-      printWindow.print();
-
-    }
-  </script>
-
 
   <script src=”https://d3js.org/d3.v5.min.js”></script>
 

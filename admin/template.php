@@ -1,4 +1,9 @@
-<div id="doc">
+<?php 
+$seriala = rand(11111111,88888888);
+$serialb = rand(11111111,88888888);
+$serial = $seriala.$serialb;
+?>
+<div id="doc<?php echo $serial ?>">
     <!-- Data Table area Start-->
     <div class="data-table-area" style="text-align: center;">
         <div class="container">
@@ -544,6 +549,21 @@
     </div>
 
 </div>
-<button id="cmd" onclick="generatePDF()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i>
+<button id="cmd" onclick="generatePDF<?php echo $serial ?>()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i>
     <h3>Download Result</h3>
 </button>
+<script>
+    function generatePDF<?php echo $serial ?>() {
+
+
+      var divContents = $("#doc<?php echo $serial; ?>").html();
+      var printWindow = window.open('', '', 'height=800,width=1600');
+      printWindow.document.write('<html><head><title>Academic Reportsheets for <?php echo $stname . "   " . $dclass ?></title>');
+      printWindow.document.write('</head><body >');
+      printWindow.document.write(divContents);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.print();
+
+    }
+  </script>
