@@ -7,7 +7,6 @@ if(!empty($_GET['class_id'])) {
 	$results = $db_handle->runQuery($query);
 ?>
 	<option value="">Select Subject From List</option>
-	<option value="All Subject">All Subject</option>
 <?php
 	foreach($results as $sbj) {
 ?>
