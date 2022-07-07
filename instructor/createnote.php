@@ -80,8 +80,7 @@ if (isset($_POST['createnote']) && $_POST['createnote'] == 'Add Note of Lesson T
     // check if file has one of the following extensions
     $allowedfileExtensions = array('pdf');
 
-    if (in_array($fileExtension, $allowedfileExtensions))
-    {
+    
       // directory in which the uploaded file will be moved
       $uploadFileDir = 'noteoflesson/';
       $dest_path = $uploadFileDir . $neoFileName;
@@ -93,7 +92,8 @@ if (isset($_POST['createnote']) && $_POST['createnote'] == 'Add Note of Lesson T
 		if(mysqli_query($con, $sql)){	
       $sql= "INSERT INTO `lhpnotice`  ( subject, message, refid, term) VALUES ('New Lesson Note ', '$update', '$classname','$term' )";
       if(mysqli_query($con, $sql)){
-      }
+      }if (in_array($fileExtension, $allowedfileExtensions))
+    {
 		$message ='Status : Learning Material has been successfully added to the topic : '.$topic;
 		}
 

@@ -470,14 +470,14 @@ $tutorname = $row["staffname"];
                   <thead>
                     <tr>
                       <th>Subject</th>
-                      <th> Ca Score</th>
-                      <th>Exam Score</th>
-                      <th>Total Score</th>
+                      <th>1st Term Score</th>
+                      <th>2nd Term Score</th>
+                      <th>3rd Term CA Score</th>
+                      <th>3rd Term Exam Score</th>
+                      <th>3rd Term Total Score</th>
+                      <th>Cumulative Score</th>
                       <th>Grade</th>
                       <th>Remarks</th>
-                      <th>Lowest Score</th>
-                      <th>Average Score</th>
-                      <th>Highest Score</th>
                     </tr>
                   </thead>
 
@@ -491,162 +491,212 @@ $tutorname = $row["staffname"];
                     include_once './conn.php';
 
                     $count = 1;
-                    $query = $conn->prepare("SELECT *  from lhpresultrecord WHERE lid = '$lname' AND term = '$term' ORDER BY rectime DESC");
+                    $query = $conn->prepare("SELECT DISTINCT lhpresultrecord.subjid as subjectid , lhpsubject.sbjid, lhpsubject.sbjname as subjectname  from lhpresultrecord LEFT JOIN lhpsubject on lhpresultrecord.subjid = lhpsubject.sbjid WHERE lhpresultrecord.classid = '$cclass' ORDER BY lhpsubject.sbjname ASC");
                     $query->setFetchMode(PDO::FETCH_OBJ);
                     $query->execute();
                     while ($row = $query->fetch()) {
+                      $subjectname = $row->subjectname;
+                      $subjectid = $row->subjectid;
 
 
                     ?>
                       <?php
 
-                      $subjectid =  $row->subjid;
-                      $score =  $row->score;
-                      $examscore =  $row->examscore;
-                      $totalscore =  $row->totalscore;
-                      $scorebar = array($totalscore);
-                      if ($totalscore >= 75) {
+                      $sql = "SELECT `session` FROM `lhpsession` WHERE `status`  = 1 ";
+                      $result = mysqli_query($con, $sql);
+                      $row = mysqli_fetch_array($result);
+                      $session = $row["session"];
+                      //1st Term Score
+                      $term = '1st Term ' . $session;
+                      $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname'  ";
+                      $result = mysqli_query($con, $sql);
+                      $row = mysqli_fetch_array($result);
+                      if (!empty($row["totalscore"])) {
+                        $term1 = $row["totalscore"];
+                        $sum1 = $row["totalscore"];
+                        $rate1 = 1;
+                      } else {
+                        $term1 = '';
+                        $sum1 = 0;
+                        $rate1 = 0;
+                      }
+                      //2nd Term Score
+                      $term = '2nd Term ' . $session;
+                      $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname' ";
+                      $result = mysqli_query($con, $sql);
+                      $row = mysqli_fetch_array($result);
+                      if (!empty($row["totalscore"])) {
+                        $term2 = $row["totalscore"];
+                        $sum2 = $row["totalscore"];
+                        $rate2 = 1;
+                      } else {
+                        $term2 = '';
+                        $sum2 = 0;
+                        $rate2 = 0;
+                      }
+
+                      //3rd Term Score
+                      $term = '3rd Term ' . $session;
+                      $sql = "SELECT score, examscore, `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname'  ";
+                      $result = mysqli_query($con, $sql);
+                      $row = mysqli_fetch_array($result);
+                      if (!empty($row["score"])) {
+                        $ca = $row["score"];
+                      } else {
+                        $ca = '';
+                      }
+
+                      if (!empty($row["examscore"])) {
+                        $exam = $row["examscore"];
+                      } else {
+                        $exam = '';
+                      }
+                      if (!empty($row["totalscore"])) {
+                        $term3 = $row["totalscore"];
+                        $sum3 = $row["totalscore"];
+                        $rate3 = 1;
+                      } else {
+                        $term3 = '';
+                        $sum3 = 0;
+                        $rate3 = 0;
+                      }
+
+                      $x = $rate1 + $rate2 + $rate3;
+                      if ($x == 0) {
+                        $cum = '';
+                      } else {
+                        $cum = round((($sum1 + $sum2 + $sum3) / $x), 2);
+                        $a += 1;
+                        $y += $cum;
+                      }
+
+
+                      if ($cum >= 75) {
                         $grade = "A";
-                      } elseif ($totalscore >= 65) {
+                      } elseif ($cum >= 65) {
                         $grade = "B";
-                      } elseif ($totalscore >= 50) {
+                      } elseif ($cum >= 50) {
                         $grade = "C";
-                      } elseif ($totalscore >= 45) {
+                      } elseif ($cum >= 45) {
                         $grade = "D";
-                      } elseif ($totalscore >= 40) {
+                      } elseif ($cum >= 40) {
                         $grade = "E";
-                      } else {
+                      } elseif ($cum >= 0) {
                         $grade = "F";
+                      } else {
+                        $grade = "";
                       }
 
-                      if ($totalscore >= 75) {
+                      if ($cum >= 75) {
                         $remarks = "Excellent";
-                      } elseif ($totalscore >= 65) {
+                      } elseif ($cum >= 65) {
                         $remarks = "Very Good";
-                      } elseif ($totalscore >= 50) {
+                      } elseif ($cum >= 50) {
                         $remarks = "Moderate";
-                      } elseif ($totalscore >= 45) {
+                      } elseif ($cum >= 45) {
                         $remarks = "Fair";
-                      } elseif ($totalscore >= 40) {
+                      } elseif ($cum >= 40) {
+                        $remarks = "Needs Help";
+                      } elseif ($cum >= 0) {
                         $remarks = "Needs Help";
                       } else {
-                        $remarks = "Needs Help";
+                        $remarks = "";
                       }
 
-                      $sql = "SELECT sbjname FROM lhpsubject WHERE sbjid  = '$subjectid' ";
+                      //cumulatives
+                      $term = '1st Term ' . $session;
+                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$term' ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
-
-                      $subject = $row["sbjname"];
-                      $subjbar = array($subject);
-
-                      $sql = "SELECT MIN(totalscore) AS minscore FROM lhpresultrecord WHERE subjid  = '$subjectid' AND term = '$term'  ";
+                      $firstterm = $row["score"];
+                      $term = '2nd Term ' . $session;
+                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$term' ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
-
-                      $subjectmin = $row["minscore"];
-
-                      $sql = "SELECT MAX(totalscore) AS maxscore FROM lhpresultrecord WHERE subjid  = '$subjectid' AND term = '$term' ";
+                      $secondterm = $row["score"];
+                      $term = '3rd Term ' . $session;
+                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term = '$term' ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
+                      $thirdterm = $row["score"];
 
-                      $subjectmax = $row["maxscore"];
-
-                      $sql = "SELECT AVG(totalscore) AS avgscore FROM lhpresultrecord WHERE subjid  = '$subjectid' AND term = '$term' ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-
-                      $subjectavg = $row["avgscore"];
-
-                      $sql = "SELECT AVG(score) AS caavgscore FROM lhpresultrecord WHERE  lid = '$lname' AND term = '$term' ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-
-                      $casubjectavg = $row["caavgscore"];
-
-                      $sql = "SELECT AVG(examscore) AS exavgscore FROM lhpresultrecord WHERE  lid = '$lname' AND term = '$term' ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-
-                      $exsubjectavg = $row["exavgscore"];
-
-
-                      $sql = "SELECT AVG(totalscore) AS toavgscore FROM lhpresultrecord WHERE  lid = '$lname' AND term = '$term' ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-                      $tsubjectavg = $row["toavgscore"];
-
-                      if ($tsubjectavg >= 75) {
+                      if (($y / $a) >= 75) {
                         $cgrade = "A";
-                      } elseif ($tsubjectavg >= 65) {
+                      } elseif (($y / $a) >= 65) {
                         $cgrade = "B";
-                      } elseif ($tsubjectavg >= 50) {
+                      } elseif (($y / $a) >= 50) {
                         $cgrade = "C";
-                      } elseif ($tsubjectavg >= 45) {
+                      } elseif (($y / $a) >= 45) {
                         $cgrade = "D";
-                      } elseif ($tsubjectavg >= 40) {
+                      } elseif (($y / $a) >= 40) {
                         $cgrade = "E";
                       } else {
                         $cgrade = "F";
                       }
 
-                      if ($tsubjectavg >= 75) {
+                      if (($y / $a) >= 75) {
                         $cremarks = "Excellent";
-                      } elseif ($tsubjectavg >= 65) {
+                      } elseif (($y / $a) >= 65) {
                         $cremarks = "Very Good";
-                      } elseif ($tsubjectavg >= 50) {
+                      } elseif (($y / $a) >= 50) {
                         $cremarks = "Moderate";
-                      } elseif ($tsubjectavg >= 45) {
+                      } elseif (($y / $a) >= 45) {
                         $cremarks = "Fair";
-                      } elseif ($tsubjectavg >= 40) {
+                      } elseif (($y / $a) >= 40) {
                         $cremarks = "Needs Help";
                       } else {
                         $cremarks = "Needs Help";
                       }
 
 
-                      if ($tsubjectavg >= 75) {
+                      if (($y / $a) >= 75) {
                         $tremarks = "Your academic performance this term is excellent; you need to keep up the good work to sustain this excellent performance in subsequent terms. Keep it Up!";
-                      } elseif ($tsubjectavg >= 65) {
+                      } elseif (($y / $a) >= 65) {
                         $tremarks = "Your academic performance this term is impressive but you need to work harder to achieve higher grades next term. Well done!";
-                      } elseif ($tsubjectavg >= 50) {
+                      } elseif (($y / $a) >= 50) {
                         $tremarks = "Your academic performance this term is moderate but with more effort towards studying, you will achieve higher grades next term. Cheer up!";
-                      } elseif ($tsubjectavg >= 45) {
+                      } elseif (($y / $a) >= 45) {
                         $tremarks = "Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
-                      } elseif ($tsubjectavg >= 40) {
+                      } elseif (($y / $a) >= 40) {
                         $tremarks = "Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
                       } else {
                         $tremarks = "Your academic performance this term is below the pass grade. You can do better if you can commit more effort and time to studying thoroughly next term.";
                       }
                       ?>
+
                       <tr>
 
                         <td><strong>
-                            <p style="text-align: left;"><?php echo strtoupper($subject) ?></p>
-                          </strong></td>
-                        <td>
-                          <h4 style="text-align: center;"><?php echo $score ?></h4>
-                        </td>
-                        <td>
-                          <h4 style="text-align: center;"><?php echo $examscore ?></h4>
-                        </td>
-                        <td><strong>
-                            <h3 style="text-align: center;"><?php echo $totalscore ?></h3>
+                            <p style="text-align: left;"> <?php echo strtoupper($subjectname) ?></p>
                           </strong></td>
                         <td><strong>
-                            <p style="text-align: center;"><?php echo $grade ?></p><strong></td>
-                        <td><strong>
-                            <p style="text-align: center;"><?php echo $remarks ?></p>
+                            <p style="text-align: left;"> <?php echo $term1 ?></p>
                           </strong></td>
-                        <td>
-                          <p style="text-align: center;"><?php echo $subjectmin ?></p>
-                        </td>
-                        <td>
-                          <p style="text-align: center;"><?php echo round($subjectavg) ?></p>
-                        </td>
-                        <td>
-                          <p style="text-align: center;"><?php echo $subjectmax ?></p>
-                        </td>
+                        <td><strong>
+                            <p style="text-align: left;"> <?php echo $term2 ?></p>
+                          </strong></td>
+                        <td><strong>
+                            <p style="text-align: left;"> <?php echo $ca ?></p>
+                          </strong></td>
+                        <td><strong>
+                            <p style="text-align: left;"> <?php echo $exam ?></p>
+                          </strong></td>
+                        <td><strong>
+                            <p style="text-align: left;"> <?php echo $term3 ?></p>
+                          </strong></td>
+                        <td><strong>
+                            <h4 style="text-align: center;">
+                              <?php echo $cum ?></h4>
+                          </strong></td>
+                        <td><strong>
+                            <h4 style="text-align: center;">
+                              <?php echo $grade ?></h4>
+                          </strong></td>
+                        <td><strong>
+                            <h4 style="text-align: center;">
+                              <?php echo $remarks ?></h4>
+                          </strong></td>
+
                       </tr>
                     <?php } ?>
                   </tbody>
@@ -682,8 +732,9 @@ $tutorname = $row["staffname"];
                         <table class="table table-bordered" border="1">
                           <thead>
                             <tr>
-                              <th style="text-align: center;">CA Cumuative</th>
-                              <th style="text-align: center;">Exam Cumulative</th>
+                              <th style="text-align: center;">1st Term Cumuative</th>
+                              <th style="text-align: center;">2nd Term Cumulative</th>
+                              <th style="text-align: center;">3rd Term Cumulative</th>
                               <th style="text-align: center;"> Cumulative Score</th>
                               <th style="text-align: center;"> Grade</th>
                               <th style="text-align: center;"> Remarks</th>
@@ -708,13 +759,18 @@ $tutorname = $row["staffname"];
 
                             <tr>
                               <td><strong>
-                                  <h4 style="text-align: center;"><?php echo round($casubjectavg, 2) ?>%</h4>
+                                  <h4 style="text-align: center;"><?php echo round($firstterm, 2) ?>%</h4>
                                 </strong></td>
                               <td><strong>
-                                  <h4 style="text-align: center;"><?php echo round($exsubjectavg, 2) ?>%</h4>
+                                  <h4 style="text-align: center;"><?php echo  round($secondterm, 2) ?>%</h4>
                                 </strong></td>
+
                               <td><strong>
-                                  <h3 style="text-align: center;"><?php echo round($tsubjectavg, 2) ?>%</h3>
+                                  <h4 style="text-align: center;"><?php echo round($thirdterm, 2) ?>%</h4>
+                                </strong></td>
+
+                              <td><strong>
+                                  <h3 style="text-align: center;"><?php echo round(($y / $a), 2) ?>%</h3>
                                 </strong></td>
                               <td><strong>
                                   <h4 style="text-align: center;"><?php echo $cgrade ?></h4>
