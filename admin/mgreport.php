@@ -5,6 +5,10 @@ include "conf.php";
 if (!isset($_SESSION['unamed'])) {
   header('Location: ../index.php');
 }
+require_once("DBController.php");
+$db_handle = new DBController();
+$query ="SELECT DISTINCT(term) FROM lhpresultrecord";
+	$terms = $db_handle->runQuery($query);
 ?>
 
 <!doctype html>
@@ -166,9 +170,16 @@ if (!isset($_SESSION['unamed'])) {
       var lid = lref.options[lref.selectedIndex].value;
 
       if (termid !== "" & classid !== "" & lid !== "") {
+        
+      if(termid.substring(0,3) == '3rd'){
+        $("#term").val("");
+        window.location.href = "viewcumresult.php?term=" + termid + "&lid=" + lid;
+      }else if(termid.substring(0,3) != '3rd'){
         $("#term").val("");
         window.location.href = "viewresult.php?term=" + termid + "&lid=" + lid;
-      } else {
+      }
+    }
+       else {
 
         alert('Select Term , Class and Learner to check Result');
       }
@@ -294,18 +305,12 @@ if (!isset($_SESSION['unamed'])) {
                 <select type="text" required="yes" class="form-control" name="term" id="term" onChange="getclass();">
                   <option value="">Select Term</option>
                   <?php
-                  $sql = "SELECT DISTINCT(term) FROM `lhpresultconfig` ";
-                  $result = mysqli_query($con, $sql);
-
-                  if (mysqli_num_rows($result) > 0) {
-                    // output data of each row
-                    while ($row = mysqli_fetch_assoc($result)) {
-                      echo '<option value="' . $row["term"] . '">' . $row["term"] . '</option>';
-                    }
+                  foreach ($terms as $term) {
+                  ?>
+                    <option value="<?php echo $term["term"]; ?>"><?php echo $term["term"]; ?></option>
+                  <?php
                   }
                   ?>
-
-
                 </select>
               </div>
             </div>
