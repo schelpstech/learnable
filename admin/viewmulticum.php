@@ -119,4 +119,3 @@ include 'multitemplate.php';
 
     }
     include 'footerrsult.php';
-?>
