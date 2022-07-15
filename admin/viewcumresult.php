@@ -18,8 +18,6 @@ if (!empty($_GET['lid'])) {
 
 <?php
 
-
-
 $sql = "SELECT * FROM `lhpuser` WHERE `uname` = '$lname'";
 $result = mysqli_query($con, $sql);
 
@@ -506,9 +504,28 @@ $tutorname = $row["staffname"];
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
                       $session = $row["session"];
+
+                      $sql =  "SELECT tid FROM `lpterm` WHERE `term`  = '$term'";
+                      $result = mysqli_query($con, $sql);
+                      $row = mysqli_fetch_array($result);
+                      $current_termid = $row["tid"];
+
+                      $secondtermid =  $current_termid - 1;
+                      $firsttermid =  $current_termid - 2;
+                      
+                      $sql =  "SELECT term FROM `lpterm` WHERE `tid`  = '$firsttermid'";
+                      $result = mysqli_query($con, $sql);
+                      $row = mysqli_fetch_array($result);
+                      $firsttermref = $row["term"];
+
+                      $sql =  "SELECT term FROM `lpterm` WHERE `tid`  = '$secondtermid'";
+                      $result = mysqli_query($con, $sql);
+                      $row = mysqli_fetch_array($result);
+                      $secondtermref = $row["term"];
+                      
                       //1st Term Score
-                      $term = '1st Term ' . $session;
-                      $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname'  ";
+                      
+                      $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$firsttermref' and `subjid`  = '$subjectid' and lid = '$lname'  ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
                       if (!empty($row["totalscore"])) {
@@ -521,8 +538,8 @@ $tutorname = $row["staffname"];
                         $rate1 = 0;
                       }
                       //2nd Term Score
-                      $term = '2nd Term ' . $session;
-                      $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname' ";
+                      
+                      $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$secondtermref' and `subjid`  = '$subjectid' and lid = '$lname' ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
                       if (!empty($row["totalscore"])) {
@@ -536,7 +553,7 @@ $tutorname = $row["staffname"];
                       }
 
                       //3rd Term Score
-                      $term = '3rd Term ' . $session;
+                      
                       $sql = "SELECT score, examscore, `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname'  ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
@@ -604,17 +621,17 @@ $tutorname = $row["staffname"];
                       }
 
                       //cumulatives
-                      $term = '1st Term ' . $session;
-                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$term' ";
+                      
+                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$firsttermref' ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
                       $firstterm = $row["score"];
-                      $term = '2nd Term ' . $session;
-                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$term' ";
+                     
+                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$secondtermref' ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
                       $secondterm = $row["score"];
-                      $term = '3rd Term ' . $session;
+                     
                       $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term = '$term' ";
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
