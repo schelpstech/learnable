@@ -196,9 +196,13 @@ $query ="SELECT DISTINCT(term) FROM lhpresultrecord";
 
 
       if (bulk_termid !== "" & bulk_classid !== "") {
-        
-        $("#bulk_term").val("");
+        if(bulk_termid.substring(0,3) == '3rd'){
+        $("#term").val("");
+        window.location.href = "viewmulticum.php?term=" + bulk_termid + "&class_id=" + bulk_classid;
+      }else if(bulk_termid.substring(0,3) != '3rd'){
+        $("#term").val("");
         window.location.href = "viewmultiresult.php?term=" + bulk_termid + "&class_id=" + bulk_classid;
+      }
       } else {
 
         alert('Select Term and Class to check Result');
@@ -409,18 +413,12 @@ $query ="SELECT DISTINCT(term) FROM lhpresultrecord";
                 <select type="text" required="yes" class="form-control" name="term" id="bulk_term" onChange="getclass2();">
                   <option value="">Select Term</option>
                   <?php
-                  $sql = "SELECT DISTINCT(term) FROM `lhpresultconfig` ";
-                  $result = mysqli_query($con, $sql);
-
-                  if (mysqli_num_rows($result) > 0) {
-                    // output data of each row
-                    while ($row = mysqli_fetch_assoc($result)) {
-                      echo '<option value="' . $row["term"] . '">' . $row["term"] . '</option>';
-                    }
+                  foreach ($terms as $term) {
+                  ?>
+                    <option value="<?php echo $term["term"]; ?>"><?php echo $term["term"]; ?></option>
+                  <?php
                   }
                   ?>
-
-
                 </select>
               </div>
             </div>

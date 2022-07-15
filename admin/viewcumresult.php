@@ -452,7 +452,7 @@ $tutorname = $row["staffname"];
       </div>
     </div>
 
-    <!-- Data Table area Start-->
+    <!--  Result-->
     <div id="doc" class="data-table-area">
       <div class="container">
         <div class="row">
@@ -707,7 +707,7 @@ $tutorname = $row["staffname"];
         </div>
       </div>
     </div>
-    <!-- Data Table area End-->
+    <!--Remarks-->
 
     <div class="breadcomb-area">
       <div class="container">
