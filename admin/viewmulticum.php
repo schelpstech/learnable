@@ -13,7 +13,7 @@ if(!empty($_GET['class_id'])) {
 if(!empty($_GET['term'])) {
     $term = $_GET["term"]; 
 }
-$query ="SELECT lid FROM `lhpresultrecord` WHERE classid = '$coun_id' AND term =  '$term'  ";
+$query ="SELECT DISTINCT lid FROM `lhpresultrecord` WHERE classid = '$coun_id' AND term =  '$term'  ";
 	$results = $db_handle->runQuery($query);
     foreach($results as $student_list) {
         $lname = $student_list["lid"] ;
