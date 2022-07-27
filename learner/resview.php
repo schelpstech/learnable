@@ -323,22 +323,23 @@ if (mysqli_num_rows($result) > 0) {
                     $termname = $row->term;
                     $termstatus = $row->status;
 
-                    if ($termstatus == 1) {
+                    if ($termstatus == 1 && substr($termname, 0, 3) == "3rd") {
+                     
+                      $action = '<a href="view3rdterm.php?term=' . $termname . '" type="button"  class="btn btn-success" ><strong>Term Result has been published. Click to View Result</strong></a>';
+                    } elseif ($termstatus == 1  && substr($termname, 0, 3) != "3rd") {
                       $action = '<a href="resultpage.php?term=' . $termname . '" type="button"  class="btn btn-success" ><strong>Term Result has been published. Click to View Result</strong></a>';
-                      $action3 = '<a href="view3rdterm.php?term=' . $termname . '" type="button"  class="btn btn-success" ><strong>Term Result has been published. Click to View Result</strong></a>';
-                    } elseif ($termstatus == 0) {
+                     
+                    }else{
                       $action = '<button  class="btn btn-danger" >Term Result is unavailable at the moment. Check back later.</button>';
+                     
                     }
                   ?>
                     <tr>
                       <td><?php echo $count++ ?></td>
 
                       <td><?php echo $termname ?></td>
-                      <td><?php if (substr($termname, 0, 3) == "3rd") {
-                            echo $action3;
-                          } else {
-                            echo $action;
-                          } ?></td>
+                      <td><?php 
+                            echo $action;?></td>
                       <td>
 
                       </td>
