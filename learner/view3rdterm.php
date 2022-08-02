@@ -588,37 +588,41 @@ $tutorname = $row["staffname"];
                                             }
 
 
-                                            if ($cum >= 75) {
-                                                $grade = "A";
-                                            } elseif ($cum >= 65) {
-                                                $grade = "B";
-                                            } elseif ($cum >= 50) {
-                                                $grade = "C";
-                                            } elseif ($cum >= 45) {
-                                                $grade = "D";
-                                            } elseif ($cum >= 40) {
-                                                $grade = "E";
-                                            } elseif ($cum >= 0) {
-                                                $grade = "F";
-                                            } else {
-                                                $grade = "";
-                                            }
-
-                                            if ($cum >= 75) {
-                                                $remarks = "Excellent";
-                                            } elseif ($cum >= 65) {
-                                                $remarks = "Very Good";
-                                            } elseif ($cum >= 50) {
-                                                $remarks = "Moderate";
-                                            } elseif ($cum >= 45) {
-                                                $remarks = "Fair";
-                                            } elseif ($cum >= 40) {
-                                                $remarks = "Needs Help";
-                                            } elseif ($cum >= 0) {
-                                                $remarks = "Needs Help";
-                                            } else {
-                                                $remarks = "";
-                                            }
+                                            if ($cum !='') {
+                                                if ($cum >= 75) {
+                                                  $grade = "A";
+                                                } elseif ($cum >= 65) {
+                                                  $grade = "B";
+                                                } elseif ($cum >= 50) {
+                                                  $grade = "C";
+                                                } elseif ($cum >= 45) {
+                                                  $grade = "D";
+                                                } elseif ($cum >= 40) {
+                                                  $grade = "E";
+                                                } elseif ($cum >= 1) {
+                                                  $grade = "F";
+                                                }
+                                               
+                                                }else{
+                                                  $grade = "";
+                                                }
+                                                if($cum != '') {                    
+                                                if ($cum >= 75) {
+                                                  $remarks = "Excellent";
+                                                } elseif ($cum >= 65) {
+                                                  $remarks = "Very Good";
+                                                } elseif ($cum >= 50) {
+                                                  $remarks = "Moderate";
+                                                } elseif ($cum >= 45) {
+                                                  $remarks = "Fair";
+                                                } elseif ($cum >= 40) {
+                                                  $remarks = "Needs Help";
+                                                } elseif ($cum >= 0) {
+                                                  $remarks = "Needs Help";
+                                                }
+                                                }else {
+                                                  $remarks = "";
+                                                }
 
                                             //cumulatives
 
