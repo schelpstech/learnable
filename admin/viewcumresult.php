@@ -606,7 +606,7 @@ $tutorname = $row["staffname"];
                       }else{
                         $grade = "";
                       }
-                      if(!is_null($cum)) {                    
+                      if($cum != '') {                    
                       if ($cum >= 75) {
                         $remarks = "Excellent";
                       } elseif ($cum >= 65) {
