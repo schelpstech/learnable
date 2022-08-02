@@ -257,6 +257,7 @@ $serial = $seriala.$serialb;
                                         $examscore =  $row->examscore;
                                         $totalscore =  $row->totalscore;
                                         $scorebar = array($totalscore);
+                                        
                                         if ($totalscore >= 75) {
                                             $grade = "A";
                                         } elseif ($totalscore >= 65) {
