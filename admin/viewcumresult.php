@@ -588,7 +588,7 @@ $tutorname = $row["staffname"];
                       }
 
 
-                       
+                      if (is_integer($cum)) {
                       if ($cum >= 75) {
                         $grade = "A";
                       } elseif ($cum >= 65) {
@@ -602,12 +602,11 @@ $tutorname = $row["staffname"];
                       } elseif ($cum >= 0) {
                         $grade = "F";
                       }
-                      elseif (!is_integer($cum)) {
-                        $grade = "";
+                     
                       }else{
                         $grade = "";
                       }
-
+                      if(is_integer($cum)) {                    
                       if ($cum >= 75) {
                         $remarks = "Excellent";
                       } elseif ($cum >= 65) {
@@ -620,9 +619,8 @@ $tutorname = $row["staffname"];
                         $remarks = "Needs Help";
                       } elseif ($cum >= 0) {
                         $remarks = "Needs Help";
-                      }elseif(!is_integer($cum)) {
-                        $remarks = "";
-                      } else {
+                      }
+                      }else {
                         $remarks = "";
                       }
 
