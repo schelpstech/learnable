@@ -599,8 +599,10 @@ $tutorname = $row["staffname"];
                         $grade = "D";
                       } elseif ($cum >= 40) {
                         $grade = "E";
-                      } elseif ($cum >= 0) {
+                      } elseif ($cum >= 1) {
                         $grade = "F";
+                      }else{
+                        $grade = "";
                       }
                      
                       }else{
