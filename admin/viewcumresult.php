@@ -588,7 +588,7 @@ $tutorname = $row["staffname"];
                       }
 
 
-                      if (is_integer($cum)) {
+                      if (!is_null($cum)) {
                       if ($cum >= 75) {
                         $grade = "A";
                       } elseif ($cum >= 65) {
@@ -606,7 +606,7 @@ $tutorname = $row["staffname"];
                       }else{
                         $grade = "";
                       }
-                      if(is_integer($cum)) {                    
+                      if(!is_null($cum)) {                    
                       if ($cum >= 75) {
                         $remarks = "Excellent";
                       } elseif ($cum >= 65) {
