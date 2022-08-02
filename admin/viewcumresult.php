@@ -588,25 +588,23 @@ $tutorname = $row["staffname"];
                       }
 
 
-                      if (!is_null($cum)) {
+                      if ($cum !='') {
                       if ($cum >= 75) {
-                        $grade = "A".$cum;
+                        $grade = "A";
                       } elseif ($cum >= 65) {
-                        $grade = "B".$cum;
+                        $grade = "B";
                       } elseif ($cum >= 50) {
-                        $grade = "C".$cum;
+                        $grade = "C";
                       } elseif ($cum >= 45) {
-                        $grade = "D".$cum;
+                        $grade = "D";
                       } elseif ($cum >= 40) {
-                        $grade = "E".$cum;
+                        $grade = "E";
                       } elseif ($cum >= 1) {
-                        $grade = "F".$cum;
-                      }else{
-                        $grade = "".$cum;
+                        $grade = "F";
                       }
                      
                       }else{
-                        $grade = "".$cum;
+                        $grade = "";
                       }
                       if(!is_null($cum)) {                    
                       if ($cum >= 75) {
