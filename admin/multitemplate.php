@@ -336,8 +336,7 @@ $serial = $seriala . $serialb;
                                             $cum = '';
                                         } else {
                                             $cum = round((($sum1 + $sum2 + $sum3) / $x), 2);
-                                            $a += 1;
-                                            $y += $cum;
+                                            
                                         }
 
 
@@ -380,17 +379,39 @@ $serial = $seriala . $serialb;
                                         $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$firsttermref' ";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
-                                        $firstterm = $row["score"];
+                                        if (!empty($row["score"])) {
+                                            $firstterm = $row["score"];
+                                            $t1 = 1;
+                                        }else{
+                                            $firstterm = 0;
+                                            $t1 = 0;
+                                        }
 
                                         $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$secondtermref' ";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
-                                        $secondterm = $row["score"];
+                                        if (!empty($row["score"])) {
+                                            $secondterm = $row["score"];
+                                            $t2 = 1;
+                                        }else{
+                                            $secondterm = 0;
+                                            $t2 = 0;
+                                        }
 
                                         $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term = '$term' ";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
-                                        $thirdterm = $row["score"];
+                                        if (!empty($row["score"])) {
+                                            $thirdterm = $row["score"];
+                                            $t3 = 1;
+                                        }else{
+                                            $thirdterm = 0;
+                                            $t3 = 0;
+                                        }
+
+                                        $y = $firstterm + $secondterm + $thirdterm;
+                                        $a = $t1+$t2+$t3;
+
 
                                         if (($y / $a) >= 75) {
                                             $cgrade = "A";
