@@ -188,8 +188,12 @@ foreach ($feedit as $ed) {
                                         <select  type="text" required="yes" class="form-control" name="term"  >
 <?php
 foreach ($feedit as $ed) {
+  $sql = "SELECT * FROM lhpsession WHERE sessionid  = '$ed[session]'";
+                    $result = mysqli_query($con, $sql);
+                    $row = mysqli_fetch_array($result);
+                    $sess = $row['session'];
     ?>
-<option value="<?php echo $ed["term"]; ?>"><?php echo $ed["term"]; ?></option>
+<option value="<?php echo $sess; ?>"><?php echo $sess; ?></option>
 <?php
 }
 ?>
