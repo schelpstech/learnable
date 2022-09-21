@@ -7,7 +7,7 @@
 
 if(isset($_POST['student'])){	
    
-    header('Location: student.php');
+    header('Location: learn');
 }
 ?>
 
