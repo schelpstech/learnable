@@ -1,8 +1,8 @@
 <?php
 include '../app/query.php';
-
+$valErr = '';
 //LOGOUT
-if ($_POST['logout'] === 'logout') {
+if (isset($_POST['logout']) && $_POST['logout'] === 'logout') {
     $model->log_out_user();
     session_start();
     $_SESSION['msg'] =
@@ -14,10 +14,10 @@ if ($_POST['logout'] === 'logout') {
 }
 
 // Check if log-in form is submitted from website
-$valErr = '';
-if ($_POST['log_in'] !== 'Log in') {
+
+elseif (isset($_POST['log_in']) && $_POST['log_in'] !== 'Log in') {
     $valErr .= 'Invalid Login request. You are attempting login from an unsecured page!.<br/>';
-} else {
+} elseif(isset($_POST['log_in']) && $_POST['log_in'] == 'Log in') {
 
 
     // Retrieve form input
