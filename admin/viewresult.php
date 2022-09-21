@@ -195,12 +195,20 @@ $tutorname = $row["staffname"];
 
   <script>
     function generatePDF() {
-
-
       var divContents = $("#doc").html();
       var printWindow = window.open('', '', 'height=800,width=1600');
       printWindow.document.write('<html><head><title>Academic Reportsheets for <?php echo $stname . "   " . $dclass ?></title>');
-      printWindow.document.write('</head><body >');
+      printWindow.document.write('<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">');
+      printWindow.document.write('<link rel="stylesheet" href="css/bootstrap.min.css">');
+      printWindow.document.write('<link rel="stylesheet" href="css/font-awesome.min.css">');
+      printWindow.document.write('<link rel="stylesheet" href="css/scrollbar/jquery.mCustomScrollbar.min.css">');
+      printWindow.document.write('<link rel="stylesheet" href="css/notika-custom-icon.css">');
+      printWindow.document.write('<link rel="stylesheet" href="css/jquery.dataTables.min.css">');
+      printWindow.document.write('<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">');
+      printWindow.document.write(' <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">');
+      printWindow.document.write('<link rel="stylesheet" href="css/main.css">');
+      printWindow.document.write('<link rel="stylesheet" href="style.css">');
+      printWindow.document.write('</head><body style="overflow:hidden; height:auto; box-sizing: border-box; padding:1em;" >');
       printWindow.document.write(divContents);
       printWindow.document.write('</body></html>');
       printWindow.document.close();
@@ -208,7 +216,6 @@ $tutorname = $row["staffname"];
 
     }
   </script>
-
 
   <script src=”https://d3js.org/d3.v5.min.js”></script>
 
@@ -339,29 +346,29 @@ $tutorname = $row["staffname"];
 
                     <tr>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $lname ?></p>
+                          <p style="text-align: center;"><?php echo $lname ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <h4 style="text-align: center;"> <?php echo $stname ?></h4>
+                          <h4 style="text-align: center;"> <?php echo $stname ?? ""; ?></h4>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $gender ?></p>
+                          <p style="text-align: center;"><?php echo $gender ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $dob ?></p>
+                          <p style="text-align: center;"><?php echo $dob ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $dclass; ?></p>
+                          <p style="text-align: center;"><?php echo $dclass ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $tutorname; ?></p>
+                          <p style="text-align: center;"><?php echo $tutorname ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $pop; ?></p>
+                          <p style="text-align: center;"><?php echo $pop ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
                           <p style="text-align: center;">
-                            <image src="images/profilepix/<?php echo $pix; ?>" height="100" width="100" />
+                            <image src="images/profilepix/<?php echo $pix ?? "nopix.jpg"; ?>" height="100" width="100" />
                           </p>
                         </strong></td>
                     </tr>
@@ -415,28 +422,28 @@ $tutorname = $row["staffname"];
 
                     <tr>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $opendays ?></p>
+                          <p style="text-align: center;"><?php echo $opendays  ?? "";?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $present ?></p>
+                          <p style="text-align: center;"><?php echo $present  ?? "";?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $opendays - $present; ?></p>
+                          <p style="text-align: center;"><?php echo $opendays - $present  ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $lead ?></p>
+                          <p style="text-align: center;"><?php echo $lead ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $eloq ?></p>
+                          <p style="text-align: center;"><?php echo $eloq  ?? "";?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $neat ?></p>
+                          <p style="text-align: center;"><?php echo $neat  ?? "";?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $create ?></p>
+                          <p style="text-align: center;"><?php echo $create ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $response ?></p>
+                          <p style="text-align: center;"><?php echo $response ?? ""; ?></p>
                         </strong></td>
                     </tr>
 
