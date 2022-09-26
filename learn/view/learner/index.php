@@ -11,7 +11,19 @@ include '../include/navigator.php';
             <div class="col-md-6 col-lg-6 col-xl-4 box-col-6">
                 <div class="card custom-card">
                     <div class="card-header"><img class="img-fluid" src="../../asset/img/app/profile_bg.jpg" alt="" data-original-title="" title=""></div>
-                    <div class="card-profile"><img class="rounded-circle" src="../../asset/img/profilebox/9.jpg" alt="" data-original-title="" title=""></div>
+                    <div class="card-profile"><img class="rounded-circle" src="
+                            <?php
+                            if (isset($learner_profile['passport'])) {
+                                $dir = '../../storage/passport/' . $learner_profile['passport'];
+                                if (file_exists($dir)) {
+                                    echo $dir;
+                                } else {
+                                    echo '../../asset/img/passport/nopix.jpg';
+                                }
+                            } else {
+                                echo '../../asset/img/passport/nopix.jpg';
+                            }
+                            ?>" alt="" data-original-title="" title=""></div>
 
                     <div class="text-center profile-details">
                         <h4><?php echo $learner_profile['fname'] ?? ' - '; ?></h4>
