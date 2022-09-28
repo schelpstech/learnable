@@ -33,8 +33,10 @@
                                     <?php
                                         if($view_note['type']=='text'){
                                             echo ucwords($view_note['content']);  
+                                        }elseif($view_note['type']=='file'){
+                                            echo '<iframe width="100%" height="600" src="https://dwatschools.com.ng/learnable/instructor/noteoflesson/'.$view_note['content'].'" title="'.$view_note['topic'].'"frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
                                         }else{
-                                            echo '<iframe width="100%" height="600" src="../../instructor/noteoflesson/'.$view_note['content'].'" title="'.$view_note['topic'].'"frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                                            echo '<iframe width="100%" height="600" src="'.$view_note['content'].'" title="'.$view_note['topic'].'"frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
                                         }
                                      ?>
                                 </div>
