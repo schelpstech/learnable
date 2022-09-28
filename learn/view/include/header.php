@@ -1,5 +1,8 @@
 <?php
 include '../../app/query.php';
+if(!isset($_SESSION['active'])){
+    $model->redirect('../index.php');
+}
 ?>
 <!DOCTYPE html>
 <html lang="zxx">

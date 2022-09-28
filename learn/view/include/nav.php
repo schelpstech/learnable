@@ -18,7 +18,7 @@
             </a>
         </li>
         <li>
-            <a href="index-2.html" aria-expanded="false">
+            <a href="notice.php" aria-expanded="false">
                 <div class="nav_icon_small">
                     <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
                 </div>
@@ -82,7 +82,7 @@
         </li>
 
         <li>
-            <a href="index-2.html" aria-expanded="false">
+            <a href="calendar.php" aria-expanded="false">
                 <div class="nav_icon_small">
                     <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
                 </div>
