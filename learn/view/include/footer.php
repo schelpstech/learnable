@@ -1,7 +1,3 @@
-<?php
-include '../../app/query.php';
-?>
-
 <div class="footer_part">
     <div class="container-fluid">
         <div class="row">
@@ -54,7 +50,7 @@ include '../../app/query.php';
 <script src="../../asset/vendors/progressbar/jquery.barfiller.js"></script>
 
 <script src="../../asset/vendors/tagsinput/tagsinput.js"></script>
-
+<script src="../../asset/vendors/text_editor/summernote-bs4.js"></script>
 <script src="../../asset/js/custom.js"></script>
 <script src="../../asset/js/performance_chart.js"></script>
 </body>

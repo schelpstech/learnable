@@ -6,93 +6,13 @@
             <i class="ti-close"></i>
         </div>
     </div>
-    <ul id="sidebar_menu">
-        <li>
-            <a href="index.php" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>My Profile</span>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="notice.php" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>Notice Board</span>
-                </div>
-            </a>
-        </li>
-        <h4 class="menu-text"><span>My Class</span> <i class="fas fa-ellipsis-h"></i> </h4>
-        <li>
-            <a href="./subject.php" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>My E-Notes</span>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="../../app/router.php?pageid=payment&instance=bill" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>My School Bills</span>
-                </div>
-            </a>
-        </li>
-
-        <li>
-            <a href="../../app/router.php?pageid=payment&instance=transaction" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>My Transaction History</span>
-                </div>
-            </a>
-        </li>
-
-        <li>
-            <a href="../../app/router.php?pageid=payment&instance=payment" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>Make Payment</span>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="../../app/router.php?pageid=result&instance=select" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>My Results</span>
-                </div>
-            </a>
-        </li>
-
-        <li>
-            <a href="calendar.php" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>School Calendar</span>
-                </div>
-            </a>
-        </li>
-
-    </ul>
+    <?php
+    if ($_SESSION['user_type'] === "Instructor") {
+        include '../include/navinstructor.php';
+    } elseif ($_SESSION['user_type'] === "Learner") {
+        include '../include/navlearner.php';
+    }
+    ?>
 </nav>
 
 
@@ -116,12 +36,15 @@
                             unset($_SESSION['msg']);
                         }
                         ?>
+                        <div id="info">
+
+                        </div>
                         <div class="profile_info">
                             <img src="../../asset/img/client_img.png" alt="#">
                             <div class="profile_info_iner">
                                 <div class="profile_author_name">
-                                    <p><?php echo $learner_profile['fname'] ?></p>
-                                    <p><?php echo $learner_profile['uname'] ?></p>
+                                    <p><?php echo $learner_profile['fname'] ?? $staff_details['staffname'] ?></p>
+                                    <p><?php echo $learner_profile['uname'] ?? $staff_details['sname'] ?></p>
                                 </div>
                                 <div class="profile_info_details">
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#logout">
@@ -135,9 +58,6 @@
             </div>
         </div>
     </div>
-
-
-
 
     <div class="modal fade" id="logout" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -157,3 +77,29 @@
             </div>
         </div>
     </div>
+    <?php
+    if ($_SESSION['user_type'] === "Instructor") {
+        echo '
+        <div class="modal fade" id="resources" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle"> </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                        <div class="modal-footer" >
+                            <a href="../../app/router.php?pageid=resources&item=add_topic" type="button" class="btn btn-primary" >Add Scheme of work</a>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="../../app/router.php?pageid=resources&item=add_note" type="button" class="btn btn-warning" >Add e-Notes</a> <br>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="../../app/router.php?pageid=resources&item=add_task" type="button" class="btn btn-info">Add e-Assessment</a><br>
+                        </div>
+                </div>
+            </div>
+        </div>            
+        ';
+    } ?>

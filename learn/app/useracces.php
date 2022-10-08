@@ -119,8 +119,11 @@ elseif (isset($_POST['log_in']) && $_POST['log_in'] !== 'Log in') {
                 </div>';
             if ($usertype == 'Learner') {
                 $_SESSION['active'] = $userid;
+                $_SESSION['user_type'] = $usertype;
                 $model->redirect('../view/learner/index.php');
             } elseif ($usertype == 'Instructor') {
+                $_SESSION['active'] = $userid;
+                $_SESSION['user_type'] = $usertype;
                 $model->redirect('../view/instructor/index.php');
             }
         } else {

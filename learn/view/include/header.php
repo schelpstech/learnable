@@ -46,4 +46,9 @@ if(!isset($_SESSION['active'])){
 
     <link rel="stylesheet" href="../../asset/css/style1.css" />
     <link rel="stylesheet" href="../../asset/css/colors/default.css" id="colorSkinCSS">
+    <?php
+    if ($_SESSION['user_type'] === "Instructor") {
+        echo '<script src="../../asset/js/auxilliary.js"></script>';
+    }
+    ?>
 </head>

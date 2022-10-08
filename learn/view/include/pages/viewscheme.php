@@ -6,9 +6,9 @@
                     <div class="white_box_tittle     ">
                         <div class="main-title2 ">
                             <span>
-                                <h4 class="mb-2 nowrap"><?php echo $active_term['term'] ?> Scheme of Work </h4><br>
-                                <p><?php echo ucwords($alist_scheme['sbjname']) ?> </p><br>
-                                <p> <?php echo ucwords($alist_scheme['staffname']) ?> </p>
+                                <h4 class="mb-2 nowrap"><?php echo $active_term['term'] ?? "-"; ?> Scheme of Work </h4><br>
+                                <p><?php echo ucwords($alist_scheme['sbjname'])  ?? "-"; ?> </p><br>
+                                <p> <?php echo ucwords($alist_scheme['staffname'])  ?? "-"; ?> </p>
                             </span>
                         </div>
                     </div>
@@ -28,19 +28,31 @@
                                                         <p class="f_s_18 f_w_900 mb-0"><small><?php echo $count++ ?></small></p>
                                                         <input type="checkbox" disabled="yes">
                                                         <span class="checkmark"></span>
+
                                                     </label>
+                                                </div>
+                                                <div class="lodo_right">
+                                                    <a class="badge_complete">
+                                                        <p class="f_s_18 f_w_900 mb-0">
+                                                            <small><?php echo ucwords($list_scheme['week']) ?></small>
+                                                        </p>
+                                                    </a>
                                                 </div>
                                                 <div class="todo_head">
                                                     <h6><?php echo ucwords($list_scheme['topic']) ?> </h6>
                                                 </div>
                                             </div>
-                                            <div class="lodo_right">
-                                                <a href="#" class="badge_complete">
-                                                    <p class="f_s_18 f_w_900 mb-0">
-                                                        <small><?php echo ucwords($list_scheme['week']) ?></small>
-                                                    </p>
-                                                </a>
-                                            </div>
+
+                                            <?php
+                                            if ((isset($_SESSION['user_type']) && $_SESSION['user_type'] === "Instructor")) {
+                                                echo '
+                                                   <div class="lodo_right">
+                                                        <a href="../../app/router.php?pageid=resources&item=modify_topic&item_ref=' . $list_scheme['schmid'] . '" class="mark_complete">
+                                                                <p class="f_s_18 f_w_900 mb-0">Modify</p>
+                                                        </a>
+                                                    </div>';
+                                            }
+                                            ?>
                                         </div>
                                 <?php
                                     }
