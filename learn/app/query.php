@@ -67,7 +67,7 @@ if (isset($_SESSION['subjectid']) && isset($_SESSION['pageid']) &&  $_SESSION['p
         'order_by' => 'lhpscheme.week ASC',
     );
     $list_task = $model->getRows($tblName, $conditions);
-} 
+}
 
 //List of Topics- Scheme of work
 if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'scheme') {
@@ -101,7 +101,7 @@ if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) && $_SESSION['pageid']
     $list_scheme = $model->getRows($tblName, $conditions);
 }
 
-if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_topic' ) {
+if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_topic') {
 
     $tblName = 'lhpscheme';
     $conditions = array(
@@ -119,7 +119,7 @@ if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_
     $mod_scheme = $model->getRows($tblName, $conditions);
 }
 
-if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_note' ) {
+if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_note') {
 
     $tblName = 'lhpnote';
     $conditions = array(
@@ -137,7 +137,7 @@ if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_
     );
     $modify_note = $model->getRows($tblName, $conditions);
 }
-if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_task' ) {
+if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_task') {
 
     $tblName = 'lhpquestion';
     $conditions = array(
@@ -587,6 +587,19 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
         )
     );
     $class_subject_allocated = $model->getRows($tblName, $conditions);
+
+
+    $tblName = 'lhpclassalloc';
+    $conditions = array(
+        'where' => array(
+            'tutorid' => $_SESSION['active'],
+            'term' => $active_term['term'],
+        ),
+        'joinl' => array(
+            'lhpclass' => ' on lhpclassalloc.classid = lhpclass.classid ',
+        )
+    );
+    $class_allocated = $model->getRows($tblName, $conditions);
 }
 
 

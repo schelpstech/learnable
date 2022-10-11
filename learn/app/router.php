@@ -86,6 +86,7 @@ if (isset($_GET['pageid']) && isset($_GET['item'])) {
   $model->redirect('../view/include/viewer.php');
 }
 
+//Modify Note, Scheme and Task
 if (isset($_GET['pageid']) && isset($_GET['item'])  && isset($_GET['item_ref'])) {
   $pageid = $_GET['pageid'];
   $item = $_GET['item'];
@@ -95,3 +96,14 @@ if (isset($_GET['pageid']) && isset($_GET['item'])  && isset($_GET['item_ref']))
   $_SESSION['item_ref'] = $item_ref;
   $model->redirect('../view/include/viewer.php');
 }
+
+//Class Manager
+//redirect to view transactions - Learner    
+if (isset($_GET['pageid']) && $_GET['pageid'] == 'class_manager') {
+  $pageid = $_GET['pageid'];
+  $instance = $_GET['instance'];
+  $_SESSION['instance'] = $instance;
+  $_SESSION['pageid'] = $pageid;
+  $model->redirect('../view/include/viewer.php');
+}
+

@@ -30,6 +30,26 @@
                 </div>
             </a>
         </li>
+        <li>
+            <a href="../../app/router.php?pageid=class_manager" aria-expanded="false">
+                <div class="nav_icon_small">
+                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
+                </div>
+                <div class="nav_title">
+                    <span>Class Manager</span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="#" aria-expanded="false">
+                <div class="nav_icon_small">
+                    <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
+                </div>
+                <div class="nav_title">
+                    <span>Scoresheet</span>
+                </div>
+            </a>
+        </li>
 
 
     </ul>

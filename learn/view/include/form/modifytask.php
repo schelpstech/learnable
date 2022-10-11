@@ -25,7 +25,7 @@
                                     <label class="" for="subject">Select Subject</label>
                                 </div>
                                 <select class="form-select" tabindex="2" id="subject" required="yes">
-                                <option value="<?php echo $modify_task['sbjid'] ?>"><?php echo $modify_task['sbjname'] ?></option>
+                                    <option value="<?php echo $modify_task['sbjid'] ?>"><?php echo $modify_task['sbjname'] ?></option>
                                 </select>
                             </div>
                             <div class="input-group mb-3">

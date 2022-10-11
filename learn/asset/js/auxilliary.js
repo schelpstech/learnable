@@ -587,3 +587,156 @@ function remove_task() {
         alert("One of the required details is missing. Check and try again");
     }
 }
+
+function class_dashboard() {
+    var allocated_class = $("#allocated_class").val();
+    var action = 'load_dashboard';
+    if (allocated_class != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_class: allocated_class,
+                action: action,
+            beforeSend: function(){
+            // Show image container
+                $("#loader").show();
+                $("#board").hide();
+            },
+            },
+            success: function (data) {
+                $("#class_dashboard").html(data);
+            },
+            complete:function(data){
+                // Hide image container
+                $("#loader").hide();
+               }
+        });
+    } else {
+        alert("Select Allocated Class");
+    }
+}
+
+function class_dashboard() {
+    var allocated_class = $("#allocated_class").val();
+    var action = 'load_dashboard';
+    if (allocated_class != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_class: allocated_class,
+                action: action,
+            beforeSend: function(){
+            // Show image container
+                $("#loader").show();
+                $("#board").hide();
+            },
+            },
+            success: function (data) {
+                $("#class_dashboard").html(data);
+            },
+            complete:function(data){
+                // Hide image container
+                $("#loader").hide();
+               }
+        });
+    } else {
+        err = '<option value="">Select Allocated Class</option>';
+        alert("Select Allocated Class");
+        $("#allocated_class").html(err);
+    }
+}
+function show_learners() {
+    var allocated_class = $("#allocated_class").val();
+    var action = 'show_learners';
+    if (allocated_class != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_class: allocated_class,
+                action: action,
+            beforeSend: function(){
+            // Show image container
+                $("#response_loader").show();
+                $("#response").hide();
+            },
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            complete:function(data){
+                // Hide image container
+                $("#response_loader").hide();
+                $("#response").show();
+               }
+        });
+    } else {
+        err = '<option value="">Select Allocated Class</option>';
+        alert("Select Allocated Class");
+        $("#allocated_class").html(err);
+    }
+}
+function show_subjects() {
+    var allocated_class = $("#allocated_class").val();
+    var action = 'show_subjects';
+    if (allocated_class != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_class: allocated_class,
+                action: action,
+            beforeSend: function(){
+            // Show image container
+                $("#response_loader").show();
+                $("#response").hide();
+            },
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            complete:function(data){
+                // Hide image container
+                $("#response_loader").hide();
+                $("#response").show();
+               }
+        });
+    } else {
+        err = '<option value="">Select Allocated Class</option>';
+        alert("Select Allocated Class");
+        $("#allocated_class").html(err);
+    }
+}
+function show_fully_paid() {
+    var allocated_class = $("#allocated_class").val();
+    var action = 'show_fully_paid';
+    if (allocated_class != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_class: allocated_class,
+                action: action,
+            beforeSend: function(){
+            // Show image container
+                $("#response_loader").show();
+                $("#response").hide();
+            },
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            complete:function(data){
+                // Hide image container
+                $("#response_loader").hide();
+                $("#response").show();
+               }
+        });
+    } else {
+        err = '<option value="">Select Allocated Class</option>';
+        alert("Select Allocated Class");
+        $("#allocated_class").html(err);
+    }
+}

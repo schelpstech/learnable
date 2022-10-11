@@ -356,3 +356,157 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
     }
 }
 ?>
+
+<?php
+//CLASS MANAGER - DASHBOARD
+if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'load_dashboard') {
+
+    $tblName = 'lhpuser';
+    $conditions = array(
+        'select' => '
+        (SELECT COUNT(uname) from lhpuser where classid = "'. $_POST["allocated_class"] . '" 
+                    and status = 1) as population,
+        (SELECT COUNT(lhpalloc.aid)  from lhpalloc WHERE lhpalloc.classid = "'. $_POST["allocated_class"] . '" 
+                    and lhpalloc.term = "' . $active_term["term"] . '") as subject,
+        (SELECT COUNT(DISTINCT lhpuser.uname) from lhpuser 
+         	WHERE lhpuser.classid =  "'.$_POST["allocated_class"].'" and
+				(SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
+                 	WHERE 	lhpassignedfee.stdid = lhpuser.uname and 
+                 			lhpassignedfee.term = "' . $active_term["term"] . '"
+                 			GROUP BY lhpassignedfee.stdid)  <= 
+				(SELECT sum(lhptransaction.amount) FROM lhptransaction
+                 	WHERE 	lhptransaction.stdid = lhpuser.uname  and 
+                 			lhptransaction.term = "' . $active_term["term"] . '" 
+                 			GROUP BY lhptransaction.stdid)) as paid,
+                            
+        (SELECT COUNT(DISTINCT lhpuser.uname) from lhpuser 
+         	WHERE lhpuser.classid =  "'. $_POST["allocated_class"] . '" and
+				(SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
+                 	WHERE 	lhpassignedfee.stdid = lhpuser.uname and 
+                 			lhpassignedfee.term = "' . $active_term["term"] . '"
+                 			GROUP BY lhpassignedfee.stdid)  > 
+				(SELECT sum(lhptransaction.amount) FROM lhptransaction
+                 	WHERE 	lhptransaction.stdid = lhpuser.uname  and 
+                 			lhptransaction.term = "' . $active_term["term"] . '" 
+                 			GROUP BY lhptransaction.stdid)) as debtor
+                        ',
+        'return_type' => 'single',
+        'joinl' => array(
+            'lhptransaction' => ' on lhpuser.uname = lhptransaction.stdid ',
+            'lhpassignedfee' => ' on lhpuser.uname = lhpassignedfee.stdid ',
+            'lhpalloc' => ' on lhpuser.classid = lhpalloc.classid ',
+        )
+    );
+    $class_allocated = $model->getRows($tblName, $conditions);
+    include_once '../view/include/classmanager/widget.php';
+}
+//CLASS MANAGER - show LEARNERS
+if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_learners') {
+    $tblName = 'lhpuser';
+    $conditions = array(
+        'where' => array(
+            'lhpuser.classid' => $_POST['allocated_class'],
+        ),
+        'order_by' => 'lhpuser.status DESC, lhpuser.fname ASC ',
+    );
+    $learner_list = $model->getRows($tblName, $conditions);
+
+    $conditions = array(
+        'select' => '
+                        (SELECT COUNT(uname) from lhpuser where status = 1 and gender = "Male" and classid = "'. $_POST["allocated_class"] . '") as male,
+                        (SELECT COUNT(uname) from lhpuser where status = 1 and gender = "Female" and classid = "'. $_POST["allocated_class"] . '") as female,
+                        (SELECT COUNT(uname) from lhpuser where status = 1 and classid = "'. $_POST["allocated_class"] . '") as total
+            ',
+        'return_type' => 'single',
+    );
+    $learner_statistics = $model->getRows($tblName, $conditions);
+
+    $tblName = 'lhpclass';
+    $conditions = array(
+        'where' => array(
+            'classid' => $_POST['allocated_class'],
+        ),
+        'return_type' => 'single',
+    );
+    $classname = $model->getRows($tblName, $conditions);
+
+
+    include_once '../view/include/classmanager/learner_list.php';
+}
+
+//CLASS MANAGER - show subject list
+if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_subjects') {
+        
+        $tblName = 'lhpalloc';
+        $conditions = array(
+            'select' => '   lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, 
+                            lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
+                            lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, 
+                            lhpclass.classid, lhpclass.classname, 
+
+                            (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE  lhpnote.sbjid = lhpalloc.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '") as note ,
+                            (SELECT count(lhpquestion.sbjid) FROM lhpquestion WHERE  lhpquestion.sbjid = lhpalloc.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term['term'] . '") as task,
+                            (SELECT count(lhpscheme.subject) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term['term'] . '") as topic',
+            'where' => array(
+                'lhpalloc.classid' => $_POST['allocated_class'],
+                'lhpalloc.term' => $active_term['term'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpalloc.classid = lhpclass.classid',
+                'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname',
+                'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid',
+                'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid',
+                'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid',
+                'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject',
+            ),
+            'group_by' => 'lhpalloc.sbjid',
+        );
+        $subject_list = $model->getRows($tblName, $conditions);
+
+        
+    $tblName = 'lhpclass';
+    $conditions = array(
+        'where' => array(
+            'classid' => $_POST['allocated_class'],
+        ),
+        'return_type' => 'single',
+    );
+    $classname = $model->getRows($tblName, $conditions);
+
+        include_once '../view/include/classmanager/subject_list.php';
+}
+
+//CLASS MANAGER - show learner who have paid fully
+if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_fully_paid') {
+    $tblName = 'lhpuser';
+    $conditions = array(
+        'select' => ' DISTINCT lhpuser.uname, lhpuser.fname,
+
+                    (SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
+                        WHERE lhpassignedfee.stdid = lhpuser.uname and 
+                        lhpassignedfee.term = "'. $active_term["term"] .'"
+                        GROUP BY lhpassignedfee.stdid) as bill,
+                        
+                    (SELECT sum(lhptransaction.amount) FROM lhptransaction
+                        WHERE lhptransaction.stdid = lhpuser.uname  and 
+                        lhptransaction.term = "' . $active_term["term"] . '" 
+                        GROUP BY lhptransaction.stdid) as paid ',
+        'where' => array(
+                    'lhpuser.classid' => $_POST['allocated_class'],
+        ),
+    );
+    $paid_list = $model->getRows($tblName, $conditions);
+
+    $tblName = 'lhpclass';
+    $conditions = array(
+        'where' => array(
+            'classid' => $_POST['allocated_class'],
+        ),
+        'return_type' => 'single',
+    );
+    $classname = $model->getRows($tblName, $conditions);
+
+    include_once '../view/include/classmanager/paid_list.php';
+
+}
+?>
