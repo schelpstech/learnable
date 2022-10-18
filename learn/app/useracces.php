@@ -97,7 +97,7 @@ elseif (isset($_POST['log_in']) && $_POST['log_in'] !== 'Log in') {
         $model->redirect('../view/index.php');
     }
     //Check Password
-    if ($userpwd === $login_details['upwd'] || $login_details['spwd']) {
+    if ($userpwd === $login_details['upwd'] || $userpwd ===  $login_details['spwd']) {
         //Check Active Status
         if ($login_details['status'] || $login_details['status'] == 1) {
 
