@@ -1,4 +1,4 @@
-<div class="col-xl-8 offset-2">
+<div class="col-xl-10 offset-1">
     <div class="col-12 QA_section">
         <div class="card QA_table ">
             <div class="card-header">
@@ -11,11 +11,13 @@
                         <thead>
                             <tr>
                                 <th class="center"></th>
+                                <th>Passport</th>
                                 <th>Userid</th>
                                 <th>Full name</th>
                                 <th>Gender</th>
                                 <th class="center">Date of Birth</th>
                                 <th class="center">Status</th>
+                                <th class="center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -26,6 +28,20 @@
                             ?>
                                     <tr>
                                         <td class="center"><?php echo $count++; ?></td>
+                                        <td class="center">
+                                        <img src="<?php
+                                            if (!empty($data['picture'])) {
+                                                $dir = '../../../asset/img/passport/'.$data['picture'];
+                                                if (file_exists('"'.$dir.'"')) {
+                                                    echo '../../asset/img/passport/'.$data['picture'];
+                                                } else {
+                                                    echo '../../asset/img/passport/nopix.jpg';
+                                                }
+                                            }else {
+                                                echo '../../asset/img/passport/nopix.jpg';
+                                            }
+                                            ?> " width="100" />
+                                        </td>
                                         <td class="center"><?php echo $data['uname']; ?></td>
                                         <td class="left strong"><?php echo $data['fname']; ?></td>
                                         <td class="left"><?php echo $data['gender']; ?></td>
@@ -34,7 +50,14 @@
                                                                 echo 'Active';
                                                             } else {
                                                                 echo 'Inactive';
-                                                            } ?></td>
+                                                            } ?>
+                                                            
+                                        </td>
+                                        <td>
+                                            <div class="action_btns d-flex">
+                                                <a href="../../app/router.php?pageid=manage_learner&instance=<?php echo $data['uname'] ?>" class="action_btn mr_10"> <i class="ti-hand-point-up"></i> </a>
+                                            </div>
+                                        </td>
                                     </tr>
                             <?php
                                 }

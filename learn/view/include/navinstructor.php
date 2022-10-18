@@ -41,7 +41,7 @@
             </a>
         </li>
         <li>
-            <a href="#" aria-expanded="false">
+            <a href="../../app/router.php?pageid=scoresheet" aria-expanded="false">
                 <div class="nav_icon_small">
                     <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
                 </div>

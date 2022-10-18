@@ -98,12 +98,21 @@ if (isset($_GET['pageid']) && isset($_GET['item'])  && isset($_GET['item_ref']))
 }
 
 //Class Manager
-//redirect to view transactions - Learner    
+//redirect to view Class Manager - Instructor    
 if (isset($_GET['pageid']) && $_GET['pageid'] == 'class_manager') {
-  $pageid = $_GET['pageid'];
-  $instance = $_GET['instance'];
-  $_SESSION['instance'] = $instance;
-  $_SESSION['pageid'] = $pageid;
+  $_SESSION['pageid'] = $_GET['pageid'];
+  $_SESSION['instance'] = $_GET['instance'];
+  $model->redirect('../view/include/viewer.php');
+}
+if (isset($_GET['pageid']) && $_GET['pageid'] == 'manage_learner') {
+  $_SESSION['pageid'] = $_GET['pageid'];
+  $_SESSION['instance'] = $_GET['instance'];
   $model->redirect('../view/include/viewer.php');
 }
 
+//Class Manager
+//redirect to view Scoresheet - Instructor    
+if (isset($_GET['pageid']) && $_GET['pageid'] == 'scoresheet') {
+  $_SESSION['pageid'] = $_GET['pageid'];
+  $model->redirect('../view/include/viewer.php');
+}

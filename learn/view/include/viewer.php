@@ -16,6 +16,10 @@
         include 'pages/viewresult.php';
     }elseif ($_SESSION['pageid'] == 'class_manager') {
         include 'classmanager/dashboard.php';
+    }elseif ($_SESSION['pageid'] == 'scoresheet') {
+        include 'scoresheet/dashboard.php';
+    }elseif ($_SESSION['pageid'] == 'manage_learner' && isset($_SESSION['instance'])) {
+        include 'form/manage_learner.php';
     }elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'modify_topic' && isset($_SESSION['item_ref'])) {
         include 'form/modifyscheme.php';
     }elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'add_topic' ) {

@@ -598,19 +598,19 @@ function class_dashboard() {
             data: {
                 allocated_class: allocated_class,
                 action: action,
-            beforeSend: function(){
-            // Show image container
-                $("#loader").show();
-                $("#board").hide();
-            },
+                beforeSend: function () {
+                    // Show image container
+                    $("#loader").show();
+                    $("#board").hide();
+                },
             },
             success: function (data) {
                 $("#class_dashboard").html(data);
             },
-            complete:function(data){
+            complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
-               }
+            }
         });
     } else {
         alert("Select Allocated Class");
@@ -627,19 +627,19 @@ function class_dashboard() {
             data: {
                 allocated_class: allocated_class,
                 action: action,
-            beforeSend: function(){
-            // Show image container
-                $("#loader").show();
-                $("#board").hide();
-            },
+                beforeSend: function () {
+                    // Show image container
+                    $("#loader").show();
+                    $("#board").hide();
+                },
             },
             success: function (data) {
                 $("#class_dashboard").html(data);
             },
-            complete:function(data){
+            complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
-               }
+            }
         });
     } else {
         err = '<option value="">Select Allocated Class</option>';
@@ -657,20 +657,20 @@ function show_learners() {
             data: {
                 allocated_class: allocated_class,
                 action: action,
-            beforeSend: function(){
-            // Show image container
-                $("#response_loader").show();
-                $("#response").hide();
-            },
+                beforeSend: function () {
+                    // Show image container
+                    $("#response_loader").show();
+                    $("#response").hide();
+                },
             },
             success: function (data) {
                 $("#response").html(data);
             },
-            complete:function(data){
+            complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
                 $("#response").show();
-               }
+            }
         });
     } else {
         err = '<option value="">Select Allocated Class</option>';
@@ -688,20 +688,20 @@ function show_subjects() {
             data: {
                 allocated_class: allocated_class,
                 action: action,
-            beforeSend: function(){
-            // Show image container
-                $("#response_loader").show();
-                $("#response").hide();
-            },
+                beforeSend: function () {
+                    // Show image container
+                    $("#response_loader").show();
+                    $("#response").hide();
+                },
             },
             success: function (data) {
                 $("#response").html(data);
             },
-            complete:function(data){
+            complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
                 $("#response").show();
-               }
+            }
         });
     } else {
         err = '<option value="">Select Allocated Class</option>';
@@ -719,24 +719,355 @@ function show_fully_paid() {
             data: {
                 allocated_class: allocated_class,
                 action: action,
-            beforeSend: function(){
-            // Show image container
-                $("#response_loader").show();
-                $("#response").hide();
-            },
+                beforeSend: function () {
+                    // Show image container
+                    $("#response_loader").show();
+                    $("#response").hide();
+                },
             },
             success: function (data) {
                 $("#response").html(data);
             },
-            complete:function(data){
+            complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
                 $("#response").show();
-               }
+            }
         });
     } else {
         err = '<option value="">Select Allocated Class</option>';
         alert("Select Allocated Class");
         $("#allocated_class").html(err);
+    }
+}
+
+
+function toggle_modify() {
+    $("#view_profile").hide();
+    $("#edit_profile").show();
+}
+
+
+function modify_learner() {
+    var fullname = $("#fullname").val();
+    var gender = $("#gender").val();
+    var date_of_birth = $("#date_of_birth").val();
+    var phone = $("#phone").val();
+    var email = $("#email").val();
+    var action = 'modify_learner';
+    var img = $("#imageInput").val();
+    if (img != "") {
+        upload = 'yes';
+        var imagebase64data = myCanvas.toDataURL("image/png");
+        imagebase64data = imagebase64data.replace('data:image/png;base64,', '');
+    } else {
+        upload = 'no';
+    }
+
+    if (fullname != "" & gender != "" & date_of_birth != "" & phone != "" & email != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                fullname: fullname,
+                gender: gender,
+                date_of_birth: date_of_birth,
+                phone: phone,
+                email: email,
+                imagebase64data: imagebase64data,
+                action: action,
+                upload: upload,
+                beforeSend: function () {
+                    // Show image container
+                    $("#view_profile").hide();
+                    $("#edit_profile").hide();
+                    $("#loader").show();
+                },
+            },
+            success: function (data) {
+                $("#info").html(data);
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#edit_profile").show();
+                $("#loader").hide();
+            }
+        });
+        var allocated_class = $("#classid").val();
+        var action = 'show_learners';
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_class: allocated_class,
+                action: action,
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+        });
+    } else {
+        alert("One of the required information is missing");
+    }
+}   
+
+
+function scoresheet_dashboard() {
+    var allocated_subject = $("#allocated_subject").val();
+    var action = 'load_scoresheet_dashboard';
+    if (allocated_subject != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#loader").show();
+                    $("#board").hide();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#myscoresheet_dashboard").html(data);
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loader").hide();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
+    }
+}
+
+function ca_score_manager(){
+    var allocated_subject = $("#allocated_subject").val();
+    var action = 'ca_score_manager';
+    if (allocated_subject != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
+    } 
+}
+function exam_score_manager(){
+    var allocated_subject = $("#allocated_subject").val();
+    var action = 'exam_score_manager';
+    if (allocated_subject != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
+    } 
+}
+
+
+function total_score_manager(){
+    var allocated_subject = $("#allocated_subject").val();
+    var action = 'total_score_manager';
+    if (allocated_subject != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
+    } 
+}
+
+
+        
+function submit_ca_scores() {
+    var action = "record_ca_scores_for_all";
+    var allocated_subject = $("#allocated_subject").val();
+    var score = document.getElementsByName('score[]');
+    var userid = document.getElementsByName('userid[]');
+    const  all_users = [];
+    const  all_scores = [];
+    for (var i = 0 , y = 0;
+         i < userid.length ,
+          y < score.length ; 
+         i++,
+         y++) {
+            if( userid[i] != ""){
+               var user = userid[i]; 
+            }else{
+                var user = 0;
+            }
+            if( score[y] != ""){
+               var grade = score[y]; 
+            }else{
+                var grade = 0;
+            }
+        all_users.push(user.value);
+        all_scores.push(grade.value);
+    }
+   
+    if (allocated_subject != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                all_users : all_users,
+                all_scores : all_scores,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#response_loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#info").html(data);
+            },
+        });
+        var allocated_subject = $("#allocated_subject").val();
+        var action = 'ca_score_manager';
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                action: action,
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            
+            complete: function (data) {
+                // Hide image container
+                $("#response_loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
+    }
+}
+
+function submit_exam_scores() {
+    var action = "record_exam_scores_for_all";
+    var allocated_subject = $("#allocated_subject").val();
+    var score = document.getElementsByName('score[]');
+    var userid = document.getElementsByName('userid[]');
+    const  all_users = [];
+    const  all_scores = [];
+    for (var i = 0 , y = 0;
+         i < userid.length ,
+          y < score.length ; 
+         i++,
+         y++) {
+            if( userid[i] != ""){
+               var user = userid[i]; 
+            }else{
+                var user = 0;
+            }
+            if( score[y] != ""){
+               var grade = score[y]; 
+            }else{
+                var grade = 0;
+            }
+        all_users.push(user.value);
+        all_scores.push(grade.value);
+    }
+   
+    if (allocated_subject != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                all_users : all_users,
+                all_scores : all_scores,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#response_loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#info").html(data);
+            },
+        });
+        var allocated_subject = $("#allocated_subject").val();
+        var action = 'exam_score_manager';
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                action: action,
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            
+            complete: function (data) {
+                // Hide image container
+                $("#response_loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
     }
 }

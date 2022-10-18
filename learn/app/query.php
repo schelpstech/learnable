@@ -600,6 +600,35 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
         )
     );
     $class_allocated = $model->getRows($tblName, $conditions);
+
+    $tblName = 'lhpalloc';
+    $conditions = array(
+        'where' => array(
+            'staffid' => $_SESSION['active'],
+            'term' => $active_term['term'],
+        ),
+        'joinl' => array(
+            'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',
+        )
+    );
+    $subject_allocated = $model->getRows($tblName, $conditions);
+
+    //Learners Profile
+
+    if( isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'manage_learner' && isset($_SESSION['instance'])){
+        $tblName = 'lhpuser';
+        $conditions = array(
+            'return_type' => 'single',
+            'where' => array(
+                'uname' => $_SESSION['instance'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpuser.classid = lhpclass.classid ',
+            )
+        );
+        $learner_profile = $model->getRows($tblName, $conditions);
+    }
+    
 }
 
 

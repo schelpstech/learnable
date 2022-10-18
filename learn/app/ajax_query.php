@@ -364,12 +364,12 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
     $tblName = 'lhpuser';
     $conditions = array(
         'select' => '
-        (SELECT COUNT(uname) from lhpuser where classid = "'. $_POST["allocated_class"] . '" 
+        (SELECT COUNT(uname) from lhpuser where classid = "' . $_POST["allocated_class"] . '" 
                     and status = 1) as population,
-        (SELECT COUNT(lhpalloc.aid)  from lhpalloc WHERE lhpalloc.classid = "'. $_POST["allocated_class"] . '" 
+        (SELECT COUNT(lhpalloc.aid)  from lhpalloc WHERE lhpalloc.classid = "' . $_POST["allocated_class"] . '" 
                     and lhpalloc.term = "' . $active_term["term"] . '") as subject,
         (SELECT COUNT(DISTINCT lhpuser.uname) from lhpuser 
-         	WHERE lhpuser.classid =  "'.$_POST["allocated_class"].'" and
+         	WHERE lhpuser.classid =  "' . $_POST["allocated_class"] . '" and
 				(SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
                  	WHERE 	lhpassignedfee.stdid = lhpuser.uname and 
                  			lhpassignedfee.term = "' . $active_term["term"] . '"
@@ -380,7 +380,7 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
                  			GROUP BY lhptransaction.stdid)) as paid,
                             
         (SELECT COUNT(DISTINCT lhpuser.uname) from lhpuser 
-         	WHERE lhpuser.classid =  "'. $_POST["allocated_class"] . '" and
+         	WHERE lhpuser.classid =  "' . $_POST["allocated_class"] . '" and
 				(SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
                  	WHERE 	lhpassignedfee.stdid = lhpuser.uname and 
                  			lhpassignedfee.term = "' . $active_term["term"] . '"
@@ -413,9 +413,9 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
 
     $conditions = array(
         'select' => '
-                        (SELECT COUNT(uname) from lhpuser where status = 1 and gender = "Male" and classid = "'. $_POST["allocated_class"] . '") as male,
-                        (SELECT COUNT(uname) from lhpuser where status = 1 and gender = "Female" and classid = "'. $_POST["allocated_class"] . '") as female,
-                        (SELECT COUNT(uname) from lhpuser where status = 1 and classid = "'. $_POST["allocated_class"] . '") as total
+                        (SELECT COUNT(uname) from lhpuser where status = 1 and gender = "Male" and classid = "' . $_POST["allocated_class"] . '") as male,
+                        (SELECT COUNT(uname) from lhpuser where status = 1 and gender = "Female" and classid = "' . $_POST["allocated_class"] . '") as female,
+                        (SELECT COUNT(uname) from lhpuser where status = 1 and classid = "' . $_POST["allocated_class"] . '") as total
             ',
         'return_type' => 'single',
     );
@@ -436,10 +436,10 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
 
 //CLASS MANAGER - show subject list
 if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_subjects') {
-        
-        $tblName = 'lhpalloc';
-        $conditions = array(
-            'select' => '   lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, 
+
+    $tblName = 'lhpalloc';
+    $conditions = array(
+        'select' => '   lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, 
                             lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
                             lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, 
                             lhpclass.classid, lhpclass.classname, 
@@ -447,23 +447,23 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
                             (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE  lhpnote.sbjid = lhpalloc.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '") as note ,
                             (SELECT count(lhpquestion.sbjid) FROM lhpquestion WHERE  lhpquestion.sbjid = lhpalloc.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term['term'] . '") as task,
                             (SELECT count(lhpscheme.subject) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term['term'] . '") as topic',
-            'where' => array(
-                'lhpalloc.classid' => $_POST['allocated_class'],
-                'lhpalloc.term' => $active_term['term'],
-            ),
-            'joinl' => array(
-                'lhpclass' => ' on lhpalloc.classid = lhpclass.classid',
-                'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname',
-                'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid',
-                'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid',
-                'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid',
-                'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject',
-            ),
-            'group_by' => 'lhpalloc.sbjid',
-        );
-        $subject_list = $model->getRows($tblName, $conditions);
+        'where' => array(
+            'lhpalloc.classid' => $_POST['allocated_class'],
+            'lhpalloc.term' => $active_term['term'],
+        ),
+        'joinl' => array(
+            'lhpclass' => ' on lhpalloc.classid = lhpclass.classid',
+            'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname',
+            'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid',
+            'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid',
+            'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid',
+            'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject',
+        ),
+        'group_by' => 'lhpalloc.sbjid',
+    );
+    $subject_list = $model->getRows($tblName, $conditions);
 
-        
+
     $tblName = 'lhpclass';
     $conditions = array(
         'where' => array(
@@ -473,7 +473,7 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
     );
     $classname = $model->getRows($tblName, $conditions);
 
-        include_once '../view/include/classmanager/subject_list.php';
+    include_once '../view/include/classmanager/subject_list.php';
 }
 
 //CLASS MANAGER - show learner who have paid fully
@@ -484,7 +484,7 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
 
                     (SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
                         WHERE lhpassignedfee.stdid = lhpuser.uname and 
-                        lhpassignedfee.term = "'. $active_term["term"] .'"
+                        lhpassignedfee.term = "' . $active_term["term"] . '"
                         GROUP BY lhpassignedfee.stdid) as bill,
                         
                     (SELECT sum(lhptransaction.amount) FROM lhptransaction
@@ -492,7 +492,7 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
                         lhptransaction.term = "' . $active_term["term"] . '" 
                         GROUP BY lhptransaction.stdid) as paid ',
         'where' => array(
-                    'lhpuser.classid' => $_POST['allocated_class'],
+            'lhpuser.classid' => $_POST['allocated_class'],
         ),
     );
     $paid_list = $model->getRows($tblName, $conditions);
@@ -507,6 +507,372 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
     $classname = $model->getRows($tblName, $conditions);
 
     include_once '../view/include/classmanager/paid_list.php';
+}
+?>
+<?php
+//CLASS MANAGER - Modify Data
+if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_of_birth']) && isset($_POST['phone']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'modify_learner') {
+    $tblName = 'lhpuser';
+    $profile_data = array(
+        'fname' => $_POST['fullname'],
+        'gender' => $_POST['gender'],
+        'dob' => $_POST['date_of_birth'],
+        'numb' => $_POST['phone'],
+        'email' => $_POST['email'],
+    );
+    $conditions = array(
+        'uname' => $_SESSION['instance'],
+    );
 
+    if ($_POST['upload'] == 'yes') {
+        $dir = '../asset/img/passport/';
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        $fileTmpPath = $_POST['imagebase64data'];
+        // form the filename 
+        $filename_path =  $_SESSION['instance'] . ".jpg";
+        // remove special characters from file name
+        $filename_path =  $utility->RemoveSpecialChar($filename_path);
+        // generate image from posted base64 data
+        $decoded = base64_decode($fileTmpPath);
+        // move image to folder
+        if (file_put_contents($dir . $filename_path, $decoded)) {
+            $profile_data += array(
+                'picture' => $filename_path
+            );
+        }
+    }
+    $action = $model->upDate($tblName, $profile_data, $conditions);
+    if ($action) {
+        echo
+        '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                      <div class="alert-text">Success! <b>Learner profile has been modified successfully</b>!</div>
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>';
+    } else {
+        echo
+        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                      <div class="alert-text">Error! Unable to modify learner profile</div>
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>';
+    }
+}
+//Scoresheet Dashboard - Weekly, CA, Exam, Cumulative
+if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($active_term)) {
+    $tblName = 'lhpresultconfig';
+        $conditions = array(
+            'where' => array(
+                'term' =>  $active_term['term'],
+            ),
+            'return_type' => 'single',
+
+        );
+        $result_config = $model->getRows($tblName, $conditions);
+
+    if ($_POST['action'] == 'load_scoresheet_dashboard') {
+        $tblName = 'lhpresultrecord';
+        $conditions = array(
+            'select' => '
+
+                (SELECT COUNT(DISTINCT lhpresultrecord.lid) from lhpresultrecord
+                    where lhpresultrecord.score != 0
+                    and lhpresultrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+                    and lhpresultrecord.term = "' . $active_term["term"] . '") as ca_score,
+                (SELECT COUNT(DISTINCT lhpresultrecord.lid) from lhpresultrecord 
+                    WHERE lhpresultrecord.examscore != 0
+                    and lhpresultrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+                    and lhpresultrecord.term = "' . $active_term["term"] . '") as exam_score,
+                (SELECT COUNT(DISTINCT lhpresultrecord.lid) from lhpresultrecord 
+                    WHERE lhpresultrecord.score != 0
+                    and lhpresultrecord.examscore != 0
+                    and lhpresultrecord.totalscore != 0
+                    and lhpresultrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+                    and lhpresultrecord.term = "' . $active_term["term"] . '") as total_score,
+                (SELECT COUNT(DISTINCT lhpweekrecord.lid) from lhpweekrecord 
+                    WHERE lhpweekrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+                    and lhpweekrecord.term = "' . $active_term["term"] . '") as week_score,
+                
+                (SELECT COUNT(UNAME) FROM lhpuser 
+                WHERE lhpuser.status = 1
+                and lhpuser.classid = 
+                    (SELECT DISTINCT lhpalloc.classid FROM lhpalloc 
+                        WHERE lhpalloc.sbjid =  "' . $_POST['allocated_subject'] . '")) as number_of_learner
+                ',
+            'where' => array(
+                'lhpresultrecord.subjid' => $_POST['allocated_subject'],
+                'lhpresultrecord.term' =>  $active_term['term'],
+            ),
+            'return_type' => 'single',
+        );
+        $scores_recorded = $model->getRows($tblName, $conditions);
+        include_once '../view/include/scoresheet/scores_widget.php';
+
+        //Load all students in the class
+    } elseif ($_POST['action'] == 'ca_score_manager') {
+        $scoresheet_type = 'CA_SCORE';
+
+        $tblName = 'lhpsubject';
+        $conditions = array(
+            'where' => array(
+                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+            ),
+            'return_type' => 'single',
+
+        );
+        $class_details = $model->getRows($tblName, $conditions);
+
+        $tblName = 'lhpuser';
+        $conditions = array(
+            'select' => 'lhpuser.fname, lhpuser.picture, lhpuser.classid, lhpuser.uname, (SELECT lhpresultrecord.score from lhpresultrecord where  lhpresultrecord.lid = lhpuser.uname 
+            and lhpresultrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+            and lhpresultrecord.term = "' . $active_term["term"] . '") as score',
+            'where' => array(
+                'lhpuser.classid' => $class_details['classid'],
+            ),
+        );
+        $ca_scores_recorder = $model->getRows($tblName, $conditions);
+        include_once '../view/include/scoresheet/recorder.php';
+
+        //Record CA SCORES
+    } elseif ($_POST['action'] == 'record_ca_scores_for_all') {
+
+        $tblName = 'lhpsubject';
+        $conditions = array(
+            'where' => array(
+                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+            ),
+            'return_type' => 'single',
+
+        );
+        $class_details = $model->getRows($tblName, $conditions);
+        $response = '';
+        $tblName = 'lhpresultrecord';
+        foreach (array_combine($_POST['all_users'], $_POST['all_scores']) as $user => $scores) {
+            if ($scores >= 1 && $result_config['ca_score'] >= $scores) {
+                $conditions = array(
+                    'where' => array(
+                        'lhpresultrecord.lid' =>  $user,
+                        'lhpresultrecord.subjid' =>  $_POST['allocated_subject'],
+                        'lhpresultrecord.term' =>  $active_term["term"],
+                    ),
+                    'return_type' => 'single',
+                );
+                $check_if_exist = $model->getRows($tblName, $conditions);
+
+                if (!empty($check_if_exist)) {
+                    $score_data = array(
+                        'score' => $scores,
+                        'totalscore' => $scores +  $check_if_exist['examscore'],
+                    );
+                    $conditions = array(
+                        'lhpresultrecord.lid' =>  $user,
+                        'lhpresultrecord.subjid' =>  $_POST['allocated_subject'],
+                        'lhpresultrecord.term' =>  $active_term["term"],
+                    );
+                    $action = $model->upDate($tblName, $score_data, $conditions);
+                    if ($action) {
+
+                        $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Success! <b>Successfully updated CA score for learner with ID : ' . $user . '</b>!</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    } else {
+                        $response .=
+                            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to update CA score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    }
+                } else {
+
+                    $score_data = array(
+                        'score' => $scores,
+                        'examscore' => 0,
+                        'totalscore' => $scores,
+                        'lid' =>  $user,
+                        'classid' =>  $class_details['classid'],
+                        'subjid' =>  $_POST['allocated_subject'],
+                        'term' =>  $active_term["term"],
+                    );
+                    $action = $model->insert_data($tblName, $score_data);
+                    if ($action) {
+
+                        $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Success! <b>Successfully recorded CA score for learner with ID : ' . $user . '</b>!</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    } else {
+                        $response .=
+                            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to record CA score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    }
+                }
+            } else {
+                $response .=
+                    '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to record 0 or scores greater than '. $result_config['ca_score'].' as CA score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+            }
+        }
+        echo $response;
+    }elseif ($_POST['action'] == 'exam_score_manager') {
+        $scoresheet_type = 'EXAM_SCORE';
+
+        $tblName = 'lhpsubject';
+        $conditions = array(
+            'where' => array(
+                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+            ),
+            'return_type' => 'single',
+
+        );
+        $class_details = $model->getRows($tblName, $conditions);
+
+        $tblName = 'lhpuser';
+        $conditions = array(
+            'select' => 'lhpuser.fname, lhpuser.picture, lhpuser.classid, lhpuser.uname, (SELECT lhpresultrecord.examscore from lhpresultrecord where  lhpresultrecord.lid = lhpuser.uname 
+            and lhpresultrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+            and lhpresultrecord.term = "' . $active_term["term"] . '") as score',
+            'where' => array(
+                'lhpuser.classid' => $class_details['classid'],
+            ),
+        );
+        $exam_scores_recorder = $model->getRows($tblName, $conditions);
+        include_once '../view/include/scoresheet/recorder.php';
+    }elseif ($_POST['action'] == 'record_exam_scores_for_all') {
+
+        $tblName = 'lhpsubject';
+        $conditions = array(
+            'where' => array(
+                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+            ),
+            'return_type' => 'single',
+
+        );
+        $class_details = $model->getRows($tblName, $conditions);
+        $response = '';
+        $tblName = 'lhpresultrecord';
+        foreach (array_combine($_POST['all_users'], $_POST['all_scores']) as $user => $scores) {
+            if ($scores >= 1 && $result_config['exam_score'] >= $scores) {
+                $conditions = array(
+                    'where' => array(
+                        'lhpresultrecord.lid' =>  $user,
+                        'lhpresultrecord.subjid' =>  $_POST['allocated_subject'],
+                        'lhpresultrecord.term' =>  $active_term["term"],
+                    ),
+                    'return_type' => 'single',
+                );
+                $check_if_exist = $model->getRows($tblName, $conditions);
+
+                if (!empty($check_if_exist)) {
+                    $score_data = array(
+                        'examscore' => $scores,
+                        'totalscore' => $scores +  $check_if_exist['score'],
+                    );
+                    $conditions = array(
+                        'lhpresultrecord.lid' =>  $user,
+                        'lhpresultrecord.subjid' =>  $_POST['allocated_subject'],
+                        'lhpresultrecord.term' =>  $active_term["term"],
+                    );
+                    $action = $model->upDate($tblName, $score_data, $conditions);
+                    if ($action) {
+
+                        $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Success! <b>Successfully updated Exam score for learner with ID : ' . $user . '</b>!</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    } else {
+                        $response .=
+                            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to update Exam score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    }
+                } else {
+
+                    $score_data = array(
+                        'score' => 0,
+                        'examscore' => $scores,
+                        'totalscore' => $scores,
+                        'lid' =>  $user,
+                        'classid' =>  $class_details['classid'],
+                        'subjid' =>  $_POST['allocated_subject'],
+                        'term' =>  $active_term["term"],
+                    );
+                    $action = $model->insert_data($tblName, $score_data);
+                    if ($action) {
+
+                        $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Success! <b>Successfully recorded Exam score for learner with ID : ' . $user . '</b>!</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    } else {
+                        $response .=
+                            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to record Exam score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    }
+                }
+            } else {
+                $response .=
+                    '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to record 0 or scores greater than '. $result_config['exam_score'].' as Exam score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+            }
+        }
+        echo $response;
+    }elseif ($_POST['action'] == 'total_score_manager') {
+
+        $tblName = 'lhpsubject';
+        $conditions = array(
+            'where' => array(
+                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+            ),
+            'return_type' => 'single',
+
+        );
+        $class_details = $model->getRows($tblName, $conditions);
+
+        $tblName = 'lhpuser';
+        $conditions = array(
+            'select' => 'lhpuser.fname, lhpuser.picture, lhpuser.classid, lhpuser.uname,
+             (SELECT lhpresultrecord.score from lhpresultrecord where  lhpresultrecord.lid = lhpuser.uname 
+            and lhpresultrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+            and lhpresultrecord.term = "' . $active_term["term"] . '") as score,
+             (SELECT lhpresultrecord.examscore from lhpresultrecord where  lhpresultrecord.lid = lhpuser.uname 
+            and lhpresultrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+            and lhpresultrecord.term = "' . $active_term["term"] . '") as examscore,
+             (SELECT lhpresultrecord.totalscore from lhpresultrecord where  lhpresultrecord.lid = lhpuser.uname 
+            and lhpresultrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+            and lhpresultrecord.term = "' . $active_term["term"] . '") as totalscore',
+
+            'where' => array(
+                'lhpuser.classid' => $class_details['classid'],
+            ),
+        );
+        $cumulative_score = $model->getRows($tblName, $conditions);
+        include_once '../view/include/scoresheet/cumulative.php';
+    }
 }
 ?>

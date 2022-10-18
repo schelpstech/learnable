@@ -58,5 +58,10 @@ class Utility
         return $grade.  "  -  " .$remarks;
     }
 
+    public function RemoveSpecialChar($str) {
+      $result = str_replace( array( '\'', '"', ',' , ';', '<', '>', '/' ), '', $str);
+      return $result;
+      }
+
 }
 ?>

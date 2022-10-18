@@ -5,7 +5,7 @@ if (!empty($view_result)) {
         if ($view_result['status'] == 1) {
             $icon =  '<i class="far fa-id-card" style="font-size:108px; color:green; text-align:center;"></i>';
             $status = 'Published';
-            $link = '<a href="../app/router.php?pageid=result&ref=' . $view_result['term'] . '" class="btn_2" style=" text-align:center;">View ' . $view_result['term'] . ' Result</a>';
+            $link = '<a href="../../app/router.php?pageid=result&ref=' . $view_result['term'] . '" class="btn_2" style=" text-align:center;">View ' . $view_result['term'] . ' Result</a>';
         } elseif ($view_result['status'] == 0) {
             $icon =  '<i class="fas fa-eye-slash" style="font-size:108px; color:red; text-align:center;"></i>';
             $status = 'Pending';

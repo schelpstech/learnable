@@ -7,6 +7,9 @@
     <div class="media_thumb ml_25">
         <img src="../../asset/img/media.svg" alt="">
     </div>
+    <div class="media_thumb ml_25" id="loader" style="display: none;">
+        <img src="../../asset/img/app/giphy.gif" alt="">
+    </div>
     <div class="media_card_body" id="board">
         <div class="media_card_list">
             <div class="single_media_card" onclick="show_learners()">
