@@ -101,7 +101,6 @@ if (isset($_GET['pageid']) && isset($_GET['item'])  && isset($_GET['item_ref']))
 //redirect to view Class Manager - Instructor    
 if (isset($_GET['pageid']) && $_GET['pageid'] == 'class_manager') {
   $_SESSION['pageid'] = $_GET['pageid'];
-  $_SESSION['instance'] = $_GET['instance'];
   $model->redirect('../view/include/viewer.php');
 }
 if (isset($_GET['pageid']) && $_GET['pageid'] == 'manage_learner') {
