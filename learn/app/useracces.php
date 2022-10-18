@@ -97,9 +97,16 @@ elseif (isset($_POST['log_in']) && $_POST['log_in'] !== 'Log in') {
         $model->redirect('../view/index.php');
     }
     //Check Password
-    if ($userpwd === $login_details['upwd'] || $userpwd ===  $login_details['spwd']) {
+
+    
+        if(isset($login_details['upwd'])){
+            $password = $login_details['upwd'];
+        }elseif(isset($login_details['spwd'])){
+            $password = $login_details['spwd'];
+        }
+        if ($userpwd === $login_details['upwd'] || $userpwd ===  $login_details['spwd']) {
         //Check Active Status
-        if ($login_details['status'] || $login_details['status'] == 1) {
+        if (isset($login_details['status']) && $login_details['status'] == 1) {
 
             // Record Log Access
 
