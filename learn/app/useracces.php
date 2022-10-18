@@ -104,7 +104,7 @@ elseif (isset($_POST['log_in']) && $_POST['log_in'] !== 'Log in') {
         }elseif(isset($login_details['spwd'])){
             $password = $login_details['spwd'];
         }
-        if ($userpwd === $login_details['upwd'] || $userpwd ===  $login_details['spwd']) {
+        if ($password === $userpwd ) {
         //Check Active Status
         if (isset($login_details['status']) && $login_details['status'] == 1) {
 
