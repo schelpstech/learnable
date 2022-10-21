@@ -7,8 +7,8 @@
                         <div class="main-title2 ">
                             <span>
                                 <h4 class="mb-2 nowrap"><?php echo $active_term['term'] ?? "-"; ?> Scheme of Work </h4><br>
-                                <p><?php echo ucwords($alist_scheme['sbjname'])  ?? "-"; ?> </p><br>
-                                <p> <?php echo ucwords($alist_scheme['staffname'])  ?? "-"; ?> </p>
+                                <p><?php if (!empty($alist_scheme['sbjname'])) {echo ucwords($alist_scheme['sbjname']); }else{echo "-";}   ?> </p><br>
+                                <p> <?php if (!empty($alist_scheme['staffname'])) {echo ucwords($alist_scheme['staffname']); }else{echo "-";}  ?> </p>
                             </span>
                         </div>
                     </div>
