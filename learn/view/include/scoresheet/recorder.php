@@ -20,6 +20,12 @@
                             onclick="submit_exam_scores()">Record Exam Scores for 
                             ' . $class_details['sbjname'] . ' - ' . $class_details['classname'] . '
                         </button>';
+                    } elseif ($result_config['midterm'] != 1 &&  $scoresheet_type == 'WEEKLY') {
+                        echo '
+                        <button class="btn_2 full_width text-center"
+                            onclick="record_weekly_scores_for_all()">Record ' . $week . ' Scores for 
+                            ' . $class_details['sbjname'] . ' - ' . $class_details['classname'] . '
+                        </button>';
                     } else {
                         echo ' 
                         <button class="btn_3 full_width text-center"
@@ -115,6 +121,46 @@
                                                                                                                                                                                                                                                                                     } ?>>
                                                     <div class="input-group-text">
                                                         <span class="" id="basic-addon1">Exam Score</span>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php
+                                }
+                            } elseif (!empty($week_scores_recorder) &&  $scoresheet_type == 'WEEKLY') {
+                                foreach ($week_scores_recorder as $data) {
+                                ?>
+                                    <tr>
+                                        <td class="center"><?php echo $count++; ?></td>
+                                        <td class="center">
+                                            <img src="<?php
+                                                        if (!empty($data['picture'])) {
+                                                            $dir = '../../../asset/img/passport/' . $data['picture'];
+                                                            if (file_exists('"' . $dir . '"')) {
+                                                                echo '../../asset/img/passport/' . $data['picture'];
+                                                            } else {
+                                                                echo '../../asset/img/passport/nopix.jpg';
+                                                            }
+                                                        } else {
+                                                            echo '../../asset/img/passport/nopix.jpg';
+                                                        }
+                                                        ?> " width="50" />
+                                        </td>
+                                        <td class="left strong">
+                                            <?php echo  $data['uname'] . ' - ' . $data['fname']; ?>
+                                        </td>
+
+                                        <td class="left">
+                                            <form>
+                                                <div id="weblink_div" class="input-group mb-3">
+                                                    <input type="text" hidden name="userid[]" id="users" value="<?php echo $data['uname']; ?>" class="form-control" tabindex="4" aria-describedby="basic-addon1">
+                                                    <input type="number" name="score[]" id="scores" value="<?php echo $data['score'] ?? ""; ?>" class="form-control" max="10" aria-label="Input Weekly Test Score" aria-describedby="basic-addon1" <?php if ($result_config['midterm'] == 1) {
+                                                                                                                                                                                                                                                        echo 'disabled';
+                                                                                                                                                                                                                                                    } ?>>
+                                                    <input type="text" hidden id="week_num" value="<?php echo $week ?? ""; ?>" class="form-control">
+                                                    <div class="input-group-text">
+                                                        <span class="" id="basic-addon1"><?php echo $week; ?></span>
                                                     </div>
                                                 </div>
                                             </form>

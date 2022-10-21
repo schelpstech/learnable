@@ -873,6 +873,124 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         );
         $cumulative_score = $model->getRows($tblName, $conditions);
         include_once '../view/include/scoresheet/cumulative.php';
+    }elseif ($_POST['action'] == 'weekly_score_manager') {
+        $scoresheet_type = 'WEEKLY';
+        $week = 'WEEK '. $_POST['week_num'];
+
+        $tblName = 'lhpsubject';
+        $conditions = array(
+            'where' => array(
+                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+            ),
+            'return_type' => 'single',
+
+        );
+        $class_details = $model->getRows($tblName, $conditions);
+
+        $tblName = 'lhpuser';
+        $conditions = array(
+            'select' => 'lhpuser.fname, lhpuser.picture, lhpuser.classid, lhpuser.uname, (SELECT lhpweekrecord.score
+             from lhpweekrecord
+              where  lhpweekrecord.lid = lhpuser.uname 
+            and lhpweekrecord.subjid =  "' . $_POST['allocated_subject'] . '"
+            and lhpweekrecord.week =  "'.$week.'"
+            and lhpweekrecord.term = "' . $active_term["term"] . '") as score',
+            'where' => array(
+                'lhpuser.classid' => $class_details['classid'],
+            ),
+        );
+        $week_scores_recorder = $model->getRows($tblName, $conditions);
+        include_once '../view/include/scoresheet/recorder.php';
+    }elseif ($_POST['action'] == 'record_weekly_scores_for_all') {
+
+        $tblName = 'lhpsubject';
+        $conditions = array(
+            'where' => array(
+                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+            ),
+            'return_type' => 'single',
+
+        );
+        $class_details = $model->getRows($tblName, $conditions);
+        $response = '';
+        $tblName = 'lhpweekrecord';
+        foreach (array_combine($_POST['all_users'], $_POST['all_scores']) as $user => $scores) {
+            if ($scores >= 1 && 10 >= $scores) {
+                $conditions = array(
+                    'where' => array(
+                        'lhpweekrecord.lid' =>  $user,
+                        'lhpweekrecord.subjid' =>  $_POST['allocated_subject'],
+                        'lhpweekrecord.term' =>  $active_term["term"],
+                        'lhpweekrecord.week' =>  $_POST['week_num'],
+                    ),
+                    'return_type' => 'single',
+                );
+                $check_if_exist = $model->getRows($tblName, $conditions);
+
+                if (!empty($check_if_exist)) {
+                    $score_data = array(
+                        'score' => $scores
+                    );
+                    $conditions = array(
+                        'lhpweekrecord.lid' =>  $user,
+                        'lhpweekrecord.subjid' =>  $_POST['allocated_subject'],
+                        'lhpweekrecord.term' =>  $active_term["term"],
+                        'lhpweekrecord.week' =>  $_POST['week_num'],
+                    );
+                    $action = $model->upDate($tblName, $score_data, $conditions);
+                    if ($action) {
+
+                        $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Success! <b>Successfully updated '.$_POST['week_num'].'  score for learner with ID : ' . $user . '</b>!</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    } else {
+                        $response .=
+                            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to update '.$_POST['week_num'].'  score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    }
+                } else {
+
+                    $score_data = array(
+                        'score' => $scores,
+                        'lid' =>  $user,
+                        'classid' =>  $class_details['classid'],
+                        'subjid' =>  $_POST['allocated_subject'],
+                        'week' =>  $_POST['week_num'],
+                        'term' =>  $active_term["term"],
+                    );
+                    $action = $model->insert_data($tblName, $score_data);
+                    if ($action) {
+
+                        $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Success! <b>Successfully recorded '.$_POST['week_num'].'  score for learner with ID : ' . $user . '</b>!</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    } else {
+                        $response .=
+                            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to record '.$_POST['week_num'].'  score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+                    }
+                }
+            } else {
+                $response .=
+                    '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                                  <div class="alert-text">Error! Unable to record 0 or scores greater than '. $result_config['exam_score'].' as Exam score for learner with ID : ' . $user . '</div>
+                                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div> <br>';
+            }
+        }
+        echo $response;
     }
 }
 ?>

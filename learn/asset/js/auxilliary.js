@@ -1071,3 +1071,113 @@ function submit_exam_scores() {
         alert("Select Allocated Subject");
     }
 }
+
+function weekly_score_manager() {
+    let week = prompt("Please enter week number(Digits only)", "1");
+    if (week != null & week >= 1 & week <= 12) {
+        var week_num = week;
+        var allocated_subject = $("#allocated_subject").val();
+        var action = 'weekly_score_manager';
+        if (allocated_subject != "") {
+            $.ajax({
+                url: "../../app/ajax_query.php",
+                method: "POST",
+                data: {
+                    allocated_subject: allocated_subject,
+                    week_num: week_num,
+                    action: action,
+                    beforeSend: function () {
+                        // Show image container
+                        $("#loader").show();
+                        $("#response").hide();
+                    },
+                },
+                success: function (data) {
+                    $("#response").html(data);
+                },
+                complete: function (data) {
+                    // Hide image container
+                    $("#loader").hide();
+                    $("#response").show();
+                }
+            });
+        } else {
+            alert("Select Allocated Subject");
+        }
+    } else {
+        alert('You need to input week number between 1 and 12');
+    }
+}
+
+function record_weekly_scores_for_all() {
+    var action = "record_weekly_scores_for_all";
+    var allocated_subject = $("#allocated_subject").val();
+    var week_num = $("#week_num").val();
+    var score = document.getElementsByName('score[]');
+    var userid = document.getElementsByName('userid[]');
+    const  all_users = [];
+    const  all_scores = [];
+    for (var i = 0 , y = 0;
+         i < userid.length ,
+          y < score.length ; 
+         i++,
+         y++) {
+            if( userid[i] != ""){
+               var user = userid[i]; 
+            }else{
+                var user = 0;
+            }
+            if( score[y] != ""){
+               var grade = score[y]; 
+            }else{
+                var grade = 0;
+            }
+        all_users.push(user.value);
+        all_scores.push(grade.value);
+    }
+   
+    if (allocated_subject != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                week_num: week_num,
+                allocated_subject: allocated_subject,
+                all_users : all_users,
+                all_scores : all_scores,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#response_loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#info").html(data);
+            },
+        });
+        var allocated_subject = $("#allocated_subject").val();
+        var weekly = week_num.slice(5);
+        var action = 'weekly_score_manager';
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                allocated_subject: allocated_subject,
+                week_num: weekly,
+                action: action,
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            
+            complete: function (data) {
+                // Hide image container
+                $("#response_loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
+    }
+}
