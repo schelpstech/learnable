@@ -157,7 +157,7 @@
                                                     <input type="text" hidden name="userid[]" id="users" value="<?php echo $data['uname']; ?>" class="form-control" tabindex="4" aria-describedby="basic-addon1">
                                                     <input type="number" name="score[]" id="scores" value="<?php echo $data['score'] ?? ""; ?>" class="form-control" max="10" aria-label="Input Weekly Test Score" aria-describedby="basic-addon1" <?php if (isset($result_config['midterm'] ) && $result_config['midterm'] == 1) {
                                                                                                                                                                                                                                                         echo 'disabled';
-                                                                                                                                                                                                                                                    } else{echo "";} ?>
+                                                                                                                                                                                                                                                    } else{echo "";} ?>>
                                                     <input type="text" hidden id="week_num" value="<?php echo $week ?? ""; ?>" class="form-control">
                                                     <div class="input-group-text">
                                                         <span class="" id="basic-addon1"><?php echo $week; ?></span>
