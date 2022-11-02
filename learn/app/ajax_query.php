@@ -569,6 +569,18 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
 
         );
         $result_config = $model->getRows($tblName, $conditions);
+        $tblName = 'lhpsubject';
+        $conditions = array(
+            'where' => array(
+                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            ),
+            'joinl' => array(
+                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+            ),
+            'return_type' => 'single',
+
+        );
+        $class_details = $model->getRows($tblName, $conditions);
 
     if ($_POST['action'] == 'load_scoresheet_dashboard') {
         $tblName = 'lhpresultrecord';
@@ -595,9 +607,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                 
                 (SELECT COUNT(lhpuser.uname) FROM lhpuser 
                 WHERE lhpuser.status = 1
-                and lhpuser.classid = 
-                    (SELECT DISTINCT lhpalloc.classid FROM lhpalloc 
-                        WHERE lhpalloc.sbjid =  "'.$_POST['allocated_subject'].'")) as number_of_learner
+                and lhpuser.classid =  "'.$class_details['classid'].'") as number_of_learner
                 ',
             'where' => array(
                 'lhpresultrecord.subjid' => $_POST['allocated_subject'],
@@ -611,19 +621,6 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         //Load all students in the class
     } elseif ($_POST['action'] == 'ca_score_manager') {
         $scoresheet_type = 'CA_SCORE';
-
-        $tblName = 'lhpsubject';
-        $conditions = array(
-            'where' => array(
-                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
-            ),
-            'joinl' => array(
-                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
-            ),
-            'return_type' => 'single',
-
-        );
-        $class_details = $model->getRows($tblName, $conditions);
 
         $tblName = 'lhpuser';
         $conditions = array(
