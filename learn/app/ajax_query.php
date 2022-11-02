@@ -593,11 +593,11 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                     WHERE lhpweekrecord.subjid =  "' . $_POST['allocated_subject'] . '"
                     and lhpweekrecord.term = "' . $active_term["term"] . '") as week_score,
                 
-                (SELECT COUNT(uname) FROM lhpuser 
+                (SELECT COUNT(lhpuser.uname) FROM lhpuser 
                 WHERE lhpuser.status = 1
                 and lhpuser.classid = 
                     (SELECT DISTINCT lhpalloc.classid FROM lhpalloc 
-                        WHERE lhpalloc.sbjid =  "' . $_POST['allocated_subject'] . '")) as number_of_learner
+                        WHERE lhpalloc.sbjid =  "'.$_POST['allocated_subject'].'")) as number_of_learner
                 ',
             'where' => array(
                 'lhpresultrecord.subjid' => $_POST['allocated_subject'],
