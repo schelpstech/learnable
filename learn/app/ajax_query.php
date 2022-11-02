@@ -582,6 +582,19 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         );
         $class_details = $model->getRows($tblName, $conditions);
 
+        //Number of students offering subject
+        $tblName = 'lhpuser';
+        $conditions = array(
+            'where' => array(
+                'classid' =>  $class_details['classid'],
+                'status' =>  1,
+            ),
+            'return_type' => 'count',
+        );
+        $class_population = $model->getRows($tblName, $conditions);
+
+
+
     if ($_POST['action'] == 'load_scoresheet_dashboard') {
         $tblName = 'lhpresultrecord';
         $conditions = array(
@@ -603,11 +616,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                     and lhpresultrecord.term = "' . $active_term["term"] . '") as total_score,
                 (SELECT COUNT(DISTINCT lhpweekrecord.lid) from lhpweekrecord 
                     WHERE lhpweekrecord.subjid =  "' . $_POST['allocated_subject'] . '"
-                    and lhpweekrecord.term = "' . $active_term["term"] . '") as week_score,
-                
-                (SELECT COUNT(lhpuser.uname) FROM lhpuser 
-                WHERE lhpuser.status = 1
-                and lhpuser.classid =  "'.$class_details['classid'].'") as number_of_learner
+                    and lhpweekrecord.term = "' . $active_term["term"] . '") as week_score
                 ',
             'where' => array(
                 'lhpresultrecord.subjid' => $_POST['allocated_subject'],

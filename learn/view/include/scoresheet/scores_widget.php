@@ -14,19 +14,19 @@
         <div class="media_card_list">
             <div class="single_media_card" onclick="ca_score_manager()">
                 <span>CA Scoresheet</span>
-                <h3><?php echo $scores_recorded['ca_score'] ?? 0; ?> / <?php echo $scores_recorded['number_of_learner'] ?? 0; ?> </h3>
+                <h3><?php echo $scores_recorded['ca_score'] ?? 0; ?> / <?php echo $class_population ?? 0; ?> </h3>
             </div>
             <div class="single_media_card" onclick="exam_score_manager()">
                 <span>Exam Scoresheet </span>
-                <h3><?php echo $scores_recorded['exam_score'] ?? 0; ?> / <?php echo $scores_recorded['number_of_learner'] ?? 0; ?></h3>
+                <h3><?php echo $scores_recorded['exam_score'] ?? 0; ?> / <?php echo $class_population ?? 0; ?></h3>
             </div>
             <div class="single_media_card" onclick="weekly_score_manager()">
                 <span>Weekly Assessment</span>
-                <h3><?php echo $scores_recorded['week_score'] ?? 0; ?> / <?php echo $scores_recorded['number_of_learner'] ?? 0; ?></h3>
+                <h3><?php echo $scores_recorded['week_score'] ?? 0; ?> / <?php echo $class_population ?? 0; ?></h3>
             </div>
             <div class="single_media_card" onclick="total_score_manager()">
                 <span>Cumulative Scoresheet</span>
-                <h3><?php echo $scores_recorded['total_score'] ?? 0; ?> / <?php echo $scores_recorded['number_of_learner'] ?? 0; ?></h3>
+                <h3><?php echo $scores_recorded['total_score'] ?? 0; ?> / <?php echo $class_population ?? 0; ?></h3>
             </div>
         </div>
     </div>
