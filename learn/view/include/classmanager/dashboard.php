@@ -78,11 +78,11 @@
                                 <h3>-</h3>
                             </div>
                             <div class="single_media_card">
-                                <span>Paid in Full</span>
+                                <span>Payment Overview</span>
                                 <h3>-</h3>
                             </div>
                             <div class="single_media_card">
-                                <span>Outstanding Balance</span>
+                                <span>Affective Domain</span>
                                 <h3>-</h3>
                             </div>
                         </div>

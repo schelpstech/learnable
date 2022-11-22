@@ -842,6 +842,37 @@ function scoresheet_dashboard() {
     }
 }
 
+
+function affective_manager(){
+    var affective_class_record = $("#allocated_class").val();
+    var action = 'affective_manager';
+    if (allocated_class != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                affective_class: affective_class_record,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Class");
+    } 
+}
+
 function ca_score_manager(){
     var allocated_subject = $("#allocated_subject").val();
     var action = 'ca_score_manager';
@@ -933,7 +964,87 @@ function total_score_manager(){
 }
 
 
-        
+
+function submit_affective() {
+    var action = "record_attendance_for_all";
+    var affective_class = $("#allocated_class").val();
+    var present = document.getElementsByName('total_present[]');
+    var userid = document.getElementsByName('userid[]');
+    var comment = document.getElementsByName('comment[]');
+    const  all_users = [];
+    const  all_present = [];
+    const  all_comment = [];
+    for (var i = 0 , y = 0 , z = 0;
+         i < userid.length ,
+          y < present.length , 
+          z < comment.length ; 
+         i++,
+         y++,
+         z++) {
+            if( userid[i] != ""){
+               var user = userid[i]; 
+            }else{
+                var user = 0;
+            }
+            if( present[y] != ""){
+               var present_days = present[y]; 
+            }else{
+                var present_days = 0;
+            }
+            if( comment[z] != ""){
+               var comment_tab = comment[z]; 
+            }else{
+                var comment_tab = "";
+            }
+        all_users.push(user.value);
+        all_present.push(present_days.value);
+        all_comment.push(comment_tab.value);
+    }
+   
+    if (affective_class != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                affective_class: affective_class,
+                all_users : all_users,
+                all_present : all_present,
+                all_comment : all_comment,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#response_loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#info").html(data);
+            },
+        });
+        var affective_class = $("#allocated_class").val();
+        var action = 'affective_manager';
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                affective_class: affective_class,
+                action: action,
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
+            cache: false,
+            complete: function (data) {
+                // Hide image container
+                $("#response_loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
+    }
+}
+
 function submit_ca_scores() {
     var action = "record_ca_scores_for_all";
     var allocated_subject = $("#allocated_subject").val();
@@ -1171,6 +1282,133 @@ function record_weekly_scores_for_all() {
                 $("#response").html(data);
             },
             
+            complete: function (data) {
+                // Hide image container
+                $("#response_loader").hide();
+                $("#response").show();
+            }
+        });
+    } else {
+        alert("Select Allocated Subject");
+    }
+}
+
+function submit_ratings() {
+    var action = "record_ratings_for_all";
+    var affective_class = $("#allocated_class").val();
+    var userid = document.getElementsByName('userid[]');
+    var rating1 = document.getElementsByName('rating1[]');
+    var rating2 = document.getElementsByName('rating2[]');
+    var rating3 = document.getElementsByName('rating3[]');
+    var rating4 = document.getElementsByName('rating4[]');
+    var rating5 = document.getElementsByName('rating5[]');
+    
+    
+    const  all_users = [];
+    const  all_rating1 = [];
+    const  all_rating2 = [];
+    const  all_rating3 = [];
+    const  all_rating4 = [];
+    const  all_rating5 = [];
+    
+    for (var i = 0 ,
+         a = 0 , 
+         b = 0 , 
+         c = 0 , 
+         d = 0 , 
+         e = 0;
+
+        i < userid.length ,
+        a < rating1.length , 
+        b < rating2.length , 
+        c < rating3.length , 
+        d < rating4.length , 
+        e < rating5.length ; 
+
+
+         i++,
+         a++,
+         b++,
+         c++,
+         d++,
+         e++)
+         
+         {
+            if( userid[i] != ""){
+               var user = userid[i]; 
+            }else{
+                var user = 0;
+            }
+
+            if( rating1[a] != ""){
+               var rating_one = rating1[a]; 
+            }else{
+                var rating_one = 0;
+            }
+            if( rating2[b] != ""){
+               var rating_two = rating2[b]; 
+            }else{
+                var rating_two = 0;
+            }
+            if( rating3[c] != ""){
+               var rating_three = rating3[c]; 
+            }else{
+                var rating_three = 0;
+            }
+            if( rating4[d] != ""){
+               var rating_four = rating4[d]; 
+            }else{
+                var rating_four = 0;
+            }
+            if( rating5[e] != ""){
+               var rating_five = rating5[e]; 
+            }else{
+                var rating_five = 0;
+            }
+
+        all_users.push(user.value);
+        all_rating1.push(rating_one.value);
+        all_rating2.push(rating_two.value);
+        all_rating3.push(rating_three.value);
+        all_rating4.push(rating_four.value);
+        all_rating5.push(rating_five.value);
+    }
+   
+    if (affective_class != "") {
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                affective_class: affective_class,
+                all_users : all_users,
+                all_rating1 : all_rating1,
+                all_rating2 : all_rating2,
+                all_rating3 : all_rating3,
+                all_rating4 : all_rating4,
+                all_rating5 : all_rating5,
+                action: action,
+                beforeSend: function () {
+                    // Show image container
+                    $("#response_loader").show();
+                    $("#response").hide();
+                },
+            },
+            success: function (data) {
+                $("#info").html(data);
+            },
+        });
+        var affective_class = $("#allocated_class").val();
+        var action = 'affective_manager';
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                affective_class: affective_class,
+                action: action,
+            },
+            success: function (data) {
+                $("#response").html(data);
+            },
             complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();

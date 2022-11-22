@@ -368,6 +368,8 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
                     and status = 1) as population,
         (SELECT COUNT(lhpalloc.aid)  from lhpalloc WHERE lhpalloc.classid = "' . $_POST["allocated_class"] . '" 
                     and lhpalloc.term = "' . $active_term["term"] . '") as subject,
+        (SELECT COUNT(lhpaffective.uname)  from lhpaffective WHERE lhpaffective.classid = "' . $_POST["allocated_class"] . '" 
+                    and lhpaffective.term = "' . $active_term["term"] . '") as affective,
         (SELECT COUNT(DISTINCT lhpuser.uname) from lhpuser 
          	WHERE lhpuser.classid =  "' . $_POST["allocated_class"] . '" and
 				(SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
@@ -627,8 +629,9 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         $scores_recorded = $model->getRows($tblName, $conditions);
         include_once '../view/include/scoresheet/scores_widget.php';
 
-        //Load all students in the class
-    } elseif ($_POST['action'] == 'ca_score_manager') {
+    }
+    //Load all students in the class for ca
+    elseif ($_POST['action'] == 'ca_score_manager') {
         $scoresheet_type = 'CA_SCORE';
 
         $tblName = 'lhpuser';
@@ -998,5 +1001,257 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         }
         echo $response;
     }
+}
+
+if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
+    $scoresheet_type = 'AFFECTIVE';
+    $tblName = 'lhpresultconfig';
+    $conditions = array(
+        'where' => array(
+            'term' =>  $active_term['term'],
+        ),
+        'return_type' => 'single',
+
+    );
+    $result_config = $model->getRows($tblName, $conditions);
+
+    $tblName = 'lhpclass';
+    $conditions = array(
+        'where' => array(
+            'classid' =>  $_POST['affective_class'],
+        ),
+        'return_type' => 'single',
+
+    );
+    $class_details = $model->getRows($tblName, $conditions);
+
+    
+    $tblName = 'lhpuser';
+    $conditions = array(
+        'select' => 'lhpuser.fname, lhpuser.picture, lhpuser.classid, lhpuser.uname, 
+        
+        (SELECT lhpaffective.total_present from lhpaffective where lhpuser.uname = lhpaffective.uname
+        and lhpaffective.classid = "' . $class_details["classid"] . '"
+        and lhpaffective.term = "' . $active_term["term"] . '") as present,
+
+        (SELECT lhpaffective.comment from lhpaffective where  lhpaffective.uname = lhpuser.uname 
+        and lhpaffective.classid = "' . $class_details["classid"] . '"
+        and lhpaffective.term = "' . $active_term["term"] . '") as comment,
+
+        (SELECT lhpaffective.rating1 from lhpaffective where  lhpaffective.uname = lhpuser.uname 
+        and lhpaffective.classid = "' . $class_details["classid"] . '"
+        and lhpaffective.term = "' . $active_term["term"] . '") as rating1,
+
+        (SELECT lhpaffective.rating2 from lhpaffective where  lhpaffective.uname = lhpuser.uname 
+        and lhpaffective.classid = "' . $class_details["classid"] . '"
+        and lhpaffective.term = "' . $active_term["term"] . '") as rating2,
+
+        (SELECT lhpaffective.rating3 from lhpaffective where  lhpaffective.uname = lhpuser.uname 
+        and lhpaffective.classid = "' . $class_details["classid"] . '"
+        and lhpaffective.term = "' . $active_term["term"] . '") as rating3,
+
+        (SELECT lhpaffective.rating4 from lhpaffective where  lhpaffective.uname = lhpuser.uname 
+        and lhpaffective.classid = "' . $class_details["classid"] . '"
+        and lhpaffective.term = "' . $active_term["term"] . '") as rating4,
+        
+        (SELECT lhpaffective.rating5 from lhpaffective where  lhpaffective.uname = lhpuser.uname 
+        and lhpaffective.classid = "' . $class_details["classid"] . '"
+        and lhpaffective.term = "' . $active_term["term"] . '") as rating5',
+        'where' => array(
+            'lhpuser.classid' => $_POST['affective_class'],
+        ),
+    );
+    $affective_recorder = $model->getRows($tblName, $conditions);
+    include_once '../view/include/classmanager/recorder.php';
+}elseif ($_POST['action'] == 'record_attendance_for_all') {
+
+    $tblName = 'lhpresultconfig';
+    $conditions = array(
+        'where' => array(
+            'term' =>  $active_term['term'],
+        ),
+        'return_type' => 'single',
+
+    );
+    $result_config = $model->getRows($tblName, $conditions);
+
+    $response = '';
+    $tblName = 'lhpaffective';
+                foreach ( $_POST['all_users'] as $idx => $user ) {
+                    $days =  $_POST['all_present'][$idx];
+                    $comment =  $_POST['all_comment'][$idx];
+
+        if ($days >= 1 &&  $days <= $result_config['sch_open'] && strlen($comment) > 5) {
+
+            $conditions = array(
+                'where' => array(
+                    'lhpaffective.uname' =>  $user,
+                    'lhpaffective.classid' =>  $_POST['affective_class'],
+                    'lhpaffective.term' =>  $active_term["term"],
+                ),
+                'return_type' => 'single',
+            );
+            $check_if_exist = $model->getRows($tblName, $conditions);
+
+            if (!empty($check_if_exist)) {
+                $update_data = array(
+                    'lhpaffective.total_present' => $days,
+                    'lhpaffective.comment' => $comment
+                );
+                $conditions = array(
+                    'lhpaffective.uname' =>  $user,
+                    'lhpaffective.classid' =>  $_POST['affective_class'],
+                    'lhpaffective.term' =>  $active_term["term"],
+                );
+                $action = $model->upDate($tblName, $update_data, $conditions);
+                if ($action) {
+
+                    $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Success! <b>Successfully updated Attendance and Comment records for learner with ID : ' . $user . '</b>!</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+                } else {
+                    $response .=
+                        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Error! Unable to update Attendance and Comment records for learner with ID : ' . $user . '</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+                }
+            } else {
+
+                $new_data = array(
+                    'uname' =>  $user,
+                    'classid' =>  $_POST['affective_class'],
+                    'term' =>  $active_term["term"],
+                    'total_present' => $days,
+                    'comment' => $comment,
+                );
+                $action = $model->insert_data($tblName, $new_data);
+                if ($action) {
+
+                    $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Success! <b>Successfully recorded Attendance and Comment data for learner with ID : ' . $user . '</b>!</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+                } else {
+                    $response .=
+                        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Error! Unable to record Attendance and Comment data for learner with ID : ' . $user . '</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+                }
+            }
+        } else {
+            $response .=
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Error! Unable to record present days greater than school open days : '. $result_config['sch_open'].' or Empty Comment for learner with ID : ' . $user . '</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+        }
+    }
+
+    echo $response;
+} elseif ($_POST['action'] == 'record_ratings_for_all') {
+
+    $tblName = 'lhpresultconfig';
+    $conditions = array(
+        'where' => array(
+            'term' =>  $active_term['term'],
+        ),
+        'return_type' => 'single',
+
+    );
+    $result_config = $model->getRows($tblName, $conditions);
+
+    $response = '';
+    $tblName = 'lhpaffective';
+                foreach ( $_POST['all_users'] as $idx => $user ) {
+                    $rate_a =  $_POST['all_rating1'][$idx];
+                    $rate_b =  $_POST['all_rating2'][$idx];
+                    $rate_c =  $_POST['all_rating3'][$idx];
+                    $rate_d =  $_POST['all_rating4'][$idx];
+                    $rate_e =  $_POST['all_rating5'][$idx];
+
+        if (
+            $rate_a >= 1 &&  $rate_a <= 5 
+            && $rate_b >= 1 &&  $rate_b <= 5 
+            && $rate_c >= 1 &&  $rate_c <= 5 
+            && $rate_d >= 1 &&  $rate_d <= 5 
+            && $rate_e >= 1 &&  $rate_e <= 5 ) {
+
+            $conditions = array(
+                'where' => array(
+                    'lhpaffective.uname' =>  $user,
+                    'lhpaffective.classid' =>  $_POST['affective_class'],
+                    'lhpaffective.term' =>  $active_term["term"]
+                ),
+                'return_type' => 'single',
+            );
+            $check_if_exist = $model->getRows($tblName, $conditions);
+
+            if (!empty($check_if_exist)) {
+                $update_data = array(
+                    'lhpaffective.rating1' => $rate_a,
+                    'lhpaffective.rating2' => $rate_b,
+                    'lhpaffective.rating3' => $rate_c,
+                    'lhpaffective.rating4' => $rate_d,
+                    'lhpaffective.rating5' => $rate_e
+                );
+                $conditions = array(
+                    'lhpaffective.uname' =>  $user,
+                    'lhpaffective.classid' =>  $_POST['affective_class'],
+                    'lhpaffective.term' =>  $active_term["term"]
+                );
+                $action = $model->upDate($tblName, $update_data, $conditions);
+                if ($action) {
+
+                    $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Success! <b>Successfully updated Affective domain ratings records for learner with ID : ' . $user . '</b>!</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+                } else {
+                    $response .=
+                        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Error! Unable to update Affective domain ratings  records for learner with ID : ' . $user . '</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+                }
+            } else {
+
+                $new_data = array(
+                    'uname' =>  $user,
+                    'classid' =>  $_POST['affective_class'],
+                    'term' =>  $active_term["term"],
+                    'rating1' => $rate_a,
+                    'rating2' => $rate_b,
+                    'rating3' => $rate_c,
+                    'rating4' => $rate_d,
+                    'rating5' => $rate_e,
+                );
+                $action = $model->insert_data($tblName, $new_data);
+                if ($action) {
+
+                    $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Success! <b>Successfully recorded Affective domain ratings for learner with ID : ' . $user . '</b>!</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+                } else {
+                    $response .=
+                        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Error! Unable to record Affective domain ratings  for learner with ID : ' . $user . '</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+                }
+            }
+        } else {
+            $response .=
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                              <div class="alert-text">Error! Unable to record Affective domain ratings greater than 5 or less than 1 for learner with ID : ' . $user . '</div>
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div> <br>';
+        }
+    }
+
+    echo $response;
 }
 ?>

@@ -21,12 +21,12 @@
                 <h3><?php echo $class_allocated['subject'] ?? 0; ?></h3>
             </div>
             <div class="single_media_card" onclick="show_fully_paid()">
-                <span>Paid in Full</span>
+                <span>Payment Overview</span>
                 <h3><?php echo $class_allocated['paid'] ?? 0; ?></h3>
             </div>
-            <div class="single_media_card" onclick="show_fully_paid()">
-                <span>Outstanding Balance</span>
-                <h3><?php echo $class_allocated['debtor'] ?? 0; ?></h3>
+            <div class="single_media_card" onclick="affective_manager()">
+                <span>Affective Domain</span>
+                <h3><?php echo $class_allocated['affective'] ?? 0; ?></h3>
             </div>
         </div>
     </div>
