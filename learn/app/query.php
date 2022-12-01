@@ -607,9 +607,6 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
             'staffid' => $_SESSION['active'],
             'term' => $active_term['term'],
         ),
-        'joinl' => array(
-            'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',
-        )
     );
     $all_subject_allocated = $model->getRows($tblName, $conditions);
 
