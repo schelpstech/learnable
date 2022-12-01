@@ -40,7 +40,7 @@
                                     if (!empty($all_subject_allocated)) {
                                         foreach ($all_subject_allocated as $data) {
                                     ?>
-                                            <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['classname'].' - '. $data['sbjname']?></option>
+                                            <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['classname'].' - '. $data['subject']?></option>
                                     <?php
                                         }
                                     }
