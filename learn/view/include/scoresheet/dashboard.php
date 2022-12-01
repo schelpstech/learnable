@@ -37,8 +37,8 @@
                                 <select class="form-select" tabindex="2" id="allocated_subject" onchange="scoresheet_dashboard()" required="yes">
                                     <option value="">Select Allocated Subject</option>
                                     <?php
-                                    if (!empty($subject_allocated)) {
-                                        foreach ($subject_allocated as $data) {
+                                    if (!empty($all_subject_allocated)) {
+                                        foreach ($all_subject_allocated as $data) {
                                     ?>
                                             <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['classname'].' - '. $data['sbjname']?></option>
                                     <?php

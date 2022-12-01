@@ -611,7 +611,7 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
             'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',
         )
     );
-    $subject_allocated = $model->getRows($tblName, $conditions);
+    $all_subject_allocated = $model->getRows($tblName, $conditions);
 
     //Learners Profile
 
