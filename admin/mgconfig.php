@@ -383,6 +383,7 @@ foreach ($termresult as $termd) {
     $row=mysqli_fetch_array($result);
      
     $numca = $row["numrec"];
+
 if ($status == 1){
     $butt = '<a href="resultstatus.php?term='.$term.'&type=Termly Result&val=1" type="button"  class="btn btn-success" >Termly Results Activated</button>';
 }
@@ -398,8 +399,9 @@ if ($midterm == 0){
 
 if ($midterm == 1 && $numca >= 100){
   $popca = '<a href="popca.php?term='.$term.'" type="button"  class="btn btn-success" >  Populate CA scores</button>';
-}
-if ($midterm == 0 && $numca < 100){
+}elseif ($midterm == 0 && $numca < 100){
+  $popca = '<a  type="button"  class="btn btn-warning" disabled> Unable to Populate</button>';
+}else{
   $popca = '<a  type="button"  class="btn btn-warning" disabled> Unable to Populate</button>';
 }
  ?>
