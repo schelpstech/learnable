@@ -560,6 +560,7 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
                     ',
         'where' => array(
             'lhpalloc.staffid' => $_SESSION['active'],
+            'lhpalloc.term' => $active_term["term"],
         ),
         'joinl' => array(
             'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname ',
