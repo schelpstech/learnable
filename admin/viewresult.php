@@ -477,16 +477,16 @@ $tutorname = $row["staffname"];
               <div class="bsc-tbl-bdr">
                 <table class="table table-bordered" style="width:100%" border="1">
                   <thead>
-                    <tr>
+                    <tr style="text-align:center;">
                       <th>Subject</th>
                       <th> Ca Score <br> <?php echo $ca_obtainable ?></th>
                       <th>Exam Score <br> <?php echo $exam_obtainable ?></th>
                       <th>Total Score <br> 100</th>
                       <th>Grade</th>
                       <th>Remarks</th>
-                      <th>Lowest Score</th>
-                      <th>Average Score</th>
-                      <th>Highest Score</th>
+                      <th>Lowest Score <br> 100</th>
+                      <th>Average Score <br> 100</th>
+                      <th>Highest Score <br> 100</th>
                     </tr>
                   </thead>
 
@@ -691,9 +691,9 @@ $tutorname = $row["staffname"];
                         <table class="table table-bordered" border="1">
                           <thead>
                             <tr>
-                              <th style="text-align: center;">CA Cumuative</th>
-                              <th style="text-align: center;">Exam Cumulative</th>
-                              <th style="text-align: center;"> Cumulative Score</th>
+                              <th style="text-align: center;">CA Cumuative  <br> <?php echo $ca_obtainable ?></th>
+                              <th style="text-align: center;">Exam Cumulative <br> <?php echo $exam_obtainable ?></th>
+                              <th style="text-align: center;"> Cumulative Score <br> 100</th>
                               <th style="text-align: center;"> Grade</th>
                               <th style="text-align: center;"> Remarks</th>
                               <th style="text-align: center;"> Performance Remarks</th>
