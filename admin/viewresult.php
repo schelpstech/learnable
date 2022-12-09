@@ -477,16 +477,16 @@ $tutorname = $row["staffname"];
               <div class="bsc-tbl-bdr">
                 <table class="table table-bordered" style="width:100%" border="1">
                   <thead>
-                    <tr style="text-align:center;">
-                      <th>Subject</th>
-                      <th> Ca Score <br> <?php echo $ca_obtainable ?></th>
-                      <th>Exam Score <br> <?php echo $exam_obtainable ?></th>
-                      <th>Total Score <br> 100</th>
-                      <th>Grade</th>
-                      <th>Remarks</th>
-                      <th>Lowest Score <br> 100</th>
-                      <th>Average Score <br> 100</th>
-                      <th>Highest Score <br> 100</th>
+                    <tr>
+                      <th style="text-align: center;">Subject</th>
+                      <th style="text-align: center;"> Ca Score <br> <?php echo $ca_obtainable ?></th>
+                      <th style="text-align: center;">Exam Score <br> <?php echo $exam_obtainable ?></th>
+                      <th style="text-align: center;">Total Score <br> 100</th>
+                      <th style="text-align: center;">Grade</th>
+                      <th style="text-align: center;">Remarks</th>
+                      <th style="text-align: center;">Lowest Score <br> 100</th>
+                      <th style="text-align: center;">Average Score <br> 100</th>
+                      <th style="text-align: center;">Highest Score <br> 100</th>
                     </tr>
                   </thead>
 
