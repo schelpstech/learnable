@@ -79,6 +79,8 @@ $row = mysqli_fetch_array($result);
 $resumedate = $row["resumption"];
 $opendays = $row["sch_open"];
 $sign = $row["signature"];
+$ca_obtainable = $row["ca_score"];
+$exam_obtainable = $row["exam_score"];
 
 //School Information
 $sql = "SELECT * FROM lhpschool ";
@@ -477,9 +479,9 @@ $tutorname = $row["staffname"];
                   <thead>
                     <tr>
                       <th>Subject</th>
-                      <th> Ca Score</th>
-                      <th>Exam Score</th>
-                      <th>Total Score</th>
+                      <th> Ca Score <br> <?php echo $ca_obtainable ?></th>
+                      <th>Exam Score <br> <?php echo $exam_obtainable ?></th>
+                      <th>Total Score <br> 100</th>
                       <th>Grade</th>
                       <th>Remarks</th>
                       <th>Lowest Score</th>
