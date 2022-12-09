@@ -73,6 +73,8 @@ $row = mysqli_fetch_array($result);
 $resumedate = $row["resumption"];
 $opendays = $row["sch_open"];
 $sign = $row["signature"];
+$ca_obtainable = $row["ca_score"];
+$exam_obtainable = $row["exam_score"];
 
 //School Information
 $sql = "SELECT * FROM lhpschool ";

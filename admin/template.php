@@ -1,7 +1,7 @@
-<?php 
-$seriala = rand(11111111,88888888);
-$serialb = rand(11111111,88888888);
-$serial = $seriala.$serialb;
+<?php
+$seriala = rand(11111111, 88888888);
+$serialb = rand(11111111, 88888888);
+$serial = $seriala . $serialb;
 ?>
 <div id="doc<?php echo $serial ?>">
     <!-- Data Table area Start-->
@@ -221,15 +221,15 @@ $serial = $seriala.$serialb;
                             <table class="table table-bordered" style="width:100%" border="1">
                                 <thead>
                                     <tr>
-                                        <th>Subject</th>
-                                        <th> Ca Score</th>
-                                        <th>Exam Score</th>
-                                        <th>Total Score</th>
-                                        <th>Grade</th>
-                                        <th>Remarks</th>
-                                        <th>Lowest Score</th>
-                                        <th>Average Score</th>
-                                        <th>Highest Score</th>
+                                        <th style="text-align: center;">Subject</th>
+                                        <th style="text-align: center;"> Ca Score <br> <?php echo $ca_obtainable ?></th>
+                                        <th style="text-align: center;">Exam Score <br> <?php echo $exam_obtainable ?></th>
+                                        <th style="text-align: center;">Total Score <br> 100</th>
+                                        <th style="text-align: center;">Grade</th>
+                                        <th style="text-align: center;">Remarks</th>
+                                        <th style="text-align: center;">Lowest Score <br> 100</th>
+                                        <th style="text-align: center;">Average Score <br> 100</th>
+                                        <th style="text-align: center;">Highest Score <br> 100</th>
                                     </tr>
                                 </thead>
 
@@ -257,7 +257,7 @@ $serial = $seriala.$serialb;
                                         $examscore =  $row->examscore;
                                         $totalscore =  $row->totalscore;
                                         $scorebar = array($totalscore);
-                                        
+
                                         if ($totalscore >= 75) {
                                             $grade = "A";
                                         } elseif ($totalscore >= 65) {
@@ -436,13 +436,13 @@ $serial = $seriala.$serialb;
                                             <table class="table table-bordered" border="1">
                                                 <thead>
                                                     <tr>
-                                                        <th style="text-align: center;">CA Cumuative</th>
-                                                        <th style="text-align: center;">Exam Cumulative</th>
-                                                        <th style="text-align: center;"> Cumulative Score</th>
+                                                        <th style="text-align: center;">CA Cumuative<br> <?php echo $ca_obtainable ?></th>
+                                                        <th style="text-align: center;">Exam Cumulative<br> <?php echo $exam_obtainable ?></th>
+                                                        <th style="text-align: center;"> Cumulative Score <br> 100</th>
                                                         <th style="text-align: center;"> Grade</th>
                                                         <th style="text-align: center;"> Remarks</th>
                                                         <th style="text-align: center;"> Performance Remarks</th>
-                                                        <?php if (!is_null($comment)&& !empty($comment) && $comment != "") {
+                                                        <?php if (!is_null($comment) && !empty($comment) && $comment != "") {
                                                             echo '<th style="text-align: center;"> Teacher' . "'s" . ' Comment</th>';
                                                         }
                                                         ?>
@@ -479,7 +479,7 @@ $serial = $seriala.$serialb;
                                                         <td>
                                                             <h5 style="text-align: center;"><?php echo $tremarks ?></h5>
                                                         </td>
-                                                        <?php if (!is_null($comment) && !empty($comment) && $comment != ""){
+                                                        <?php if (!is_null($comment) && !empty($comment) && $comment != "") {
                                                             echo '<td><strong>
                                  <h5 style="text-align: center;">' . $comment . '</h5>
                                  </strong></td>';
@@ -540,14 +540,14 @@ $serial = $seriala.$serialb;
     function generatePDF<?php echo $serial ?>() {
 
 
-      var divContents = $("#doc<?php echo $serial; ?>").html();
-      var printWindow = window.open('', '', 'height=800,width=1600');
-      printWindow.document.write('<html><head><title>Academic Reportsheets for <?php echo $stname . "   " . $dclass ?></title>');
-      printWindow.document.write('</head><body >');
-      printWindow.document.write(divContents);
-      printWindow.document.write('</body></html>');
-      printWindow.document.close();
-      printWindow.print();
+        var divContents = $("#doc<?php echo $serial; ?>").html();
+        var printWindow = window.open('', '', 'height=800,width=1600');
+        printWindow.document.write('<html><head><title>Academic Reportsheets for <?php echo $stname . "   " . $dclass ?></title>');
+        printWindow.document.write('</head><body >');
+        printWindow.document.write(divContents);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
 
     }
-  </script>
+</script>
