@@ -296,6 +296,11 @@ $tutorname = $row["staffname"];
                         <h4 style="text-align: center;"> <?php echo $term . " " ?> Academic Reportsheets for <?php echo $dclass ?></h4>
                       </td>
 
+                      <td>
+                        <image src="../learn/asset/img/passport/<?php echo $pix; ?>" width="150" height="150" /><br>
+                        <strong> <?php echo $lname; ?></strong>
+                      </td>
+
 
                     </tr>
 
