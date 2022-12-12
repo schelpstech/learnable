@@ -31,7 +31,7 @@
                                         <td class="center">
                                         <img src="<?php
                                             if (!empty($data['picture'])) {
-                                                echo '../../../asset/img/passport/'.$data['picture'];
+                                                echo '../../asset/img/passport/'.$data['picture'];
                                             }else {
                                                 echo '../../asset/img/passport/nopix.jpg';
                                             }
