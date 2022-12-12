@@ -4,29 +4,6 @@ $serialb = rand(11111111, 88888888);
 $serial = $seriala . $serialb;
 ?>
 <div id="doc<?php echo $serial ?>">
-    <!-- Data Table area Start-->
-    <div class="header-top-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <div class="logo-area">
-                        <a href="#"><img src="img/logo/logo.png" alt="" /></a>
-                    </div>
-                </div>
-                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Header Top Area -->
-    <!-- Mobile Menu start -->
-    <?php include "nav.html"; ?>
-    <!-- Main Menu area End-->
-    <!-- Breadcomb area Start-->
-    <div id="doc">
-
-
         <!-- Data Table area Start-->
         <div class="data-table-area" style="text-align: center;">
             <div class="container">

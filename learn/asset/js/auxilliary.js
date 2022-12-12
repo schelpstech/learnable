@@ -13,6 +13,7 @@ function fetchsubject() {
             success: function (data) {
                 $("#subject").html(data);
             },
+            cache: false,
         });
     } else {
         alert("Select Class");
@@ -34,6 +35,7 @@ function fetchscheme() {
             success: function (data) {
                 $("#schemedata").html(data);
             },
+            cache: false,
         });
     } else {
         err = '<option value="">select</option>';
@@ -62,6 +64,7 @@ function add_topic_to_scheme() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -102,6 +105,7 @@ function modify_topic_in_scheme() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -113,6 +117,7 @@ function modify_topic_in_scheme() {
             success: function (data) {
                 $("#schemedata").html(data);
             },
+            cache: false,
         });
     } else {
         alert("One of the required details is missing. Check and try again");
@@ -141,6 +146,7 @@ function remove_topic_from_scheme() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -156,6 +162,7 @@ function remove_topic_from_scheme() {
                 $("#week").val("");
                 $("#topic").val("");
             },
+            cache: false,
         });
     } else {
         alert("One of the required details is missing. Check and try again");
@@ -188,6 +195,7 @@ function fetchnote() {
             success: function (data) {
                 $("#notedata").html(data);
             },
+            cache: false,
         });
     } else {
         err = '<option value="">select</option>';
@@ -250,6 +258,7 @@ function add_enote() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -266,6 +275,7 @@ function add_enote() {
                 $('#weblink_div').hide();
                 $('#summernote_div').hide();
             },
+            cache: false,
         });
     } else {
         alert("One of the required details is missing. Check and try again");
@@ -305,6 +315,7 @@ function modify_enote() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -316,6 +327,7 @@ function modify_enote() {
             success: function (data) {
                 $("#notedata").html(data);
             },
+            cache: false,
         });
     } else {
         alert("One of the required details is missing. Check and try again");
@@ -354,6 +366,7 @@ function remove_enote() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -373,6 +386,7 @@ function remove_enote() {
                 $('#weblink_div').hide();
                 $('#summernote_div').hide();
             },
+            cache: false,
         });
     } else {
         alert("One of the required details is missing. Check and try again");
@@ -393,6 +407,7 @@ function fetchtask() {
             success: function (data) {
                 $("#topic_list").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -404,6 +419,7 @@ function fetchtask() {
             success: function (data) {
                 $("#notedata").html(data);
             },
+            cache: false,
         });
     } else {
         err = '<option value="">select</option>';
@@ -447,6 +463,7 @@ function add_task() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -465,6 +482,7 @@ function add_task() {
                 $('#weblink_div').hide();
                 $('#summernote_div').hide();
             },
+            cache: false,
         });
     } else {
         alert("One of the required details is missing. Check and try again");
@@ -508,6 +526,7 @@ function modify_task() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -519,6 +538,7 @@ function modify_task() {
             success: function (data) {
                 $("#notedata").html(data);
             },
+            cache: false,
         });
     } else {
         alert("One of the required details is missing. Check and try again");
@@ -561,6 +581,7 @@ function remove_task() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         $.ajax({
             url: "../../app/ajax_query.php",
@@ -582,6 +603,7 @@ function remove_task() {
                 $('#weblink_div').hide();
                 $('#summernote_div').hide();
             },
+            cache: false,
         });
     } else {
         alert("One of the required details is missing. Check and try again");
@@ -607,6 +629,7 @@ function class_dashboard() {
             success: function (data) {
                 $("#class_dashboard").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
@@ -636,6 +659,7 @@ function class_dashboard() {
             success: function (data) {
                 $("#class_dashboard").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
@@ -666,6 +690,7 @@ function show_learners() {
             success: function (data) {
                 $("#response").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
@@ -697,6 +722,7 @@ function show_subjects() {
             success: function (data) {
                 $("#response").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
@@ -728,6 +754,7 @@ function show_fully_paid() {
             success: function (data) {
                 $("#response").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
@@ -787,6 +814,7 @@ function modify_learner() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#edit_profile").show();
@@ -832,6 +860,7 @@ function scoresheet_dashboard() {
             success: function (data) {
                 $("#myscoresheet_dashboard").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
@@ -862,6 +891,7 @@ function affective_manager(){
             success: function (data) {
                 $("#response").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
@@ -892,6 +922,7 @@ function ca_score_manager(){
             success: function (data) {
                 $("#response").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
@@ -921,6 +952,7 @@ function exam_score_manager(){
             success: function (data) {
                 $("#response").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
@@ -952,6 +984,7 @@ function total_score_manager(){
             success: function (data) {
                 $("#response").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#loader").hide();
@@ -1020,6 +1053,7 @@ function submit_affective() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         var affective_class = $("#allocated_class").val();
         var action = 'affective_manager';
@@ -1089,6 +1123,7 @@ function submit_ca_scores() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         var allocated_subject = $("#allocated_subject").val();
         var action = 'ca_score_manager';
@@ -1102,7 +1137,7 @@ function submit_ca_scores() {
             success: function (data) {
                 $("#response").html(data);
             },
-            
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
@@ -1127,6 +1162,7 @@ function submit_ca_scores() {
                 success: function (data) {
                     $("#myscoresheet_dashboard").html(data);
                 },
+                cache: false,
                 complete: function (data) {
                     // Hide image container
                     $("#loader").hide();
@@ -1181,6 +1217,7 @@ function submit_exam_scores() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         var allocated_subject = $("#allocated_subject").val();
         var action = 'exam_score_manager';
@@ -1193,8 +1230,10 @@ function submit_exam_scores() {
             },
             success: function (data) {
                 $("#response").html(data);
+                
             },
             
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
@@ -1220,6 +1259,7 @@ function submit_exam_scores() {
                 success: function (data) {
                     $("#myscoresheet_dashboard").html(data);
                 },
+                cache: false,
                 complete: function (data) {
                     // Hide image container
                     $("#loader").hide();
@@ -1253,6 +1293,7 @@ function weekly_score_manager() {
                 success: function (data) {
                     $("#response").html(data);
                 },
+                cache: false,
                 complete: function (data) {
                     // Hide image container
                     $("#loader").hide();
@@ -1313,6 +1354,7 @@ function record_weekly_scores_for_all() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         var allocated_subject = $("#allocated_subject").val();
         var weekly = week_num.slice(5);
@@ -1328,7 +1370,7 @@ function record_weekly_scores_for_all() {
             success: function (data) {
                 $("#response").html(data);
             },
-            
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();
@@ -1443,6 +1485,7 @@ function submit_ratings() {
             success: function (data) {
                 $("#info").html(data);
             },
+            cache: false,
         });
         var affective_class = $("#allocated_class").val();
         var action = 'affective_manager';
@@ -1456,6 +1499,7 @@ function submit_ratings() {
             success: function (data) {
                 $("#response").html(data);
             },
+            cache: false,
             complete: function (data) {
                 // Hide image container
                 $("#response_loader").hide();

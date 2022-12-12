@@ -532,8 +532,9 @@ if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_o
             mkdir($dir);
         }
         $fileTmpPath = $_POST['imagebase64data'];
+        $random = $utility->generateRandomString(7);
         // form the filename 
-        $filename_path =  $_SESSION['instance'] . ".jpg";
+        $filename_path =  $_SESSION['instance'] .$random. ".jpg";
         // remove special characters from file name
         $filename_path =  $utility->RemoveSpecialChar($filename_path);
         // generate image from posted base64 data
