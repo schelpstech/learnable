@@ -284,7 +284,7 @@ $tutorname = $row["staffname"];
 
                     <tr>
                       <td>
-                        <image src=".../learn/asset/img/school/<?php echo $schlogo; ?>" width="150" height="150" /><br>
+                        <image src="../learn/asset/img/school/<?php echo $schlogo; ?>" width="150" height="150" /><br>
                         <strong>Founded: <?php echo $schyear; ?></strong>
                       </td>
                       <td>
