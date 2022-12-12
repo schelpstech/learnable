@@ -14,12 +14,7 @@ include '../include/navigator.php';
                     <div class="card-profile"><img class="rounded-circle" src="
                             <?php
                             if (isset($learner_profile['passport'])) {
-                                $dir = '../../asset/img/passport/'. $learner_profile['passport'];
-                                if (file_exists($dir)) {
-                                    echo $dir;
-                                } else {
-                                    echo '../../asset/img/passport/nopix.jpg';
-                                }
+                                echo '../../asset/img/passport/'.$learner_profile['passport'];
                             } else {
                                 echo '../../asset/img/passport/nopix.jpg';
                             }
