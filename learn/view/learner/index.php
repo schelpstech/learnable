@@ -13,8 +13,8 @@ include '../include/navigator.php';
                     <div class="card-header"><img class="img-fluid" src="../../asset/img/app/profile_bg.jpg" alt="" data-original-title="" title=""></div>
                     <div class="card-profile"><img class="rounded-circle" src="
                             <?php
-                            if (isset($learner_profile['passport'])) {
-                                echo '../../asset/img/passport/'.$learner_profile['passport'];
+                            if (isset($learner_profile['picture'])) {
+                                echo '../../asset/img/passport/'.$learner_profile['picture'];
                             } else {
                                 echo '../../asset/img/passport/nopix.jpg';
                             }
