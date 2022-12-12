@@ -340,7 +340,6 @@ $tutorname = $row["staffname"];
                       <th style="text-align: center;">Current Class </th>
                       <th style="text-align: center;"> Class Teacher</th>
                       <th style="text-align: center;"> Class Population</th>
-                      <th style="text-align: center;">Passport</th>
                     </tr>
                   </thead>
 
@@ -373,11 +372,7 @@ $tutorname = $row["staffname"];
                       <td><strong>
                           <p style="text-align: center;"><?php echo $pop ?? ""; ?></p>
                         </strong></td>
-                      <td><strong>
-                          <p style="text-align: center;">
-                            <image src="../learn/asset/img/passport/<?php echo $pix ?? "nopix.jpg"; ?>" height="100" width="100" />
-                          </p>
-                        </strong></td>
+                      
                     </tr>
 
                   </tbody>
