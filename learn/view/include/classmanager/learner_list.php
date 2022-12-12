@@ -31,12 +31,7 @@
                                         <td class="center">
                                         <img src="<?php
                                             if (!empty($data['picture'])) {
-                                                $dir = '../../../asset/img/passport/'.$data['picture'];
-                                                if (file_exists('"'.$dir.'"')) {
-                                                    echo '../../asset/img/passport/'.$data['picture'];
-                                                } else {
-                                                    echo '../../asset/img/passport/nopix.jpg';
-                                                }
+                                                echo '../../../asset/img/passport/'.$data['picture'];
                                             }else {
                                                 echo '../../asset/img/passport/nopix.jpg';
                                             }
