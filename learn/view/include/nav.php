@@ -40,7 +40,14 @@
 
                         </div>
                         <div class="profile_info">
-                            <img src="../../asset/img/client_img.png" alt="#">
+                            <img src="
+                            <?php
+                            if (isset($learner_profile['picture'])) {
+                                echo '../../asset/img/passport/'.$learner_profile['picture'];
+                            } else {
+                                echo '../../asset/img/passport/nopix.jpg';
+                            }
+                            ?>" alt="#">
                             <div class="profile_info_iner">
                                 <div class="profile_author_name">
                                     <p><?php echo $learner_profile['fname'] ?? $staff_details['staffname'] ?></p>
