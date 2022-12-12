@@ -283,7 +283,7 @@ $tutorname = $row["staffname"];
 
 
                     <tr>
-                      <td>
+                      <td style="text-align: center;">
                         <image src="../learn/asset/img/school/<?php echo $schlogo; ?>" width="150" height="150" /><br>
                         <strong>Founded: <?php echo $schyear; ?></strong>
                       </td>
@@ -296,7 +296,7 @@ $tutorname = $row["staffname"];
                         <h4 style="text-align: center;"> <?php echo $term . " " ?> Academic Reportsheets for <?php echo $dclass ?></h4>
                       </td>
 
-                      <td>
+                      <td style="text-align: center;">
                         <image src="../learn/asset/img/passport/<?php echo $pix; ?>" width="150" height="150" /><br>
                         <strong> <?php echo $lname; ?></strong>
                       </td>
@@ -322,12 +322,6 @@ $tutorname = $row["staffname"];
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="normal-table-list mg-t-30">
-              <div class="basic-tb-hd">
-                <strong>
-                  <h3 style="text-align: center;">Learners Details</h3>
-                </strong>
-
-              </div>
 
               <div class="bsc-tbl-bdr">
                 <table class="table table-bordered"  style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
@@ -680,13 +674,6 @@ $tutorname = $row["staffname"];
 
                   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="normal-table-list mg-t-30">
-                      <div class="basic-tb-hd">
-                        <strong>
-                          <h3 style="text-align: center;">Performance Remarks</h3>
-                        </strong>
-
-                      </div>
-
                       <div class="bsc-tbl-bdr">
                         <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                           <thead>
