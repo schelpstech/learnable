@@ -30,7 +30,6 @@ if (mysqli_num_rows($result) > 0) {
     $stname = $row["fname"];
     $gender = $row["gender"];
     $dob = $row["dob"];
-
     $cclass = $row["classid"];
     $pix = $row["picture"];
   }
@@ -285,7 +284,7 @@ $tutorname = $row["staffname"];
 
                     <tr>
                       <td>
-                        <image src="../admin/images/<?php echo $schlogo; ?>" width="150" height="150" /><br>
+                        <image src=".../learn/asset/img/school/<?php echo $schlogo; ?>" width="150" height="150" /><br>
                         <strong>Founded: <?php echo $schyear; ?></strong>
                       </td>
                       <td>
@@ -296,6 +295,7 @@ $tutorname = $row["staffname"];
                         <h5 style="text-align: center;"> <?php echo $schphone; ?> | <?php echo $schemail; ?> | <?php echo $schweb ?> </h5>
                         <h4 style="text-align: center;"> <?php echo $term . " " ?> Academic Reportsheets for <?php echo $dclass ?></h4>
                       </td>
+
 
                     </tr>
 
@@ -325,7 +325,7 @@ $tutorname = $row["staffname"];
               </div>
 
               <div class="bsc-tbl-bdr">
-                <table class="table table-bordered" style="width:100%;" border="1">
+                <table class="table table-bordered"  style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                   <thead>
                     <tr>
                       <th style="text-align: center;">Learners ID</th>
@@ -424,10 +424,10 @@ $tutorname = $row["staffname"];
 
                     <tr>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $opendays  ?? "";?></p>
+                          <p style="text-align: center;"><?php echo $opendays  ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $present  ?? "";?></p>
+                          <p style="text-align: center;"><?php echo $present  ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
                           <p style="text-align: center;"><?php echo $opendays - $present  ?? ""; ?></p>
@@ -436,10 +436,10 @@ $tutorname = $row["staffname"];
                           <p style="text-align: center;"><?php echo $lead ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $eloq  ?? "";?></p>
+                          <p style="text-align: center;"><?php echo $eloq  ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
-                          <p style="text-align: center;"><?php echo $neat  ?? "";?></p>
+                          <p style="text-align: center;"><?php echo $neat  ?? ""; ?></p>
                         </strong></td>
                       <td><strong>
                           <p style="text-align: center;"><?php echo $create ?? ""; ?></p>
@@ -475,7 +475,7 @@ $tutorname = $row["staffname"];
               </div>
 
               <div class="bsc-tbl-bdr">
-                <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;"  border="1">
+                <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                   <thead>
                     <tr>
                       <th style="text-align: center;">Subject</th>
@@ -691,7 +691,7 @@ $tutorname = $row["staffname"];
                         <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                           <thead>
                             <tr>
-                              <th style="text-align: center;">CA Cumuative  <br> <?php echo $ca_obtainable ?></th>
+                              <th style="text-align: center;">CA Cumuative <br> <?php echo $ca_obtainable ?></th>
                               <th style="text-align: center;">Exam Cumulative <br> <?php echo $exam_obtainable ?></th>
                               <th style="text-align: center;"> Cumulative Score <br> 100</th>
                               <th style="text-align: center;"> Grade</th>
