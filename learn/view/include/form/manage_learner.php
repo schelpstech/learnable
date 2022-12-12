@@ -16,12 +16,7 @@
                             <div class="card-profile"><img src="
                                 <?php
                                 if (isset($learner_profile['picture'])) {
-                                    $dir = '../../asset/img/passport/' . $learner_profile['picture'] . '"';
-                                    if (file_exists($dir)) {
-                                        echo $dir;
-                                    } else {
-                                        echo '../../asset/img/staff/instructor.jpg';
-                                    }
+                                    echo '../../asset/img/passport/'. $learner_profile['picture'] . '"';  
                                 } else {
                                     echo '../../asset/img/staff/instructor.jpg';
                                 }
@@ -91,12 +86,9 @@
                             <div class="card-profile" id="mypassport">
                                 <img src="<?php
                                             if (!empty($learner_profile['picture'])) {
-                                                $dir = '../../asset/img/passport/' . $learner_profile['picture'];
-                                                if (file_exists($dir)) {
-                                                    echo $dir;
-                                                } else {
+                                                echo '../../asset/img/passport/'. $learner_profile['picture'];
+                                            }else {
                                                     echo ' " style="display: none;" ';
-                                                }
                                             }
                                             ?> " width="200" />
 
