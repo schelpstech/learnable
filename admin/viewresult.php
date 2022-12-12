@@ -370,7 +370,7 @@ $tutorname = $row["staffname"];
                         </strong></td>
                       <td><strong>
                           <p style="text-align: center;">
-                            <image src="images/profilepix/<?php echo $pix ?? "nopix.jpg"; ?>" height="100" width="100" />
+                            <image src="../learn/asset/img/passport/<?php echo $pix ?? "nopix.jpg"; ?>" height="100" width="100" />
                           </p>
                         </strong></td>
                     </tr>
@@ -401,7 +401,7 @@ $tutorname = $row["staffname"];
               </div>
 
               <div class="bsc-tbl-bdr">
-                <table class="table table-hover" style="width:100%" border="1">
+                <table class="table table-hover" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                   <thead>
                     <tr>
                       <th style="text-align: center;">School Open</th>
@@ -475,7 +475,7 @@ $tutorname = $row["staffname"];
               </div>
 
               <div class="bsc-tbl-bdr">
-                <table class="table table-bordered" style="width:100%" border="1">
+                <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;"  border="1">
                   <thead>
                     <tr>
                       <th style="text-align: center;">Subject</th>
@@ -688,7 +688,7 @@ $tutorname = $row["staffname"];
                       </div>
 
                       <div class="bsc-tbl-bdr">
-                        <table class="table table-bordered" border="1">
+                        <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                           <thead>
                             <tr>
                               <th style="text-align: center;">CA Cumuative  <br> <?php echo $ca_obtainable ?></th>
