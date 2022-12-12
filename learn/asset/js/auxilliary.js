@@ -1109,6 +1109,29 @@ function submit_ca_scores() {
                 $("#response").show();
             }
         });
+        var allocated_subject = $("#allocated_subject").val();
+        var action = 'load_scoresheet_dashboard';
+            $.ajax({
+                url: "../../app/ajax_query.php",
+                method: "POST",
+                data: {
+                    allocated_subject: allocated_subject,
+                    action: action,
+                    beforeSend: function () {
+                        // Show image container
+                        $("#loader").show();
+                        $("#board").hide();
+                        $("#response").hide();
+                    },
+                },
+                success: function (data) {
+                    $("#myscoresheet_dashboard").html(data);
+                },
+                complete: function (data) {
+                    // Hide image container
+                    $("#loader").hide();
+                }
+            });
     } else {
         alert("Select Allocated Subject");
     }
@@ -1178,6 +1201,30 @@ function submit_exam_scores() {
                 $("#response").show();
             }
         });
+
+        var allocated_subject = $("#allocated_subject").val();
+        var action = 'load_scoresheet_dashboard';
+            $.ajax({
+                url: "../../app/ajax_query.php",
+                method: "POST",
+                data: {
+                    allocated_subject: allocated_subject,
+                    action: action,
+                    beforeSend: function () {
+                        // Show image container
+                        $("#loader").show();
+                        $("#board").hide();
+                        $("#response").hide();
+                    },
+                },
+                success: function (data) {
+                    $("#myscoresheet_dashboard").html(data);
+                },
+                complete: function (data) {
+                    // Hide image container
+                    $("#loader").hide();
+                }
+            });
     } else {
         alert("Select Allocated Subject");
     }
