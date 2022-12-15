@@ -497,26 +497,6 @@ $serial = $seriala . $serialb;
             </div>
         </div>
     </div>
-
-    <div class="breadcomb-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <style type="text/css">
-                        #chart-container {
-                            width: auto;
-                            height: auto;
-                        }
-                    </style>
-                    <div id="chart-container">
-                        <canvas id="mycanvas"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 </div>
 <button id="cmd" onclick="generatePDF<?php echo $serial ?>()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i>
     <h3>Download Result</h3>
