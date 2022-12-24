@@ -276,7 +276,7 @@ if(!isset($_SESSION['unamed'])){
                                    
 									
                                     <div class="nk-int-st">
-                                    <image  src="../admin/images/<?php echo $schlogo; ?>" width="150" height="150"/>
+                                    <image  src="../learn/asset/img/school/<?php echo $schlogo; ?>" width="150" height="150"/>
 
                                     </div>
                                 </div>
