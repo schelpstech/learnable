@@ -44,7 +44,7 @@ $schowner = mysqli_real_escape_string($con,$_POST['schowner']);
     if (in_array($fileExtension, $allowedfileExtensions))
     {
       // directory in which the uploaded file will be moved
-      $uploadFileDir = 'images/';
+      $uploadFileDir = '../learn/asset/img/school/';
       $dest_path = $uploadFileDir . $schlogo;
 
       if(move_uploaded_file($fileTmpPath, $dest_path)) 
@@ -98,7 +98,7 @@ $allowedfileExtensions = array('jpg', 'jpeg', 'png');
 if (in_array($fileExtension, $allowedfileExtensions))
 {
   // directory in which the uploaded file will be moved
-  $uploadFileDir = 'images/';
+  $uploadFileDir = '../learn/asset/img/school/';
   $dest_path = $uploadFileDir . $schlogo;
 
   if(move_uploaded_file($fileTmpPath, $dest_path)) 
