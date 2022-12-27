@@ -67,7 +67,7 @@ class DBbackup
         $output .= "COMMIT;";
         //save filename
 
-        $filename = 'db_backup_' . $this->suffix.'.sql';
+        $filename = 'db_backup_' . $this->suffix.'.zip';
         $this->writeUTF8filename($filename, $output);
         echo '<a href="./'.$filename.'">Click to download backup file</a>';
     }
