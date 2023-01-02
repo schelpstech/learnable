@@ -12,9 +12,9 @@ if (isset($_POST['assign']) && $_POST['assign'] == 'Assign Fee to Selected Custo
 	$feeid = mysqli_real_escape_string($con, $_POST['feeid']);
 	$feedate = mysqli_real_escape_string($con, $_POST['feedate']);
 	if ($_POST['feeamounta']!= "") {
-		$feeamount = $feeamounta;
+		$feeamount = $_POST['feeamounta'];
 	}elseif ($_POST['feeamountb'] != "") {
-		$feeamount = $feeamountb;
+		$feeamount = $_POST['feeamountb'];
 	}
 	if ($type != "" && $term != "" && $feeid != "") {
 
