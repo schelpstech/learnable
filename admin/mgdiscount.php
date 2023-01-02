@@ -421,7 +421,7 @@ $result = $db_handle->runQuery($query);
                $sql = "SELECT * FROM lhpuser WHERE uname  = '$stdid'";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
-               $std = $row['fname'];
+               $std = $row['fname'] ?? "";
                 
                
                $sql = "SELECT * FROM lhpfeelist WHERE feeid  = '$feeid'";

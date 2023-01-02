@@ -534,7 +534,7 @@ if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_o
         $fileTmpPath = $_POST['imagebase64data'];
         $random = $utility->generateRandomString(7);
         // form the filename 
-        $filename_path =  $_SESSION['instance'] .$random. ".jpg";
+        $filename_path =  $_SESSION['instance'] . $random . ".jpg";
         // remove special characters from file name
         $filename_path =  $utility->RemoveSpecialChar($filename_path);
         // generate image from posted base64 data
@@ -564,37 +564,37 @@ if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_o
 //Scoresheet Dashboard - Weekly, CA, Exam, Cumulative
 if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($active_term)) {
     $tblName = 'lhpresultconfig';
-        $conditions = array(
-            'where' => array(
-                'term' =>  $active_term['term'],
-            ),
-            'return_type' => 'single',
+    $conditions = array(
+        'where' => array(
+            'term' =>  $active_term['term'],
+        ),
+        'return_type' => 'single',
 
-        );
-        $result_config = $model->getRows($tblName, $conditions);
-        $tblName = 'lhpsubject';
-        $conditions = array(
-            'where' => array(
-                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
-            ),
-            'joinl' => array(
-                'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
-            ),
-            'return_type' => 'single',
+    );
+    $result_config = $model->getRows($tblName, $conditions);
+    $tblName = 'lhpsubject';
+    $conditions = array(
+        'where' => array(
+            'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+        ),
+        'joinl' => array(
+            'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
+        ),
+        'return_type' => 'single',
 
-        );
-        $class_details = $model->getRows($tblName, $conditions);
+    );
+    $class_details = $model->getRows($tblName, $conditions);
 
-        //Number of students offering subject
-        $tblName = 'lhpuser';
-        $conditions = array(
-            'where' => array(
-                'classid' =>  $class_details['classid'],
-                'status' =>  1,
-            ),
-            'return_type' => 'count',
-        );
-        $class_population = $model->getRows($tblName, $conditions);
+    //Number of students offering subject
+    $tblName = 'lhpuser';
+    $conditions = array(
+        'where' => array(
+            'classid' =>  $class_details['classid'],
+            'status' =>  1,
+        ),
+        'return_type' => 'count',
+    );
+    $class_population = $model->getRows($tblName, $conditions);
 
 
 
@@ -629,7 +629,6 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         );
         $scores_recorded = $model->getRows($tblName, $conditions);
         include_once '../view/include/scoresheet/scores_widget.php';
-
     }
     //Load all students in the class for ca
     elseif ($_POST['action'] == 'ca_score_manager') {
@@ -729,13 +728,13 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
             } else {
                 $response .=
                     '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                                  <div class="alert-text">Error! Unable to record 0 or scores greater than '. $result_config['ca_score'].' as CA score for learner with ID : ' . $user . '</div>
+                                  <div class="alert-text">Error! Unable to record 0 or scores greater than ' . $result_config['ca_score'] . ' as CA score for learner with ID : ' . $user . '</div>
                                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                           </div> <br>';
             }
         }
         echo $response;
-    }elseif ($_POST['action'] == 'exam_score_manager') {
+    } elseif ($_POST['action'] == 'exam_score_manager') {
         $scoresheet_type = 'EXAM_SCORE';
 
         $tblName = 'lhpsubject';
@@ -762,7 +761,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         );
         $exam_scores_recorder = $model->getRows($tblName, $conditions);
         include_once '../view/include/scoresheet/recorder.php';
-    }elseif ($_POST['action'] == 'record_exam_scores_for_all') {
+    } elseif ($_POST['action'] == 'record_exam_scores_for_all') {
 
         $tblName = 'lhpsubject';
         $conditions = array(
@@ -843,13 +842,13 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
             } else {
                 $response .=
                     '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                                  <div class="alert-text">Error! Unable to record 0 or scores greater than '. $result_config['exam_score'].' as Exam score for learner with ID : ' . $user . '</div>
+                                  <div class="alert-text">Error! Unable to record 0 or scores greater than ' . $result_config['exam_score'] . ' as Exam score for learner with ID : ' . $user . '</div>
                                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                           </div> <br>';
             }
         }
         echo $response;
-    }elseif ($_POST['action'] == 'total_score_manager') {
+    } elseif ($_POST['action'] == 'total_score_manager') {
 
         $tblName = 'lhpsubject';
         $conditions = array(
@@ -883,9 +882,9 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         );
         $cumulative_score = $model->getRows($tblName, $conditions);
         include_once '../view/include/scoresheet/cumulative.php';
-    }elseif ($_POST['action'] == 'weekly_score_manager') {
+    } elseif ($_POST['action'] == 'weekly_score_manager') {
         $scoresheet_type = 'WEEKLY';
-        $week = 'WEEK '. $_POST['week_num'];
+        $week = 'WEEK ' . $_POST['week_num'];
 
         $tblName = 'lhpsubject';
         $conditions = array(
@@ -906,7 +905,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
              from lhpweekrecord
               where  lhpweekrecord.lid = lhpuser.uname 
             and lhpweekrecord.subjid =  "' . $_POST['allocated_subject'] . '"
-            and lhpweekrecord.week =  "'.$week.'"
+            and lhpweekrecord.week =  "' . $week . '"
             and lhpweekrecord.term = "' . $active_term["term"] . '") as score',
             'where' => array(
                 'lhpuser.classid' => $class_details['classid'],
@@ -914,7 +913,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         );
         $week_scores_recorder = $model->getRows($tblName, $conditions);
         include_once '../view/include/scoresheet/recorder.php';
-    }elseif ($_POST['action'] == 'record_weekly_scores_for_all') {
+    } elseif ($_POST['action'] == 'record_weekly_scores_for_all') {
 
         $tblName = 'lhpsubject';
         $conditions = array(
@@ -957,13 +956,13 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                     if ($action) {
 
                         $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
-                                  <div class="alert-text">Success! <b>Successfully updated '.$_POST['week_num'].'  score for learner with ID : ' . $user . '</b>!</div>
+                                  <div class="alert-text">Success! <b>Successfully updated ' . $_POST['week_num'] . '  score for learner with ID : ' . $user . '</b>!</div>
                                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                           </div> <br>';
                     } else {
                         $response .=
                             '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                                  <div class="alert-text">Error! Unable to update '.$_POST['week_num'].'  score for learner with ID : ' . $user . '</div>
+                                  <div class="alert-text">Error! Unable to update ' . $_POST['week_num'] . '  score for learner with ID : ' . $user . '</div>
                                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                           </div> <br>';
                     }
@@ -981,13 +980,13 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                     if ($action) {
 
                         $response .= '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
-                                  <div class="alert-text">Success! <b>Successfully recorded '.$_POST['week_num'].'  score for learner with ID : ' . $user . '</b>!</div>
+                                  <div class="alert-text">Success! <b>Successfully recorded ' . $_POST['week_num'] . '  score for learner with ID : ' . $user . '</b>!</div>
                                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                           </div> <br>';
                     } else {
                         $response .=
                             '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                                  <div class="alert-text">Error! Unable to record '.$_POST['week_num'].'  score for learner with ID : ' . $user . '</div>
+                                  <div class="alert-text">Error! Unable to record ' . $_POST['week_num'] . '  score for learner with ID : ' . $user . '</div>
                                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                           </div> <br>';
                     }
@@ -995,7 +994,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
             } else {
                 $response .=
                     '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                                  <div class="alert-text">Error! Unable to record 0 or scores greater than '. $result_config['exam_score'].' as Exam score for learner with ID : ' . $user . '</div>
+                                  <div class="alert-text">Error! Unable to record 0 or scores greater than ' . $result_config['exam_score'] . ' as Exam score for learner with ID : ' . $user . '</div>
                                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                           </div> <br>';
             }
@@ -1026,7 +1025,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     );
     $class_details = $model->getRows($tblName, $conditions);
 
-    
+
     $tblName = 'lhpuser';
     $conditions = array(
         'select' => 'lhpuser.fname, lhpuser.picture, lhpuser.classid, lhpuser.uname, 
@@ -1064,7 +1063,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     );
     $affective_recorder = $model->getRows($tblName, $conditions);
     include_once '../view/include/classmanager/recorder.php';
-}elseif ($_POST['action'] == 'record_attendance_for_all') {
+} elseif ($_POST['action'] == 'record_attendance_for_all') {
 
     $tblName = 'lhpresultconfig';
     $conditions = array(
@@ -1078,9 +1077,9 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
 
     $response = '';
     $tblName = 'lhpaffective';
-                foreach ( $_POST['all_users'] as $idx => $user ) {
-                    $days =  $_POST['all_present'][$idx];
-                    $comment =  $_POST['all_comment'][$idx];
+    foreach ($_POST['all_users'] as $idx => $user) {
+        $days =  $_POST['all_present'][$idx];
+        $comment =  $_POST['all_comment'][$idx];
 
         if ($days >= 1 &&  $days <= $result_config['sch_open'] && strlen($comment) > 5) {
 
@@ -1145,7 +1144,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
         } else {
             $response .=
                 '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                              <div class="alert-text">Error! Unable to record present days greater than school open days : '. $result_config['sch_open'].' or Empty Comment for learner with ID : ' . $user . '</div>
+                              <div class="alert-text">Error! Unable to record present days greater than school open days : ' . $result_config['sch_open'] . ' or Empty Comment for learner with ID : ' . $user . '</div>
                                       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                       </div> <br>';
         }
@@ -1166,19 +1165,20 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
 
     $response = '';
     $tblName = 'lhpaffective';
-                foreach ( $_POST['all_users'] as $idx => $user ) {
-                    $rate_a =  $_POST['all_rating1'][$idx];
-                    $rate_b =  $_POST['all_rating2'][$idx];
-                    $rate_c =  $_POST['all_rating3'][$idx];
-                    $rate_d =  $_POST['all_rating4'][$idx];
-                    $rate_e =  $_POST['all_rating5'][$idx];
+    foreach ($_POST['all_users'] as $idx => $user) {
+        $rate_a =  $_POST['all_rating1'][$idx];
+        $rate_b =  $_POST['all_rating2'][$idx];
+        $rate_c =  $_POST['all_rating3'][$idx];
+        $rate_d =  $_POST['all_rating4'][$idx];
+        $rate_e =  $_POST['all_rating5'][$idx];
 
         if (
-            $rate_a >= 1 &&  $rate_a <= 5 
-            && $rate_b >= 1 &&  $rate_b <= 5 
-            && $rate_c >= 1 &&  $rate_c <= 5 
-            && $rate_d >= 1 &&  $rate_d <= 5 
-            && $rate_e >= 1 &&  $rate_e <= 5 ) {
+            $rate_a >= 1 &&  $rate_a <= 5
+            && $rate_b >= 1 &&  $rate_b <= 5
+            && $rate_c >= 1 &&  $rate_c <= 5
+            && $rate_d >= 1 &&  $rate_d <= 5
+            && $rate_e >= 1 &&  $rate_e <= 5
+        ) {
 
             $conditions = array(
                 'where' => array(
@@ -1254,5 +1254,9 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     }
 
     echo $response;
+} elseif ($_POST['action'] == 'compute_class_broasdsheet') {
+
 }
+
+
 ?>
