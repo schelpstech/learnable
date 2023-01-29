@@ -324,11 +324,11 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
     $tblName = 'lhpalloc';
     $conditions = array(
         'select' => 'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
-                        lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classname, 
-                        (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE  lhpnote.sbjid = lhpalloc.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '" GROUP BY lhpalloc.sbjid) as note ,
-                        (SELECT count(lhpquestion.sbjid) FROM lhpquestion WHERE  lhpquestion.sbjid = lhpalloc.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term['term'] . '" GROUP BY lhpalloc.sbjid) as task,
-                        (SELECT count(lhpfeedback.sbjid) FROM lhpfeedback WHERE lhpfeedback.sbjid = lhpalloc.sbjid and lhpfeedback.stdid = "' . $_SESSION['active'] . '" and lhpfeedback.term ="' . $active_term['term'] . '" GROUP BY lhpalloc.sbjid) as feedback,
-                        (SELECT count(lhpscheme.subject) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term['term'] . '" GROUP BY lhpalloc.sbjid) as topic',
+                        lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classid, lhpclass.classname, 
+                        (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE  lhpnote.sbjid = lhpalloc.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '") as note ,
+                        (SELECT count(lhpquestion.sbjid) FROM lhpquestion WHERE  lhpquestion.sbjid = lhpalloc.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term['term'] . '") as task,
+                        (SELECT count(lhpfeedback.sbjid) FROM lhpfeedback WHERE lhpfeedback.sbjid = lhpalloc.sbjid and lhpfeedback.stdid = "' . $_SESSION['active'] . '" and lhpfeedback.term ="' . $active_term['term'] . '") as feedback,
+                        (SELECT count(lhpscheme.subject) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term['term'] . '") as topic',
         'where' => array(
             'lhpalloc.classid' => $learner_profile['classid'],
             'lhpalloc.term' => $active_term['term'],
@@ -553,10 +553,10 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
             lhpquestion.questid, lhpquestion.status, lhpquestion.term, lhpquestion.staffid,
             lhpscheme.schmid, lhpscheme.status, lhpscheme.term, lhpscheme.staffid, lhpscheme.subject,
 
-                    (SELECT count(lhpscheme.schmid) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term["term"] . '"and lhpscheme.staffid ="' . $_SESSION["active"] . '" GROUP BY lhpalloc.sbjid) as topic  ,
-                    (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE lhpalloc.sbjid = lhpnote.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '"and lhpnote.staffid ="' . $_SESSION["active"] . '" GROUP BY lhpalloc.sbjid) as note ,
-                    (SELECT count(lhpquestion.questid) FROM lhpquestion WHERE  lhpalloc.sbjid = lhpquestion.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term["term"] . '"and lhpquestion.staffid ="' . $_SESSION["active"] . '" GROUP BY lhpalloc.sbjid) as task, 
-                    (SELECT count(lhpfeedback.fid) FROM lhpfeedback WHERE  lhpalloc.sbjid = lhpfeedback.sbjid and lhpfeedback.term ="' . $active_term["term"] . '" GROUP BY lhpalloc.sbjid) as feedback 
+                    (SELECT count(lhpscheme.schmid) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term["term"] . '"and lhpscheme.staffid ="' . $_SESSION["active"] . '") as topic ,
+                    (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE lhpalloc.sbjid = lhpnote.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '"and lhpnote.staffid ="' . $_SESSION["active"] . '") as note ,
+                    (SELECT count(lhpquestion.questid) FROM lhpquestion WHERE  lhpalloc.sbjid = lhpquestion.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term["term"] . '"and lhpquestion.staffid ="' . $_SESSION["active"] . '") as task, 
+                    (SELECT count(lhpfeedback.fid) FROM lhpfeedback WHERE  lhpalloc.sbjid = lhpfeedback.sbjid and lhpfeedback.term ="' . $active_term["term"] . '") as feedback 
                     ',
         'where' => array(
             'lhpalloc.staffid' => $_SESSION['active'],
