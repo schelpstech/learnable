@@ -38,6 +38,8 @@
         include 'payment/transaction.php';
     } elseif ($_SESSION['pageid'] == 'payment' && $_SESSION['instance'] == 'payment') {
         include 'payment/paynow.php';
+    } elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'add_cbt') {
+        include 'form/createcbt.php';
     }
 ?>
 </section>

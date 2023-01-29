@@ -98,7 +98,7 @@ $schowner = $row["proprietor"];
 
 //Get Affective Domain
 $sql = "SELECT *  from lhpaffective WHERE uname = '$lname' AND term = '$term'";
-$result = mysqli_query($con, $sql);
+$result = mysqli_query($con, filter_var($sql,0));
 $row = mysqli_fetch_array($result);
 
 
@@ -113,7 +113,7 @@ $comment = $row["comment"];
 
 //Get Class Teacher's name
 $sql = "SELECT * FROM `lhpclassalloc` WHERE term = '$term' and classid = '$cclass'";
-$result = mysqli_query($con, $sql);
+$result = mysqli_query($con, filter_var($sql,0));
 $row = mysqli_fetch_array($result);
 $tutor = $row["tutorid"];
 

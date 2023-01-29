@@ -105,6 +105,9 @@
                         <div class="modal-footer">
                             <a href="../../app/router.php?pageid=resources&item=add_task" type="button" class="btn btn-info">Add e-Assessment</a><br>
                         </div>
+                        <div class="modal-footer">
+                            <a href="../../app/router.php?pageid=resources&item=add_cbt" type="button" class="btn btn-success">Create CBT Test</a><br>
+                        </div>
                 </div>
             </div>
         </div>            
