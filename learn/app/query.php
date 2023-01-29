@@ -324,7 +324,7 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
     $tblName = 'lhpalloc';
     $conditions = array(
         'select' => 'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
-                        lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classid, lhpclass.classname, 
+                        lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classname, 
                         (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE  lhpnote.sbjid = lhpalloc.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '" GROUP BY lhpalloc.sbjid) as note ,
                         (SELECT count(lhpquestion.sbjid) FROM lhpquestion WHERE  lhpquestion.sbjid = lhpalloc.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term['term'] . '" GROUP BY lhpalloc.sbjid) as task,
                         (SELECT count(lhpfeedback.sbjid) FROM lhpfeedback WHERE lhpfeedback.sbjid = lhpalloc.sbjid and lhpfeedback.stdid = "' . $_SESSION['active'] . '" and lhpfeedback.term ="' . $active_term['term'] . '" GROUP BY lhpalloc.sbjid) as feedback,
