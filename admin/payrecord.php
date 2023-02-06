@@ -485,7 +485,7 @@ foreach ($classresult as $classd) {
                $sql = "SELECT * FROM lhpuser WHERE uname  = '$stdid'";
 				$result=mysqli_query($con,$sql);
 				 $row=mysqli_fetch_array($result);
-               $std = $row['fname'];
+               $std = $row['fname'] ?? "";
                 
               
                 
