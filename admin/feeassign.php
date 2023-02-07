@@ -31,9 +31,9 @@ if (isset($_POST['assign']) && $_POST['assign'] == 'Assign Fee to Selected Custo
 
 			if ($count == $stat) {
 
-				$sql = "INSERT into `lhpassignedfee` (feeid, classid, stdid, term, type, due, amount, status)
+				$sql = "INSERT into `lhpassignedfee` (feeid, classid, stdid, term, type, due, amount, discount, 'status')
 
-VALUES('$feeid', '$classname', '$learner', '$term', '$type', '$feedate', '$feeamount', 1)";
+VALUES('$feeid', '$classname', '$learner', '$term', '$type', '$feedate', '$feeamount', 0, 1)";
 				if (mysqli_query($con, $sql)) {
 
 					$feemessage = 'Status : Successfully assigned fee to the selected learner';
