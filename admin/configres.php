@@ -52,7 +52,7 @@ if (isset($_POST['configresult']) && $_POST['configresult'] == 'Save Result Conf
       if(move_uploaded_file($fileTmpPath, $dest_path)) 
       {
 		 
-		  $sql= "INSERT INTO lhpresultconfig  (term, ca_score, exam_score, sch_open, resumption, signature, status ) VALUES ('$resterm', '$cascore', '$examscore', '$schopen', '$resume', '$newFileName','0' )";
+		  $sql= "INSERT INTO lhpresultconfig  (term, ca_score, exam_score, sch_open, resumption, signature, status, midterm ) VALUES ('$resterm', '$cascore', '$examscore', '$schopen', '$resume', '$newFileName','0','0')";
 		if(mysqli_query($con, $sql)){	
 		$remessage ='Status : ReportSheet configuration successfully saved.';
 		}
