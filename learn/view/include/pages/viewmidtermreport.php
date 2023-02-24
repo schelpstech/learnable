@@ -63,7 +63,7 @@
                                     <tr>
                                         <th class="center">#</th>
                                         <th>Subject</th>
-                                        <th class="center">CA Score<br></th>
+                                        <th class="center">CA Score - <?php echo $search_result['ca_score'] ?? ""; ?><br></th>
                                     </tr>
                                 </thead>
                                 <tbody>
