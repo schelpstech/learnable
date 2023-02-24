@@ -49,7 +49,7 @@ if (isset($_GET['pageid']) && isset($_GET['instance'])) {
 }
 
 
-//redirect to view selected  result - Learner    
+//redirect to view selected  result / midterm report - Learner    
 if (isset($_GET['pageid']) && isset($_GET['ref'])) {
   $pageid = $_GET['pageid'];
   $ref = $_GET['ref'];

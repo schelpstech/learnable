@@ -73,6 +73,31 @@
         </a>
     </li>
 
+    <?php
+    if (!empty($search_result)) {
+        if ($search_result['midterm'] == 1) {
+    ?>
+        <li>
+        <a href="../../app/router.php?pageid=midterm_result&ref=<?php echo $active_term['term'] ?>" aria-expanded="false">
+            <div class="nav_icon_small">
+                <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Mid-Term Report</span>
+            </div>
+        </a>
+    </li>
+<?php
+    }
+    else{
+        echo '';
+    }
+    }else{
+        echo '';
+    }
+?>
+
+
     <li>
         <a href="calendar.php" aria-expanded="false">
             <div class="nav_icon_small">

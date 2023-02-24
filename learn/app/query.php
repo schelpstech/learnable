@@ -447,7 +447,30 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
 
     //Results
     $tblName = 'lhpresultconfig';
+    $conditions = array(
+        'return_type' => 'single',
+        'where' => array(
+            'term' => $active_term['term'],
+        )
+    );
     $view_result = $model->getRows($tblName);
+    $search_result = $model->getRows($tblName, $conditions);
+
+    if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) &&  $_SESSION['pageid'] == 'midterm_result') {
+        //Midterm Result
+        $tblName = 'lhpresultrecord';
+        $conditions = array(
+            'where' => array(
+                'lhpresultrecord.lid' => $learner_profile['uname'],
+                'lhpresultrecord.term' => $_SESSION['ref'],
+            ),
+            'joinl' => array(
+                'lhpsubject' => ' on lhpresultrecord.subjid = lhpsubject.sbjid',
+            ),
+            'order_by' => 'lhpsubject.sbjname',
+        );
+        $show_report = $model->getRows($tblName, $conditions);
+    }
 
     if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) &&  $_SESSION['pageid'] == 'result') {
         //1st and 2nd term result 
@@ -616,7 +639,7 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
 
     //Learners Profile
 
-    if( isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'manage_learner' && isset($_SESSION['instance'])){
+    if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'manage_learner' && isset($_SESSION['instance'])) {
         $tblName = 'lhpuser';
         $conditions = array(
             'return_type' => 'single',
@@ -629,7 +652,6 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
         );
         $learner_profile = $model->getRows($tblName, $conditions);
     }
-    
 }
 
 

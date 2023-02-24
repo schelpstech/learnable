@@ -12,9 +12,17 @@
         include 'pages/viewwork.php';
     }elseif ($_SESSION['pageid'] == 'scheme') {
         include 'pages/viewscheme.php';
-    }elseif ($_SESSION['pageid'] == 'result') {
+    }
+    
+    elseif ($_SESSION['pageid'] == 'result') {
         include 'pages/viewresult.php';
-    }elseif ($_SESSION['pageid'] == 'class_manager') {
+    }
+    
+    elseif ($_SESSION['pageid'] == 'midterm_result') {
+        include 'pages/viewmidtermreport.php';
+    }
+    
+    elseif ($_SESSION['pageid'] == 'class_manager') {
         include 'classmanager/dashboard.php';
     }elseif ($_SESSION['pageid'] == 'scoresheet') {
         include 'scoresheet/dashboard.php';
