@@ -5,9 +5,9 @@
             <div class="col-12">
                 <div class="page_title_box d-flex align-items-center justify-content-between">
                     <a href="#" onclick="window.print();" class="white_btn3">Print</a>
-                    
+
                     <div class="page_title_left">
-                    <div class="card-profile" ><img src="../../asset/img/school/<?php echo $sch_details['logo'] ?>" style="display: block; margin-left: auto;margin-right: auto;"  alt=""  width="100"></div>
+                        <div class="card-profile"><img src="../../asset/img/school/<?php echo $sch_details['logo'] ?>" style="display: block; margin-left: auto;margin-right: auto;" alt="" width="100"></div>
                         <h2 class="f_s_30 f_w_700 dark_text" style="text-align:center;"><?php echo ucwords($sch_details['schname']) ?></h2>
                         <ol class="breadcrumb page_bradcam mb-0">
                             <li class="breadcrumb-item"><a href="javascript:void(0);">Address </a></li>
@@ -20,10 +20,10 @@
                     </div>
 
                     <div class="page_title_left">
-                    <div class="card-profile"><img class="rounded-circle" src="
-                            <?php  
+                        <div class="card-profile"><img class="rounded-circle" src="
+                            <?php
                             if (isset($learner_profile['picture'])) {
-                                echo '../../asset/img/passport/'.$learner_profile['picture'];
+                                echo '../../asset/img/passport/' . $learner_profile['picture'];
                             } else {
                                 echo '../../asset/img/passport/nopix.jpg';
                             }
@@ -42,9 +42,6 @@
                                                                 } ?></li>
                         </ol>
                     </div>
-                    
-
-                    
                 </div>
             </div>
         </div>
@@ -52,8 +49,9 @@
             <div class="col-12 QA_section">
                 <div class="card QA_table ">
                     <div class="card-header" style="text-align:center;">
-                       <h4> Academic Performance Report Sheet as at Mid Term,
-                        <strong><?php echo ucwords($active_term['term']) ?></strong></h4>
+                        <h4> Academic Performance Report Sheet as at Mid Term,
+                            <strong><?php echo ucwords($active_term['term']) ?></strong>
+                        </h4>
                         <span class="float-end"> <strong>Generated:</strong> <?php echo date("d-m-Y") ?></span>
                     </div>
                     <div class="card-body">
