@@ -16,7 +16,6 @@
                             <li class="breadcrumb-item active"><?php echo ucwords($sch_details['email'] . " | " . $sch_details['phone']) ?></li>
                         </ol>
                     </div>
-
                     <div class="page_title_left">
                         <div class="card-profile"><img class="rounded-circle" src="
                             <?php
@@ -83,7 +82,6 @@
                                                             ',
                                             );
                                             $minscore = $model->getRows($tblName, $conditions);
-
                                     ?>
                                             <tr>
                                                 <td class="center"><?php echo $count++; ?></td>
@@ -105,9 +103,7 @@
                                 </tbody>
                             </table>
                         </div>
-
                         <div class="row">
-
                             <div class="col-lg-4 col-sm-4">
                                 <table class="table table-clear QA_table">
                                     <thead>
@@ -271,7 +267,6 @@
                                                                     echo "";
                                                                 } ?></td>
                                         </tr>
-
                                     </tbody>
                                 </table>
                             </div>
@@ -374,8 +369,6 @@
                                 </table>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>

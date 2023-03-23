@@ -1,6 +1,5 @@
 <?php
 include './query.php';
-
 if (isset($_POST['classid']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'fetchsubject') {
     //All classes where subject have been allocated
     $tblName = 'lhpalloc';
@@ -21,8 +20,7 @@ if (isset($_POST['classid']) && isset($_SESSION['active']) && isset($active_term
     if (!empty($subject_allocated)) {
         foreach ($subject_allocated as $data) {
     ?>
-
-            <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['sbjname'] ?></option>
+            <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['sbjname'];?></option>
 <?php
         }
     } else {
@@ -30,8 +28,6 @@ if (isset($_POST['classid']) && isset($_SESSION['active']) && isset($active_term
     }
 }
 ?>
-
-
 <?php
 if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'fetchscheme') {
     $tblName = 'lhpscheme';
@@ -77,7 +73,6 @@ if (isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic'
         'staffid' => $_SESSION['active'],
         'status' => 1,
     );
-
     if ($_POST['action'] == 'add_topic_to_scheme') {
         $action = $model->insert_data($tblName, $schemedata);
         if ($action) {
@@ -165,7 +160,6 @@ if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term
 }
 ?>
 <?php
-
 if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'fetchnote') {
     $tblName = 'lhpnote';
     $conditions = array(
@@ -183,9 +177,7 @@ if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term
     $list_note = $model->getRows($tblName, $conditions);
     include_once '../view/include/pages/selectnote.php';
 }
-
 ?>
-
 <?php
 if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic']) && isset($_POST['note_type']) && isset($_POST['content']) && isset($_SESSION['active']) && isset($active_term)) {
     $tblName = 'lhpnote';
@@ -198,7 +190,6 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
         'staffid' => $_SESSION['active'],
         'status' => 1,
     );
-
     if ($_POST['action'] == 'add_enote') {
         $action = $model->insert_data($tblName, $notedata);
         if ($action) {
@@ -258,8 +249,6 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
     }
 }
 ?>
-
-
 <?php
 //TASK AND ASSEMENT 
 if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'fetchtask') {
@@ -279,9 +268,7 @@ if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term
     $list_task = $model->getRows($tblName, $conditions);
     include_once '../view/include/pages/selectask.php';
 }
-
 ?>
-
 <?php
 if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic']) && isset($_POST['note_type']) && isset($_POST['content']) && isset($_SESSION['active']) && isset($active_term)) {
     $tblName = 'lhpquestion';
@@ -296,7 +283,6 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
         'staffid' => $_SESSION['active'],
         'status' => 1,
     );
-
     if ($_POST['action'] == 'add_task') {
         $action = $model->insert_data($tblName, $notedata);
         if ($action) {
@@ -356,11 +342,9 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
     }
 }
 ?>
-
 <?php
 //CLASS MANAGER - DASHBOARD
 if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'load_dashboard') {
-
     $tblName = 'lhpuser';
     $conditions = array(
         'select' => '
@@ -1096,7 +1080,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
             if (!empty($check_if_exist)) {
                 $update_data = array(
                     'lhpaffective.total_present' => $days,
-                    'lhpaffective.comment' => $comment
+                    'lhpaffective.comment' => addslashes($comment)
                 );
                 $conditions = array(
                     'lhpaffective.uname' =>  $user,
@@ -1124,7 +1108,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
                     'classid' =>  $_POST['affective_class'],
                     'term' =>  $active_term["term"],
                     'total_present' => $days,
-                    'comment' => $comment,
+                    'comment' => addslashes($comment),
                 );
                 $action = $model->insert_data($tblName, $new_data);
                 if ($action) {
