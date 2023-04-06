@@ -463,25 +463,21 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
 }
 
 //CLASS MANAGER - show learner who have paid fully
-if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_fully_paid') {
-    $tblName = 'lhpuser';
-    $conditions = array(
-        'select' => ' DISTINCT lhpuser.uname, lhpuser.fname,
+if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_broadsheet') {
 
-                    (SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
-                        WHERE lhpassignedfee.stdid = lhpuser.uname and 
-                        lhpassignedfee.term = "' . $active_term["term"] . '"
-                        GROUP BY lhpassignedfee.stdid) as bill,
-                        
-                    (SELECT sum(lhptransaction.amount) FROM lhptransaction
-                        WHERE lhptransaction.stdid = lhpuser.uname  and 
-                        lhptransaction.term = "' . $active_term["term"] . '" 
-                        GROUP BY lhptransaction.stdid) as paid ',
+    $tblName = 'lhpresultrecord';
+    $conditions = array(
+        'select' => 'DISTINCT lhpsubject.sbjname, lhpsubject.sbjid',
         'where' => array(
-            'lhpuser.classid' => $_POST['allocated_class'],
+            'lhpresultrecord.classid' => $_POST['allocated_class'],
+            'lhpresultrecord.term' => $active_term["term"],
         ),
+        'joinl' => array(
+            'lhpsubject' => ' on lhpresultrecord.subjid = lhpsubject.sbjid',
+        ),
+        'order_by' => 'lhpsubject.sbjid',
     );
-    $paid_list = $model->getRows($tblName, $conditions);
+    $subject_header = $model->getRows($tblName, $conditions);
 
     $tblName = 'lhpclass';
     $conditions = array(
@@ -492,7 +488,21 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
     );
     $classname = $model->getRows($tblName, $conditions);
 
-    include_once '../view/include/classmanager/paid_list.php';
+    $tblName = 'lhpresultrecord';
+    $conditions = array(
+        'select' => 'DISTINCT lhpresultrecord.lid,lhpresultrecord.term, lhpresultrecord.classid, lhpuser.uname, lhpuser.fname, lhpuser.picture',
+        'where' => array(
+            'lhpresultrecord.classid' => $_POST['allocated_class'],
+            'lhpresultrecord.term' => $active_term["term"],
+        ),
+        'joinl' => array(
+            'lhpuser' => ' on lhpresultrecord.lid = lhpuser.uname',
+        ),
+        'order_by' => 'lhpuser.uname',
+    );
+    $class_list = $model->getRows($tblName, $conditions);
+
+    include_once '../view/include/classmanager/broadsheet.php';
 }
 ?>
 <?php

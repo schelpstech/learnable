@@ -42,9 +42,6 @@ $result = mysqli_query($con, $sql);
 if (mysqli_num_rows($result) > 0) {
   // output data of each row
   while ($row = mysqli_fetch_assoc($result)) {
-
-
-
     $cclass = $row["classid"];
   }
 }
@@ -54,7 +51,6 @@ if (mysqli_num_rows($result) > 0) {
 <?php
 $sql = "SELECT classname FROM `lhpclass` WHERE `classid` = '$cclass'";;
 $result = mysqli_query($con, $sql);
-
 if (mysqli_num_rows($result) > 0) {
   // output data of each row
   while ($row = mysqli_fetch_assoc($result)) {
@@ -98,9 +94,8 @@ $schowner = $row["proprietor"];
 
 //Get Affective Domain
 $sql = "SELECT *  from lhpaffective WHERE uname = '$lname' AND term = '$term'";
-$result = mysqli_query($con, filter_var($sql,0));
+$result = mysqli_query($con, $sql);
 $row = mysqli_fetch_array($result);
-
 
 $present = $row["total_present"];
 $lead = $row["rating1"];
@@ -113,7 +108,7 @@ $comment = $row["comment"];
 
 //Get Class Teacher's name
 $sql = "SELECT * FROM `lhpclassalloc` WHERE term = '$term' and classid = '$cclass'";
-$result = mysqli_query($con, filter_var($sql,0));
+$result = mysqli_query($con, $sql);
 $row = mysqli_fetch_array($result);
 $tutor = $row["tutorid"];
 

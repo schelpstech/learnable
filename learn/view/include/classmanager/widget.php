@@ -20,8 +20,8 @@
                 <span>Subjects Offered </span>
                 <h3><?php echo $class_allocated['subject'] ?? 0; ?></h3>
             </div>
-            <div class="single_media_card" onclick="show_fully_paid()">
-                <span>Payment Overview</span>
+            <div class="single_media_card" onclick="show_broadsheet()">
+                <span>Broadsheet</span>
                 <h3><?php echo $class_allocated['paid'] ?? 0; ?></h3>
             </div>
             <div class="single_media_card" onclick="affective_manager()">

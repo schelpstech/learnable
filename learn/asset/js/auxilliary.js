@@ -735,9 +735,9 @@ function show_subjects() {
         $("#allocated_class").html(err);
     }
 }
-function show_fully_paid() {
+function show_broadsheet() {
     var allocated_class = $("#allocated_class").val();
-    var action = 'show_fully_paid';
+    var action = 'show_broadsheet';
     if (allocated_class != "") {
         $.ajax({
             url: "../../app/ajax_query.php",

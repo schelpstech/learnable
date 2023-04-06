@@ -433,17 +433,17 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
     $bill_paid = $model->getRows($tblName, $conditions);
 
     //Count Payments this term
-    $tblName = 'lhptransaction';
-    $conditions = array(
-        'return_type' => 'count',
-        'where' => array(
-            'stdid' => $learner_profile['uname'],
-            'classid' => $learner_profile['classid'],
-            'term' => $active_term['term'],
-            'status' => 1,
-        )
-    );
-    $bill_transaction = $model->getRows($tblName, $conditions);
+   $tblName = 'lhptransaction';
+   $conditions = [
+       'return_type' => 'count',
+       'where' => [
+           'stdid' => $learner_profile['uname'],
+           'classid' => $learner_profile['classid'],
+           'term' => $active_term['term'],
+           'status' => 1,
+       ]
+   ];
+   $bill_transaction = $model->getRows($tblName, $conditions);
 
     //Results
     $tblName = 'lhpresultconfig';

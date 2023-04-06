@@ -78,7 +78,7 @@
                                 <h3>-</h3>
                             </div>
                             <div class="single_media_card">
-                                <span>Payment Overview</span>
+                                <span>Broadsheet</span>
                                 <h3>-</h3>
                             </div>
                             <div class="single_media_card">
