@@ -1,7 +1,7 @@
 <?php
 $count = 1;
-if (!empty($view_result)) {
-    foreach ($view_result as $view_result) {
+if (!empty($available_result)) {
+    foreach ($available_result as $view_result) {
         if ($view_result['status'] == 1) {
             $icon =  '<i class="far fa-id-card" style="font-size:108px; color:green; text-align:center;"></i>';
             $status = 'Published';
