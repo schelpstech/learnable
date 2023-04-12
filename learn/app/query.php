@@ -445,7 +445,22 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
    ];
    $bill_transaction = $model->getRows($tblName, $conditions);
 
-    //Results
+           //Available Results 
+
+           $tblName = 'lhpresultrecord';
+           $conditions = array(
+               'select' => 'Distinct lhpresultrecord.term, lhpresultconfig.status',
+               'where' => array(
+                   'lhpresultrecord.lid' => $learner_profile['uname'],
+               ),
+               'joinl' => array(
+                   'lhpresultconfig' => ' on lhpresultrecord.term = lhpresultconfig.term',
+               ),
+               'order_by' => 'lhpresultrecord.term',
+           );
+           $available_result = $model->getRows($tblName, $conditions);
+           
+   //Results
     $tblName = 'lhpresultconfig';
     $conditions = array(
         'return_type' => 'single',
@@ -474,21 +489,7 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
 
     if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) &&  $_SESSION['pageid'] == 'result') {
 
-        //Available Results 
 
-        $tblName = 'lhpresultrecord';
-        $conditions = array(
-            'select' => 'Distinct lhpresultrecord.term, lhpresultconfig.status',
-            'where' => array(
-                'lhpresultrecord.lid' => $learner_profile['uname'],
-                'lhpresultrecord.term' => $_SESSION['ref'],
-            ),
-            'joinl' => array(
-                'lhpresultconfig' => ' on lhpresultrecord.term = lhpresultconfig.term',
-            ),
-            'order_by' => 'lhpresultrecord.term',
-        );
-        $available_result = $model->getRows($tblName, $conditions);
 
         //1st and 2nd term result 
         $tblName = 'lhpresultrecord';
