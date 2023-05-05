@@ -1,9 +1,11 @@
-<div class="main_content_iner overly_inner ">
+
+
+<div class="main_content_iner overly_inner" id="to_be_printed">
     <div class="container-fluid p-0 ">
         <div class="row">
             <div class="col-12">
                 <div class="page_title_box d-flex align-items-center justify-content-between">
-                    <a href="#" onclick="window.print();" class="white_btn3">Print</a>
+                    <a href="#" onclick="print_selection();" class="white_btn3">Print</a>
                     <div class="page_title_left">
                         <div class="card-profile"><img src="../../asset/img/school/<?php echo $sch_details['logo'] ?>" style="display: block; margin-left: auto;margin-right: auto;" alt="" width="100"></div>
                         <h2 class="f_s_30 f_w_700 dark_text" style="text-align:center;"><?php echo ucwords($sch_details['schname']) ?></h2>
@@ -47,7 +49,7 @@
                 <div class="card QA_table ">
                     <div class="card-header" style="text-align:center;">
                         <h4> Academic Performance Report Sheet for
-                            <strong><?php echo ucwords($active_term['term']) ?></strong>
+                            <strong><?php echo ucwords($_SESSION['ref']) ?></strong>
                         </h4>
                         <span class="float-end"> <strong>Generated:</strong> <?php echo date("d-m-Y") ?></span>
                     </div>
