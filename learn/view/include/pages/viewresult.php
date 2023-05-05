@@ -1,11 +1,11 @@
 
 
-<div class="main_content_iner overly_inner" id="to_be_printed">
+<div class="main_content_iner overly_inner" id="print_area">
     <div class="container-fluid p-0 ">
         <div class="row">
             <div class="col-12">
                 <div class="page_title_box d-flex align-items-center justify-content-between">
-                    <a href="#" onclick="print_selection();" class="white_btn3">Print</a>
+                    <button  class="white_btn3" onclick="printTable();">Print</button>
                     <div class="page_title_left">
                         <div class="card-profile"><img src="../../asset/img/school/<?php echo $sch_details['logo'] ?>" style="display: block; margin-left: auto;margin-right: auto;" alt="" width="100"></div>
                         <h2 class="f_s_30 f_w_700 dark_text" style="text-align:center;"><?php echo ucwords($sch_details['schname']) ?></h2>
@@ -400,3 +400,21 @@
         </div>
     </div>
 </div>
+
+<script>
+function printTable() {
+    
+
+    // Print the table
+    var printContents = document.getElementById("print_area").innerHTML;
+    var originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+
+    // Restore the original page contents
+    document.body.innerHTML = originalContents;
+    elementsToHide.forEach(function(element) {
+        element.style.display = '';
+    });
+}
+</script>

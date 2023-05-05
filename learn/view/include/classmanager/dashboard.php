@@ -5,7 +5,8 @@
         <div class="row ">
             <div class="col-md-6 col-lg-6 col-xl-6 box-col-6">
                 <div class="card custom-card">
-                    <div class="card-header"><img class="img-fluid" src="../../asset/img/app/profile_bg.jpg" alt="" data-original-title="" title=""></div>
+                    <div class="card-header"><img class="img-fluid" src="../../asset/img/app/profile_bg.jpg" alt=""
+                            data-original-title="" title=""></div>
                     <div class="card-profile"><img class="rounded-circle" src="
                             <?php
                             if (isset($learner_profile['passport'])) {
@@ -21,7 +22,9 @@
                             ?>" alt="" data-original-title="" title=""></div>
 
                     <div class="text-center profile-details">
-                        <h4><?php echo $staff_details['staffname'] ?? ' - '; ?></h4>
+                        <h4>
+                            <?php echo $staff_details['staffname'] ?? ' - '; ?>
+                        </h4>
                     </div>
                     <div class="white_card card_height_100 mb_30">
                         <div class="white_card_header">
@@ -36,14 +39,16 @@
                                 <div class="input-group-text">
                                     <label class="" for="subject">Select Class</label>
                                 </div>
-                                <select class="form-select" tabindex="2" id="allocated_class" onchange="class_dashboard()" required="yes">
+                                <select class="form-select" tabindex="2" id="allocated_class"
+                                    onchange="class_dashboard()" required="yes">
                                     <option value="">Select Allocated Class</option>
                                     <?php
                                     if (!empty($class_allocated)) {
                                         foreach ($class_allocated as $data) {
-                                    ?>
-                                            <option value="<?php echo $data['classid'] ?>"><?php echo $data['classname'] ?></option>
-                                    <?php
+                                            ?>
+                                            <option value="<?php echo $data['classid'] ?>"><?php echo $data['classname'] ?>
+                                            </option>
+                                            <?php
                                         }
                                     }
                                     ?>
@@ -92,10 +97,10 @@
 
         </div>
         <div class="media_thumb ml_25" id="response_loader" style="display: none;">
-                <img src="../../asset/img/app/giphy.gif" alt="">
-            </div>
+            <img src="../../asset/img/app/giphy.gif" alt="">
+        </div>
         <div class="row " id="response">
-            
+
         </div>
 
     </div>
