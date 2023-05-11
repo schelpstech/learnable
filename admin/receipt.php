@@ -58,17 +58,17 @@ if (mysqli_num_rows($result) > 0) {
 
 
 
-$sql = "SELECT SUM(amount) as totpayment FROM `lhptransaction` WHERE `stdid` = '$payid' AND term = '$term' AND classid = '$classid' ";
+$sql = "SELECT SUM(amount) as totpayment FROM `lhptransaction` WHERE `stdid` = '$payid' AND term = '$term' AND classid = '$classid' AND `status` = 1 ";
 $result = mysqli_query($con, $sql);
 $row = mysqli_fetch_array($result);
 $payment = $row["totpayment"];
 
-$sql = "SELECT SUM(amount) as totbill FROM `lhpassignedfee` WHERE `stdid` = '$payid' AND term = '$term' AND classid = '$classid' ";
+$sql = "SELECT SUM(amount) as totbill FROM `lhpassignedfee` WHERE `stdid` = '$payid' AND term = '$term' AND classid = '$classid' AND `status` = 1 ";
 $result = mysqli_query($con, $sql);
 $row = mysqli_fetch_array($result);
 $bill = $row["totbill"];
 
-$sql = "SELECT COUNT(transid) as cntpayment FROM `lhptransaction` WHERE `stdid` = '$payid' AND term = '$term' AND classid = '$classid' ";
+$sql = "SELECT COUNT(transid) as cntpayment FROM `lhptransaction` WHERE `stdid` = '$payid' AND term = '$term' AND classid = '$classid'  AND `status` = 1 ";
 $result = mysqli_query($con, $sql);
 $row = mysqli_fetch_array($result);
 $cntpayment = $row["cntpayment"];

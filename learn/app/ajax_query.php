@@ -14,14 +14,14 @@ if (isset($_POST['classid']) && isset($_SESSION['active']) && isset($active_term
         )
     );
     $subject_allocated = $model->getRows($tblName, $conditions);
-?>
+    ?>
     <option value="">Select Subject</option>
     <?php
     if (!empty($subject_allocated)) {
         foreach ($subject_allocated as $data) {
-    ?>
-            <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['sbjname'];?></option>
-<?php
+            ?>
+            <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['sbjname']; ?></option>
+            <?php
         }
     } else {
         echo '<option value="">No Subject Allocated in Selected Class</option>';
@@ -77,13 +77,13 @@ if (isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic'
         $action = $model->insert_data($tblName, $schemedata);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Topic added to scheme successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to add topic to scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -96,13 +96,13 @@ if (isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic'
         $action = $model->upDate($tblName, $schemedata, $conditons);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Scheme of work modified successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to modify scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -118,13 +118,13 @@ if (isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic'
         $action = $model->upDate($tblName, $schemedata, $conditons);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Topic removed from Scheme of work  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to remove topic from scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -144,15 +144,15 @@ if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term
         'order_by' => 'week ASC',
     );
     $topic_created = $model->getRows($tblName, $conditions);
-?>
+    ?>
     <option value="">Select Topic</option>
     <?php
     if (!empty($topic_created)) {
         foreach ($topic_created as $data) {
-    ?>
+            ?>
 
             <option value="<?php echo $data['schmid'] ?>"><?php echo $data['week'] . " - " . $data['topic'] ?></option>
-<?php
+            <?php
         }
     } else {
         echo '<option value="">No Topic has been added to scheme of work for the selected Subject</option>';
@@ -194,13 +194,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
         $action = $model->insert_data($tblName, $notedata);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>e-Note has been added  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to add e-Note to the portal</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -213,13 +213,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
         $action = $model->upDate($tblName, $notedata, $conditons);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>e-Note has been modified successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to modify e-Note</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -235,13 +235,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
         $action = $model->upDate($tblName, $notedata, $conditons);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>e-Note removed from Scheme of work  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to remove e-Note from scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -287,13 +287,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
         $action = $model->insert_data($tblName, $notedata);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>e-Assessment has been added  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to add Assessment to the portal</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -306,13 +306,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
         $action = $model->upDate($tblName, $notedata, $conditons);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Assessment has been modified successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to modify Assessment</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -328,13 +328,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
         $action = $model->upDate($tblName, $notedata, $conditons);
         if ($action) {
             echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Assessment removed from Scheme of work  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to remove Assessment from scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -528,9 +528,9 @@ if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_o
         $fileTmpPath = $_POST['imagebase64data'];
         $random = $utility->generateRandomString(7);
         // form the filename 
-        $filename_path =  $_SESSION['instance'] . $random . ".jpg";
+        $filename_path = $_SESSION['instance'] . $random . ".jpg";
         // remove special characters from file name
-        $filename_path =  $utility->RemoveSpecialChar($filename_path);
+        $filename_path = $utility->RemoveSpecialChar($filename_path);
         // generate image from posted base64 data
         $decoded = base64_decode($fileTmpPath);
         // move image to folder
@@ -543,13 +543,13 @@ if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_o
     $action = $model->upDate($tblName, $profile_data, $conditions);
     if ($action) {
         echo
-        '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                       <div class="alert-text">Success! <b>Learner profile has been modified successfully</b>!</div>
                               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>';
     } else {
         echo
-        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                       <div class="alert-text">Error! Unable to modify learner profile</div>
                               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>';
@@ -560,7 +560,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
     $tblName = 'lhpresultconfig';
     $conditions = array(
         'where' => array(
-            'term' =>  $active_term['term'],
+            'term' => $active_term['term'],
         ),
         'return_type' => 'single',
 
@@ -569,7 +569,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
     $tblName = 'lhpsubject';
     $conditions = array(
         'where' => array(
-            'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+            'lhpsubject.sbjid' => $_POST['allocated_subject'],
         ),
         'joinl' => array(
             'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
@@ -583,8 +583,8 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
     $tblName = 'lhpuser';
     $conditions = array(
         'where' => array(
-            'classid' =>  $class_details['classid'],
-            'status' =>  1,
+            'classid' => $class_details['classid'],
+            'status' => 1,
         ),
         'return_type' => 'count',
     );
@@ -617,7 +617,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                 ',
             'where' => array(
                 'lhpresultrecord.subjid' => $_POST['allocated_subject'],
-                'lhpresultrecord.term' =>  $active_term['term'],
+                'lhpresultrecord.term' => $active_term['term'],
             ),
             'return_type' => 'single',
         );
@@ -646,7 +646,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         $tblName = 'lhpsubject';
         $conditions = array(
             'where' => array(
-                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+                'lhpsubject.sbjid' => $_POST['allocated_subject'],
             ),
             'joinl' => array(
                 'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
@@ -661,9 +661,9 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
             if ($scores >= 1 && $result_config['ca_score'] >= $scores) {
                 $conditions = array(
                     'where' => array(
-                        'lhpresultrecord.lid' =>  $user,
-                        'lhpresultrecord.subjid' =>  $_POST['allocated_subject'],
-                        'lhpresultrecord.term' =>  $active_term["term"],
+                        'lhpresultrecord.lid' => $user,
+                        'lhpresultrecord.subjid' => $_POST['allocated_subject'],
+                        'lhpresultrecord.term' => $active_term["term"],
                     ),
                     'return_type' => 'single',
                 );
@@ -672,12 +672,12 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                 if (!empty($check_if_exist)) {
                     $score_data = array(
                         'score' => $scores,
-                        'totalscore' => $scores +  $check_if_exist['examscore'],
+                        'totalscore' => $scores + $check_if_exist['examscore'],
                     );
                     $conditions = array(
-                        'lhpresultrecord.lid' =>  $user,
-                        'lhpresultrecord.subjid' =>  $_POST['allocated_subject'],
-                        'lhpresultrecord.term' =>  $active_term["term"],
+                        'lhpresultrecord.lid' => $user,
+                        'lhpresultrecord.subjid' => $_POST['allocated_subject'],
+                        'lhpresultrecord.term' => $active_term["term"],
                     );
                     $action = $model->upDate($tblName, $score_data, $conditions);
                     if ($action) {
@@ -699,10 +699,10 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                         'score' => $scores,
                         'examscore' => 0,
                         'totalscore' => $scores,
-                        'lid' =>  $user,
-                        'classid' =>  $class_details['classid'],
-                        'subjid' =>  $_POST['allocated_subject'],
-                        'term' =>  $active_term["term"],
+                        'lid' => $user,
+                        'classid' => $class_details['classid'],
+                        'subjid' => $_POST['allocated_subject'],
+                        'term' => $active_term["term"],
                     );
                     $action = $model->insert_data($tblName, $score_data);
                     if ($action) {
@@ -734,7 +734,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         $tblName = 'lhpsubject';
         $conditions = array(
             'where' => array(
-                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+                'lhpsubject.sbjid' => $_POST['allocated_subject'],
             ),
             'joinl' => array(
                 'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
@@ -760,7 +760,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         $tblName = 'lhpsubject';
         $conditions = array(
             'where' => array(
-                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+                'lhpsubject.sbjid' => $_POST['allocated_subject'],
             ),
             'joinl' => array(
                 'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
@@ -775,9 +775,9 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
             if ($scores >= 1 && $result_config['exam_score'] >= $scores) {
                 $conditions = array(
                     'where' => array(
-                        'lhpresultrecord.lid' =>  $user,
-                        'lhpresultrecord.subjid' =>  $_POST['allocated_subject'],
-                        'lhpresultrecord.term' =>  $active_term["term"],
+                        'lhpresultrecord.lid' => $user,
+                        'lhpresultrecord.subjid' => $_POST['allocated_subject'],
+                        'lhpresultrecord.term' => $active_term["term"],
                     ),
                     'return_type' => 'single',
                 );
@@ -786,12 +786,12 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                 if (!empty($check_if_exist)) {
                     $score_data = array(
                         'examscore' => $scores,
-                        'totalscore' => $scores +  $check_if_exist['score'],
+                        'totalscore' => $scores + $check_if_exist['score'],
                     );
                     $conditions = array(
-                        'lhpresultrecord.lid' =>  $user,
-                        'lhpresultrecord.subjid' =>  $_POST['allocated_subject'],
-                        'lhpresultrecord.term' =>  $active_term["term"],
+                        'lhpresultrecord.lid' => $user,
+                        'lhpresultrecord.subjid' => $_POST['allocated_subject'],
+                        'lhpresultrecord.term' => $active_term["term"],
                     );
                     $action = $model->upDate($tblName, $score_data, $conditions);
                     if ($action) {
@@ -813,10 +813,10 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                         'score' => 0,
                         'examscore' => $scores,
                         'totalscore' => $scores,
-                        'lid' =>  $user,
-                        'classid' =>  $class_details['classid'],
-                        'subjid' =>  $_POST['allocated_subject'],
-                        'term' =>  $active_term["term"],
+                        'lid' => $user,
+                        'classid' => $class_details['classid'],
+                        'subjid' => $_POST['allocated_subject'],
+                        'term' => $active_term["term"],
                     );
                     $action = $model->insert_data($tblName, $score_data);
                     if ($action) {
@@ -847,7 +847,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         $tblName = 'lhpsubject';
         $conditions = array(
             'where' => array(
-                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+                'lhpsubject.sbjid' => $_POST['allocated_subject'],
             ),
             'joinl' => array(
                 'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
@@ -883,7 +883,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         $tblName = 'lhpsubject';
         $conditions = array(
             'where' => array(
-                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+                'lhpsubject.sbjid' => $_POST['allocated_subject'],
             ),
             'joinl' => array(
                 'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
@@ -912,7 +912,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
         $tblName = 'lhpsubject';
         $conditions = array(
             'where' => array(
-                'lhpsubject.sbjid' =>  $_POST['allocated_subject'],
+                'lhpsubject.sbjid' => $_POST['allocated_subject'],
             ),
             'joinl' => array(
                 'lhpclass' => ' on lhpsubject.classid = lhpclass.classid',
@@ -927,10 +927,10 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
             if ($scores >= 1 && 10 >= $scores) {
                 $conditions = array(
                     'where' => array(
-                        'lhpweekrecord.lid' =>  $user,
-                        'lhpweekrecord.subjid' =>  $_POST['allocated_subject'],
-                        'lhpweekrecord.term' =>  $active_term["term"],
-                        'lhpweekrecord.week' =>  $_POST['week_num'],
+                        'lhpweekrecord.lid' => $user,
+                        'lhpweekrecord.subjid' => $_POST['allocated_subject'],
+                        'lhpweekrecord.term' => $active_term["term"],
+                        'lhpweekrecord.week' => $_POST['week_num'],
                     ),
                     'return_type' => 'single',
                 );
@@ -941,10 +941,10 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
                         'score' => $scores
                     );
                     $conditions = array(
-                        'lhpweekrecord.lid' =>  $user,
-                        'lhpweekrecord.subjid' =>  $_POST['allocated_subject'],
-                        'lhpweekrecord.term' =>  $active_term["term"],
-                        'lhpweekrecord.week' =>  $_POST['week_num'],
+                        'lhpweekrecord.lid' => $user,
+                        'lhpweekrecord.subjid' => $_POST['allocated_subject'],
+                        'lhpweekrecord.term' => $active_term["term"],
+                        'lhpweekrecord.week' => $_POST['week_num'],
                     );
                     $action = $model->upDate($tblName, $score_data, $conditions);
                     if ($action) {
@@ -964,11 +964,11 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
 
                     $score_data = array(
                         'score' => $scores,
-                        'lid' =>  $user,
-                        'classid' =>  $class_details['classid'],
-                        'subjid' =>  $_POST['allocated_subject'],
-                        'week' =>  $_POST['week_num'],
-                        'term' =>  $active_term["term"],
+                        'lid' => $user,
+                        'classid' => $class_details['classid'],
+                        'subjid' => $_POST['allocated_subject'],
+                        'week' => $_POST['week_num'],
+                        'term' => $active_term["term"],
                     );
                     $action = $model->insert_data($tblName, $score_data);
                     if ($action) {
@@ -1002,7 +1002,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     $tblName = 'lhpresultconfig';
     $conditions = array(
         'where' => array(
-            'term' =>  $active_term['term'],
+            'term' => $active_term['term'],
         ),
         'return_type' => 'single',
 
@@ -1012,7 +1012,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     $tblName = 'lhpclass';
     $conditions = array(
         'where' => array(
-            'classid' =>  $_POST['affective_class'],
+            'classid' => $_POST['affective_class'],
         ),
         'return_type' => 'single',
 
@@ -1062,7 +1062,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     $tblName = 'lhpresultconfig';
     $conditions = array(
         'where' => array(
-            'term' =>  $active_term['term'],
+            'term' => $active_term['term'],
         ),
         'return_type' => 'single',
 
@@ -1072,16 +1072,16 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     $response = '';
     $tblName = 'lhpaffective';
     foreach ($_POST['all_users'] as $idx => $user) {
-        $days =  $_POST['all_present'][$idx];
-        $comment =  $_POST['all_comment'][$idx];
+        $days = $_POST['all_present'][$idx];
+        $comment = $_POST['all_comment'][$idx];
 
-        if ($days >= 1 &&  $days <= $result_config['sch_open'] && strlen($comment) > 5) {
+        if ($days >= 1 && $days <= $result_config['sch_open'] && strlen($comment) > 5) {
 
             $conditions = array(
                 'where' => array(
-                    'lhpaffective.uname' =>  $user,
-                    'lhpaffective.classid' =>  $_POST['affective_class'],
-                    'lhpaffective.term' =>  $active_term["term"],
+                    'lhpaffective.uname' => $user,
+                    'lhpaffective.classid' => $_POST['affective_class'],
+                    'lhpaffective.term' => $active_term["term"],
                 ),
                 'return_type' => 'single',
             );
@@ -1093,9 +1093,9 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
                     'lhpaffective.comment' => addslashes($comment)
                 );
                 $conditions = array(
-                    'lhpaffective.uname' =>  $user,
-                    'lhpaffective.classid' =>  $_POST['affective_class'],
-                    'lhpaffective.term' =>  $active_term["term"],
+                    'lhpaffective.uname' => $user,
+                    'lhpaffective.classid' => $_POST['affective_class'],
+                    'lhpaffective.term' => $active_term["term"],
                 );
                 $action = $model->upDate($tblName, $update_data, $conditions);
                 if ($action) {
@@ -1114,9 +1114,9 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
             } else {
 
                 $new_data = array(
-                    'uname' =>  $user,
-                    'classid' =>  $_POST['affective_class'],
-                    'term' =>  $active_term["term"],
+                    'uname' => $user,
+                    'classid' => $_POST['affective_class'],
+                    'term' => $active_term["term"],
                     'total_present' => $days,
                     'comment' => addslashes($comment),
                 );
@@ -1150,7 +1150,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     $tblName = 'lhpresultconfig';
     $conditions = array(
         'where' => array(
-            'term' =>  $active_term['term'],
+            'term' => $active_term['term'],
         ),
         'return_type' => 'single',
 
@@ -1160,25 +1160,25 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     $response = '';
     $tblName = 'lhpaffective';
     foreach ($_POST['all_users'] as $idx => $user) {
-        $rate_a =  $_POST['all_rating1'][$idx];
-        $rate_b =  $_POST['all_rating2'][$idx];
-        $rate_c =  $_POST['all_rating3'][$idx];
-        $rate_d =  $_POST['all_rating4'][$idx];
-        $rate_e =  $_POST['all_rating5'][$idx];
+        $rate_a = $_POST['all_rating1'][$idx];
+        $rate_b = $_POST['all_rating2'][$idx];
+        $rate_c = $_POST['all_rating3'][$idx];
+        $rate_d = $_POST['all_rating4'][$idx];
+        $rate_e = $_POST['all_rating5'][$idx];
 
         if (
-            $rate_a >= 1 &&  $rate_a <= 5
-            && $rate_b >= 1 &&  $rate_b <= 5
-            && $rate_c >= 1 &&  $rate_c <= 5
-            && $rate_d >= 1 &&  $rate_d <= 5
-            && $rate_e >= 1 &&  $rate_e <= 5
+            $rate_a >= 1 && $rate_a <= 5
+            && $rate_b >= 1 && $rate_b <= 5
+            && $rate_c >= 1 && $rate_c <= 5
+            && $rate_d >= 1 && $rate_d <= 5
+            && $rate_e >= 1 && $rate_e <= 5
         ) {
 
             $conditions = array(
                 'where' => array(
-                    'lhpaffective.uname' =>  $user,
-                    'lhpaffective.classid' =>  $_POST['affective_class'],
-                    'lhpaffective.term' =>  $active_term["term"]
+                    'lhpaffective.uname' => $user,
+                    'lhpaffective.classid' => $_POST['affective_class'],
+                    'lhpaffective.term' => $active_term["term"]
                 ),
                 'return_type' => 'single',
             );
@@ -1193,9 +1193,9 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
                     'lhpaffective.rating5' => $rate_e
                 );
                 $conditions = array(
-                    'lhpaffective.uname' =>  $user,
-                    'lhpaffective.classid' =>  $_POST['affective_class'],
-                    'lhpaffective.term' =>  $active_term["term"]
+                    'lhpaffective.uname' => $user,
+                    'lhpaffective.classid' => $_POST['affective_class'],
+                    'lhpaffective.term' => $active_term["term"]
                 );
                 $action = $model->upDate($tblName, $update_data, $conditions);
                 if ($action) {
@@ -1214,9 +1214,9 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
             } else {
 
                 $new_data = array(
-                    'uname' =>  $user,
-                    'classid' =>  $_POST['affective_class'],
-                    'term' =>  $active_term["term"],
+                    'uname' => $user,
+                    'classid' => $_POST['affective_class'],
+                    'term' => $active_term["term"],
                     'rating1' => $rate_a,
                     'rating2' => $rate_b,
                     'rating3' => $rate_c,
