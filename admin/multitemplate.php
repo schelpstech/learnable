@@ -446,7 +446,7 @@ $serial = $seriala . $serialb;
                                         <tr>
 
                                             <td><strong>
-                                                    <p style="text-align: left;"> <?php echo (strtoupper($subjectname)) ?? "" ?></p>
+                                                    <p style="text-align: left;"> <?php echo (!empty($subjectname) ? strtoupper($subjectname) : "" )?></p>
                                                 </strong></td>
                                             <td><strong>
                                                     <p style="text-align: left;"> <?php echo $term1 ?></p>
