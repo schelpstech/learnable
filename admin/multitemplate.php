@@ -18,34 +18,22 @@ $serial = $seriala . $serialb;
 
                                     </tr>
                                 </thead>
-
-
                                 <tbody>
-
-
-
-
-
                                     <tr>
                                         <td>
                                             <image src="../admin/images/<?php echo $schlogo; ?>" width="150" height="150" /><br>
                                             <strong>Founded: <?php echo $schyear; ?></strong>
                                         </td>
                                         <td>
-
                                             <h1 style="text-align: center;"> <?php echo $schname; ?> </h1>
                                             <h5 style="text-align: center;"> <?php echo $schmotto; ?> </h5>
                                             <h5 style="text-align: center;"> <?php echo $schaddress; ?> </h5>
                                             <h5 style="text-align: center;"> <?php echo $schphone; ?> | <?php echo $schemail; ?> | <?php echo $schweb ?> </h5>
                                             <h4 style="text-align: center;"> <?php echo $term . " " ?> Academic Reportsheets for <?php echo $dclass ?></h4>
                                         </td>
-
                                     </tr>
-
                                 </tbody>
-
                                 </tbody>
-
                             </table>
                         </div>
                     </div>
@@ -53,8 +41,6 @@ $serial = $seriala . $serialb;
             </div>
         </div>
     </div><br>
-
-
     <div class="data-table-area" style="text-align: center;">
         <div class="container">
             <div class="row">
@@ -460,7 +446,7 @@ $serial = $seriala . $serialb;
                                         <tr>
 
                                             <td><strong>
-                                                    <p style="text-align: left;"> <?php echo strtoupper($subjectname) ?></p>
+                                                    <p style="text-align: left;"> <?php echo (strtoupper($subjectname)) ?? "" ?></p>
                                                 </strong></td>
                                             <td><strong>
                                                     <p style="text-align: left;"> <?php echo $term1 ?></p>
