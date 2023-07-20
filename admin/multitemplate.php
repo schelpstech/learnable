@@ -229,14 +229,12 @@ $serial = $seriala . $serialb;
                                     include_once './conn.php';
 
                                     $count = 1;
-                                    $query = $conn->prepare("SELECT DISTINCT lhpresultrecord.subjid as subjectid , lhpsubject.sbjid, lhpsubject.sbjname as subjectname  from lhpresultrecord LEFT JOIN lhpsubject on lhpresultrecord.subjid = lhpsubject.sbjid WHERE lhpresultrecord.classid = '$cclass' ORDER BY lhpsubject.sbjname ASC");
+                                    $query = $conn->prepare('SELECT DISTINCT lhpresultrecord.subjid as subjectid , lhpsubject.sbjid, lhpsubject.sbjname as subjectname  from lhpresultrecord LEFT JOIN lhpsubject on lhpresultrecord.subjid = lhpsubject.sbjid WHERE lhpresultrecord.classid = '.$cclass.' and lhpsubject.sbjname != "" ORDER BY lhpsubject.sbjname ASC');
                                     $query->setFetchMode(PDO::FETCH_OBJ);
                                     $query->execute();
                                     while ($row = $query->fetch()) {
                                         $subjectname = $row->subjectname;
                                         $subjectid = $row->subjectid;
-
-
                                     ?>
                                         <?php
                                         $sql = "SELECT `session` FROM `lhpsession` WHERE `status`  = 1 ";
