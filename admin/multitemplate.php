@@ -21,15 +21,31 @@ $serial = $seriala . $serialb;
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <image src="../admin/images/<?php echo $schlogo; ?>" width="150" height="150" /><br>
-                                            <strong>Founded: <?php echo $schyear; ?></strong>
+                                            <image src="../admin/images/<?php echo $schlogo; ?>" width="150"
+                                                height="150" /><br>
+                                            <strong>Founded:
+                                                <?php echo $schyear; ?>
+                                            </strong>
                                         </td>
                                         <td>
-                                            <h1 style="text-align: center;"> <?php echo $schname; ?> </h1>
-                                            <h5 style="text-align: center;"> <?php echo $schmotto; ?> </h5>
-                                            <h5 style="text-align: center;"> <?php echo $schaddress; ?> </h5>
-                                            <h5 style="text-align: center;"> <?php echo $schphone; ?> | <?php echo $schemail; ?> | <?php echo $schweb ?> </h5>
-                                            <h4 style="text-align: center;"> <?php echo $term . " " ?> Academic Reportsheets for <?php echo $dclass ?></h4>
+                                            <h1 style="text-align: center;">
+                                                <?php echo $schname; ?>
+                                            </h1>
+                                            <h5 style="text-align: center;">
+                                                <?php echo $schmotto; ?>
+                                            </h5>
+                                            <h5 style="text-align: center;">
+                                                <?php echo $schaddress; ?>
+                                            </h5>
+                                            <h5 style="text-align: center;">
+                                                <?php echo $schphone; ?> |
+                                                <?php echo $schemail; ?> |
+                                                <?php echo $schweb ?>
+                                            </h5>
+                                            <h4 style="text-align: center;">
+                                                <?php echo $term . " " ?> Academic Reportsheets for
+                                                <?php echo $dclass ?>
+                                            </h4>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -77,31 +93,47 @@ $serial = $seriala . $serialb;
 
                                     <tr>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $lname ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $lname ?>
+                                                </p>
                                             </strong></td>
                                         <td><strong>
-                                                <h4 style="text-align: center;"> <?php echo $stname ?></h4>
-                                            </strong></td>
-                                        <td><strong>
-                                                <p style="text-align: center;"><?php echo $gender ?></p>
-                                            </strong></td>
-                                        <td><strong>
-                                                <p style="text-align: center;"><?php echo $dob ?></p>
-                                            </strong></td>
-                                        <td><strong>
-                                                <p style="text-align: center;"><?php echo $dclass; ?></p>
-                                            </strong></td>
-                                        <td><strong>
-                                                <p style="text-align: center;"><?php echo $tutorname; ?></p>
-                                            </strong></td>
-                                        <td><strong>
-                                                <p style="text-align: center;"><?php echo $pop; ?></p>
+                                                <h4 style="text-align: center;">
+                                                    <?php echo $stname ?>
+                                                </h4>
                                             </strong></td>
                                         <td><strong>
                                                 <p style="text-align: center;">
-                                                    <image src="images/profilepix/<?php echo $pix; ?>" height="100" width="100" />
+                                                    <?php echo $gender ?>
                                                 </p>
                                             </strong></td>
+                                        <td><strong>
+                                                <p style="text-align: center;">
+                                                    <?php echo $dob ?>
+                                                </p>
+                                            </strong></td>
+                                        <td><strong>
+                                                <p style="text-align: center;">
+                                                    <?php echo $dclass; ?>
+                                                </p>
+                                            </strong></td>
+                                        <td><strong>
+                                                <p style="text-align: center;">
+                                                    <?php echo $tutorname; ?>
+                                                </p>
+                                            </strong></td>
+                                        <td><strong>
+                                                <p style="text-align: center;">
+                                                    <?php echo $pop; ?>
+                                                </p>
+                                            </strong></td>
+                                            <td style="text-align: center;">
+                                                <image src="../learn/asset/img/passport/<?php echo $pix; ?>" width="150"
+                                                    height="150" /><br>
+                                                <strong>
+                                                    <?php echo $lname; ?>
+                                                </strong>
+                                            </td>
                                     </tr>
 
                                 </tbody>
@@ -153,28 +185,44 @@ $serial = $seriala . $serialb;
 
                                     <tr>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $opendays ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $opendays ?>
+                                                </p>
                                             </strong></td>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $present ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $present ?>
+                                                </p>
                                             </strong></td>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $opendays - $present; ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $opendays - $present; ?>
+                                                </p>
                                             </strong></td>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $lead ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $lead ?>
+                                                </p>
                                             </strong></td>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $eloq ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $eloq ?>
+                                                </p>
                                             </strong></td>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $neat ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $neat ?>
+                                                </p>
                                             </strong></td>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $create ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $create ?>
+                                                </p>
                                             </strong></td>
                                         <td><strong>
-                                                <p style="text-align: center;"><?php echo $response ?></p>
+                                                <p style="text-align: center;">
+                                                    <?php echo $response ?>
+                                                </p>
                                             </strong></td>
                                     </tr>
 
@@ -229,39 +277,39 @@ $serial = $seriala . $serialb;
                                     include_once './conn.php';
 
                                     $count = 1;
-                                    $query = $conn->prepare('SELECT DISTINCT lhpresultrecord.subjid as subjectid , lhpsubject.sbjid, lhpsubject.sbjname as subjectname  from lhpresultrecord LEFT JOIN lhpsubject on lhpresultrecord.subjid = lhpsubject.sbjid WHERE lhpresultrecord.classid = '.$cclass.' and lhpsubject.sbjname != "" ORDER BY lhpsubject.sbjname ASC');
+                                    $query = $conn->prepare('SELECT DISTINCT lhpresultrecord.subjid as subjectid , lhpsubject.sbjid, lhpsubject.sbjname as subjectname  from lhpresultrecord LEFT JOIN lhpsubject on lhpresultrecord.subjid = lhpsubject.sbjid WHERE lhpresultrecord.classid = ' . $cclass . ' and lhpsubject.sbjname != "" ORDER BY lhpsubject.sbjname ASC');
                                     $query->setFetchMode(PDO::FETCH_OBJ);
                                     $query->execute();
                                     while ($row = $query->fetch()) {
                                         $subjectname = $row->subjectname;
                                         $subjectid = $row->subjectid;
-                                    ?>
+                                        ?>
                                         <?php
                                         $sql = "SELECT `session` FROM `lhpsession` WHERE `status`  = 1 ";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
                                         $session = $row["session"];
 
-                                        $sql =  "SELECT tid FROM `lpterm` WHERE `term`  = '$term'";
+                                        $sql = "SELECT tid FROM `lpterm` WHERE `term`  = '$term'";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
                                         $current_termid = $row["tid"];
 
-                                        $secondtermid =  $current_termid - 1;
-                                        $firsttermid =  $current_termid - 2;
+                                        $secondtermid = $current_termid - 1;
+                                        $firsttermid = $current_termid - 2;
 
-                                        $sql =  "SELECT term FROM `lpterm` WHERE `tid`  = '$firsttermid'";
+                                        $sql = "SELECT term FROM `lpterm` WHERE `tid`  = '$firsttermid'";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
                                         $firsttermref = $row["term"];
 
-                                        $sql =  "SELECT term FROM `lpterm` WHERE `tid`  = '$secondtermid'";
+                                        $sql = "SELECT term FROM `lpterm` WHERE `tid`  = '$secondtermid'";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
                                         $secondtermref = $row["term"];
 
                                         //1st Term Score
-
+                                    
                                         $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$firsttermref' and `subjid`  = '$subjectid' and lid = '$lname'  ";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
@@ -275,7 +323,7 @@ $serial = $seriala . $serialb;
                                             $rate1 = 0;
                                         }
                                         //2nd Term Score
-
+                                    
                                         $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$secondtermref' and `subjid`  = '$subjectid' and lid = '$lname' ";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
@@ -290,7 +338,7 @@ $serial = $seriala . $serialb;
                                         }
 
                                         //3rd Term Score
-
+                                    
                                         $sql = "SELECT score, examscore, `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname'  ";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
@@ -320,7 +368,7 @@ $serial = $seriala . $serialb;
                                             $cum = '';
                                         } else {
                                             $cum = round((($sum1 + $sum2 + $sum3) / $x), 2);
-                                            
+
                                         }
 
 
@@ -359,14 +407,14 @@ $serial = $seriala . $serialb;
                                             $remarks = "";
                                         }
                                         //cumulatives
-
+                                    
                                         $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$firsttermref' ";
                                         $result = mysqli_query($con, $sql);
                                         $row = mysqli_fetch_array($result);
                                         if (!empty($row["score"])) {
                                             $firstterm = $row["score"];
                                             $t1 = 1;
-                                        }else{
+                                        } else {
                                             $firstterm = 0;
                                             $t1 = 0;
                                         }
@@ -377,7 +425,7 @@ $serial = $seriala . $serialb;
                                         if (!empty($row["score"])) {
                                             $secondterm = $row["score"];
                                             $t2 = 1;
-                                        }else{
+                                        } else {
                                             $secondterm = 0;
                                             $t2 = 0;
                                         }
@@ -388,13 +436,13 @@ $serial = $seriala . $serialb;
                                         if (!empty($row["score"])) {
                                             $thirdterm = $row["score"];
                                             $t3 = 1;
-                                        }else{
+                                        } else {
                                             $thirdterm = 0;
                                             $t3 = 0;
                                         }
 
                                         $y = $firstterm + $secondterm + $thirdterm;
-                                        $a = $t1+$t2+$t3;
+                                        $a = $t1 + $t2 + $t3;
 
 
                                         if (($y / $a) >= 75) {
@@ -444,34 +492,49 @@ $serial = $seriala . $serialb;
                                         <tr>
 
                                             <td><strong>
-                                                    <p style="text-align: left;"> <?php echo (!empty($subjectname) ? strtoupper($subjectname) : "" )?></p>
+                                                    <p style="text-align: left;">
+                                                        <?php echo (!empty($subjectname) ? strtoupper($subjectname) : "") ?>
+                                                    </p>
                                                 </strong></td>
                                             <td><strong>
-                                                    <p style="text-align: left;"> <?php echo $term1 ?></p>
+                                                    <p style="text-align: left;">
+                                                        <?php echo $term1 ?>
+                                                    </p>
                                                 </strong></td>
                                             <td><strong>
-                                                    <p style="text-align: left;"> <?php echo $term2 ?></p>
+                                                    <p style="text-align: left;">
+                                                        <?php echo $term2 ?>
+                                                    </p>
                                                 </strong></td>
                                             <td><strong>
-                                                    <p style="text-align: left;"> <?php echo $ca ?></p>
+                                                    <p style="text-align: left;">
+                                                        <?php echo $ca ?>
+                                                    </p>
                                                 </strong></td>
                                             <td><strong>
-                                                    <p style="text-align: left;"> <?php echo $exam ?></p>
+                                                    <p style="text-align: left;">
+                                                        <?php echo $exam ?>
+                                                    </p>
                                                 </strong></td>
                                             <td><strong>
-                                                    <p style="text-align: left;"> <?php echo $term3 ?></p>
+                                                    <p style="text-align: left;">
+                                                        <?php echo $term3 ?>
+                                                    </p>
                                                 </strong></td>
                                             <td><strong>
                                                     <h4 style="text-align: center;">
-                                                        <?php echo $cum ?></h4>
+                                                        <?php echo $cum ?>
+                                                    </h4>
                                                 </strong></td>
                                             <td><strong>
                                                     <h4 style="text-align: center;">
-                                                        <?php echo $grade ?></h4>
+                                                        <?php echo $grade ?>
+                                                    </h4>
                                                 </strong></td>
                                             <td><strong>
                                                     <h4 style="text-align: center;">
-                                                        <?php echo $remarks ?></h4>
+                                                        <?php echo $remarks ?>
+                                                    </h4>
                                                 </strong></td>
 
                                         </tr>
@@ -536,27 +599,41 @@ $serial = $seriala . $serialb;
 
                                                     <tr>
                                                         <td><strong>
-                                                                <h4 style="text-align: center;"><?php echo round($firstterm, 2) ?>%</h4>
+                                                                <h4 style="text-align: center;">
+                                                                    <?php echo round($firstterm, 2) ?>%
+                                                                </h4>
                                                             </strong></td>
                                                         <td><strong>
-                                                                <h4 style="text-align: center;"><?php echo  round($secondterm, 2) ?>%</h4>
+                                                                <h4 style="text-align: center;">
+                                                                    <?php echo round($secondterm, 2) ?>%
+                                                                </h4>
                                                             </strong></td>
 
                                                         <td><strong>
-                                                                <h4 style="text-align: center;"><?php echo round($thirdterm, 2) ?>%</h4>
+                                                                <h4 style="text-align: center;">
+                                                                    <?php echo round($thirdterm, 2) ?>%
+                                                                </h4>
                                                             </strong></td>
 
                                                         <td><strong>
-                                                                <h3 style="text-align: center;"><?php echo round(($y / $a), 2) ?>%</h3>
+                                                                <h3 style="text-align: center;">
+                                                                    <?php echo round(($y / $a), 2) ?>%
+                                                                </h3>
                                                             </strong></td>
                                                         <td><strong>
-                                                                <h4 style="text-align: center;"><?php echo $cgrade ?></h4>
+                                                                <h4 style="text-align: center;">
+                                                                    <?php echo $cgrade ?>
+                                                                </h4>
                                                             </strong></td>
                                                         <td><strong>
-                                                                <h4 style="text-align: center;"><?php echo $cremarks ?></h4>
+                                                                <h4 style="text-align: center;">
+                                                                    <?php echo $cremarks ?>
+                                                                </h4>
                                                             </strong></td>
                                                         <td>
-                                                            <h5 style="text-align: center;"><?php echo $tremarks ?></h5>
+                                                            <h5 style="text-align: center;">
+                                                                <?php echo $tremarks ?>
+                                                            </h5>
                                                         </td>
                                                         <?php if (!is_null($comment)) {
                                                             echo '<td><strong>
@@ -566,7 +643,9 @@ $serial = $seriala . $serialb;
                                                         ?>
 
                                                         <td><strong>
-                                                                <p style="text-align: center;"><?php echo $resumedate ?></p>
+                                                                <p style="text-align: center;">
+                                                                    <?php echo $resumedate ?>
+                                                                </p>
                                                             </strong></td>
 
                                                     </tr>
@@ -596,7 +675,9 @@ $serial = $seriala . $serialb;
 
                             <div class="breadcomb-icon">
                                 <image src="../admin/archive/<?php echo $sign; ?>" height="100" width="100" />
-                                <h3 style="text-align: left;"> <?php echo $schowner; ?> </h3>
+                                <h3 style="text-align: left;">
+                                    <?php echo $schowner; ?>
+                                </h3>
                                 <h4 style="text-align: left;"> Chief Learning Officer </h4>
 
                             </div>
@@ -611,7 +692,8 @@ $serial = $seriala . $serialb;
 
 
 </div>
-<button id="cmd" onclick="generatePDF<?php echo $serial ?>()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i>
+<button id="cmd" onclick="generatePDF<?php echo $serial ?>()" class="btn btn-default btn-icon-notika"><i
+        class="notika-icon notika-down-arrow"></i>
     <h3>Download Result</h3>
 </button>
 <script>
