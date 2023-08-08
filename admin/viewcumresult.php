@@ -653,15 +653,15 @@ $tutorname = $row["staffname"];
 
 
                       if (($y / $a) >= 75) {
-                        $tremarks = "Your academic performance this term is excellent; you need to keep up the good work to sustain this excellent performance in subsequent terms. Keep it Up!";
+                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is excellent; you need to keep up the good work to sustain this excellent performance in subsequent terms. Keep it Up!";
                       } elseif (($y / $a) >= 65) {
-                        $tremarks = "Your academic performance this term is impressive but you need to work harder to achieve higher grades next term. Well done!";
+                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is impressive but you need to work harder to achieve higher grades next term. Well done!";
                       } elseif (($y / $a) >= 50) {
-                        $tremarks = "Your academic performance this term is moderate but with more effort towards studying, you will achieve higher grades next term. Cheer up!";
+                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is moderate but with more effort towards studying, you will achieve higher grades next term. Cheer up!";
                       } elseif (($y / $a) >= 45) {
-                        $tremarks = "Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
+                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
                       } elseif (($y / $a) >= 40) {
-                        $tremarks = "Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
+                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
                       } else {
                         $tremarks = "Your academic performance this term is below the pass grade. You can do better if you can commit more effort and time to studying thoroughly next term.";
                       }
