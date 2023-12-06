@@ -714,7 +714,6 @@ $tutorname = $row["staffname"];
                               <?php echo $remarks ?>
                             </h4>
                           </strong></td>
-
                       </tr>
                     <?php } ?>
                   </tbody>

@@ -2,12 +2,12 @@
 
    if(isset($_POST['staff'])){	
    
-    header('Location: staff.php');
+    header('Location: ./staff.php');
 }
 
 if(isset($_POST['student'])){	
    
-    header('Location: learn');
+    header('Location: ./student.php');
 }
 ?>
 
@@ -53,9 +53,9 @@ if(isset($_POST['student'])){
 					
 
 					<div class="container-login100-form-btn m-t-32">
-						<button class="login100-form-btn"  name="staff">
+						<a class="login100-form-btn"  name="staff">
 							Staff Log in
-						</button> 
+						</a> 
 					</div>
 					
 					<div class="container-login100-form-btn m-t-32">
