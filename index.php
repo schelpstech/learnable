@@ -53,9 +53,9 @@ if(isset($_POST['student'])){
 					
 
 					<div class="container-login100-form-btn m-t-32">
-						<a class="login100-form-btn"  name="staff">
+						<button class="login100-form-btn"  name="staff">
 							Staff Log in
-						</a> 
+						</button> 
 					</div>
 					
 					<div class="container-login100-form-btn m-t-32">
