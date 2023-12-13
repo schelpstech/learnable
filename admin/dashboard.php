@@ -290,7 +290,7 @@ function getclass() {
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("select * from log LIMIT 500 ORDER BY udate DESC ");
+            $query=$conn->prepare("select * from log  ORDER BY udate DESC LIMIT 500");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
