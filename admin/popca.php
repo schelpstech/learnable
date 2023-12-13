@@ -6,10 +6,25 @@ if(!empty($_GET['term'])) {
 }
 
 
-$sql = "UPDATE lhpresultrecord SET 
-lhpresultrecord.score = ( SELECT ((SUM(lhpweekrecord.score) / COUNT(lhpweekrecord.id))*3) FROM lhpweekrecord WHERE lid = lhpresultrecord.lid and subjid = lhpresultrecord.subjid and lhpresultrecord.term = '$ref'), 
-lhpresultrecord.totalscore =  (( SELECT ((SUM(lhpweekrecord.score) / COUNT(lhpweekrecord.id))*3) FROM lhpweekrecord where lid = lhpresultrecord.lid and subjid = lhpresultrecord.subjid and lhpresultrecord.term = '$ref') + lhpresultrecord.examscore)   
-WHERE lid = lhpresultrecord.lid and subjid = lhpresultrecord.subjid and term = '$ref'";
+$sql = "UPDATE lhpresultrecord lr
+JOIN (
+    SELECT
+        lid,
+        subjid,
+        (SUM(score) / COUNT(id)) * 3 AS calculated_score
+    FROM
+        lhpweekrecord
+    WHERE
+        term = '$ref'
+    GROUP BY
+        lid,
+        subjid
+) ag ON lr.lid = ag.lid AND lr.subjid = ag.subjid
+SET
+    lr.score = ag.calculated_score,
+    lr.totalscore = ag.calculated_score + lr.examscore
+WHERE
+    lr.term = '$ref'";
 	if(mysqli_query($con, $sql)){	
 		
 		$message = 'Status : Successfully populated Continuous Assessment Scores From Weekly Assement Records for '.$ref;
