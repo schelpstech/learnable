@@ -1,5 +1,4 @@
 <?php
-
 // Check user login or not
 include "conf.php";
 if (!isset($_SESSION['unamed'])) {
@@ -7,24 +6,14 @@ if (!isset($_SESSION['unamed'])) {
 }
 ?>
 <?php
+if (!empty($_GET['termref'])) {
+    $termref = $_GET["termref"];
+    $_SESSION['termref'] = $_GET["termref"];
+}
 require_once("DBController.php");
 $db_handle = new DBController();
-$query = "SELECT * FROM lhpclass";
-$classresult = $db_handle->runQuery($query);
-?>
-
-<?php
-require_once("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm where status = 1";
-$termresult = $db_handle->runQuery($query);
-?>
-
-<?php
-require_once("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpsession where status = 1";
-$activeSession = $db_handle->runQuery($query);
+$query = "SELECT * FROM lpterm WHERE tid = '" . $termref . "'";
+$termdetails = $db_handle->runQuery($query);
 ?>
 
 
@@ -34,12 +23,12 @@ $activeSession = $db_handle->runQuery($query);
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Manage Terms - LearnAble</title>
+    <title>Change Term Status - LearnAble</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="https://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -89,9 +78,12 @@ $activeSession = $db_handle->runQuery($query);
     <link rel="stylesheet" href="css/responsive.css">
     <!-- modernizr JS
 		============================================ -->
+
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+
+
 </head>
 
 <body>
@@ -118,34 +110,7 @@ $activeSession = $db_handle->runQuery($query);
     <?php include "nav.html"; ?>
     <!-- Main Menu area End-->
     <!-- Breadcomb area Start-->
-    <div class="breadcomb-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="breadcomb-list">
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                <div class="breadcomb-wp">
-                                    <div class="breadcomb-icon">
-                                        <i class="notika-icon notika-support"></i>
-                                    </div>
-                                    <div class="breadcomb-ctn">
-                                        <h2>Welcome Admin</h2>
-                                        <p>.<span class="bread-ntd"></span></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
-                                <div class="breadcomb-report">
-                                    <button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i class="notika-icon notika-sent"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <div class="form-element-area">
         <div class="container">
@@ -154,8 +119,8 @@ $activeSession = $db_handle->runQuery($query);
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Term Configuration</h2>
-                            <p>Use the form below to configure a term </p>
+                            <h2>Change Term Status</h2>
+                            <p>Use the form below to change term status </p>
                             <h2> <?php
 
                                     if (isset($_SESSION['remessage']) && $_SESSION['remessage']) {
@@ -172,44 +137,71 @@ $activeSession = $db_handle->runQuery($query);
             <br>
             <div class="row">
                 <form method="POST" action="configterm.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+
                     <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                        <label>Select New Term</label>
+                        <label> Selected Term</label>
                         <div class="form-group ic-cmp-int">
                             <div class="form-ic-cmp">
                                 <i class="notika-icon notika-support"></i>
                             </div>
 
                             <div class="nk-int-st">
-                                <select type="text" required="yes" class="form-control" name="term">
-                                    <option value=""> Select Term</option>
-                                    <option value="1st Term"> 1st Term</option>
-                                    <option value="2nd Term"> 2nd Term</option>
-                                    <option value="3rd Term"> 3rd Term</option>
-                                </select>
+                                <input type="text" required="yes" class="form-control" name="na" disabled <?php
+                                                                                                            foreach ($termdetails as $ed) {
+                                                                                                            ?> value="<?php echo $ed["term"]; ?>">
+                            <?php
+                                                                                                            }
+                            ?>
                             </div>
                         </div>
                     </div>
 
+
                     <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                        <label>Active Academic Session</label>
+                        <label>Current Term Status</label>
                         <div class="form-group ic-cmp-int">
                             <div class="form-ic-cmp">
                                 <i class="notika-icon notika-support"></i>
                             </div>
 
                             <div class="nk-int-st">
-                                <select type="text" required="yes" class="form-control" name="actSession">
+                                <select type="text" disabled required="yes" class="form-control">
                                     <?php
-                                    foreach ($activeSession as $actSession) {
+                                    foreach ($termdetails as $ed) {
+                                        $stat = $ed["status"];
+                                        if ($stat == 1) {
+                                            $statmsg = "Active";
+                                        } else {
+                                            $statmsg = "In-active";
+                                        }
+
                                     ?>
-                                        <option value="<?php echo $actSession["session"]; ?>"><?php echo $actSession["session"]; ?></option>
+                                        <option value="<?php echo $stat; ?>"><?php echo $statmsg; ?></option>
                                     <?php
                                     }
                                     ?>
+
                                 </select>
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
+                        <label>Change Status</label>
+                        <div class="form-group ic-cmp-int">
+                            <div class="form-ic-cmp">
+                                <i class="notika-icon notika-support"></i>
+                            </div>
+
+                            <div class="nk-int-st">
+                                <select type="text" required="yes" class="form-control" name="action">
+                                    <option value="">Change Status</option>
+                                    <option value="1">Activate</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <br>
                     <br>
                     <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
@@ -217,7 +209,7 @@ $activeSession = $db_handle->runQuery($query);
                         <div class="form-group ic-cmp-int">
 
                             <div class="nk-int-st">
-                                <input type="submit" class="form-control" name="configterm" value="Create Term Record" />
+                                <input type="submit" class="form-control" name="modifyTerm" value="Change Term Status" />
                             </div>
                         </div>
                     </div>
@@ -232,79 +224,10 @@ $activeSession = $db_handle->runQuery($query);
     </div>
     </div>
 
-    <!-- Breadcomb area End-->
-    <!-- Data Table area Start-->
-    <div id="doc" class="data-table-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="data-table-list">
-                        <div class="basic-tb-hd">
-                            <h2>
-                                Term Configurations
-                            </h2>
-
-                        </div>
-                        <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>S/N</th>
-                                        <th>Term</th>
-                                        <th>Active Status</th>
-                                        <th>Modify Term Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    include_once './conn.php';
-
-                                    $count = 1;
-                                    $query = $conn->prepare("select * from lpterm ORDER BY tid DESC ");
-                                    $query->setFetchMode(PDO::FETCH_OBJ);
-                                    $query->execute();
-                                    while ($row = $query->fetch()) {
-                                        $termref = $row->tid;
-                                        $term = $row->term;
-                                        $status = $row->status;
-
-                                        if ($status == 1) {
-                                            $butt = '<a disabled type="button"  class="btn btn-success" > Current Term </button>';
-                                            $action = '<a href="#" type="button"  class="btn btn-warning" > Active Term</button>';
-                                        }
-                                        if ($status == 0) {
-                                          $butt = '<a disabled type="button"  class="btn btn-primary" > Inactive/ Previous Term </button>';
-                                          $action = '<a href="modifyTerm.php?termref='.$termref .'" type="button"  class="btn btn-info" > Activate Term</button>';
-                                        }
-                                    ?>
-                                        <tr>
-                                            <td><?php echo $count++ ?></td>
-                                            <td><?php echo $term  ?></td>
-                                            <td><?php echo $butt ?></td>
-                                            <td><?php echo $action ?></td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>S/N</th>
-                                        <th>Term</th>
-                                       <th>Term Status</th>
-                                       <th>Modify Term Status</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Data Table area End-->
     <!-- Start Footer area-->
     <?php include "foot.html"; ?>
+
     <!-- End Footer area-->
 
 
