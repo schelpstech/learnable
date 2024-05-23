@@ -320,31 +320,33 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
     );
     $recent = $model->getRows($tblName, $conditions);
 
-    //Subject List
-    $tblName = 'lhpalloc';
-    $conditions = array(
-        'select' => 'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
-                        lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classid, lhpclass.classname, 
-                        (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE  lhpnote.sbjid = lhpalloc.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '") as note ,
-                        (SELECT count(lhpquestion.sbjid) FROM lhpquestion WHERE  lhpquestion.sbjid = lhpalloc.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term['term'] . '") as task,
-                        (SELECT count(lhpfeedback.sbjid) FROM lhpfeedback WHERE lhpfeedback.sbjid = lhpalloc.sbjid and lhpfeedback.stdid = "' . $_SESSION['active'] . '" and lhpfeedback.term ="' . $active_term['term'] . '") as feedback,
-                        (SELECT count(lhpscheme.subject) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term['term'] . '") as topic',
-        'where' => array(
-            'lhpalloc.classid' => $learner_profile['classid'],
-            'lhpalloc.term' => $active_term['term'],
-        ),
-        'joinl' => array(
-            'lhpclass' => ' on lhpalloc.classid = lhpclass.classid',
-            'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname',
-            'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid',
-            'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid',
-            'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid',
-            'lhpfeedback' => ' on lhpalloc.sbjid = lhpfeedback.sbjid',
-            'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject',
-        ),
-        'group_by' => 'lhpalloc.sbjid',
-    );
-    $subject_list = $model->getRows($tblName, $conditions);
+//Subject List
+$tblName = 'lhpalloc';
+$conditions = array(
+    'select' => 'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
+                    lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classid, lhpclass.classname, 
+                    (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE lhpnote.sbjid = lhpalloc.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '") as note ,
+                    (SELECT count(lhpquestion.sbjid) FROM lhpquestion WHERE lhpquestion.sbjid = lhpalloc.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term['term'] . '") as task,
+                    (SELECT count(lhpfeedback.sbjid) FROM lhpfeedback WHERE lhpfeedback.sbjid = lhpalloc.sbjid and lhpfeedback.stdid = "' . $_SESSION['active'] . '" and lhpfeedback.term ="' . $active_term['term'] . '") as feedback,
+                    (SELECT count(lhpscheme.subject) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term['term'] . '") as topic',
+    'where' => array(
+        'lhpalloc.classid' => $learner_profile['classid'],
+        'lhpalloc.term' => $active_term['term'],
+    ),
+    'joinl' => array(
+        'lhpclass' => ' on lhpalloc.classid = lhpclass.classid',
+        'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname',
+        'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid',
+        'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid',
+        'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid',
+        'lhpfeedback' => ' on lhpalloc.sbjid = lhpfeedback.sbjid',
+        'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject',
+    ),
+    'group_by' => 'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, lhpalloc.sbjid, lhpsubject.sbjid, lhpsubject.sbjname, lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classid, lhpclass.classname',
+);
+
+$subject_list = $model->getRows($tblName, $conditions);
+
 
     //List of Submitted Assignments
     if (isset($_SESSION['subjectid'])) {
