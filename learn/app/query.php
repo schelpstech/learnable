@@ -613,7 +613,7 @@ $conditions = array(
         'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',
         'lhpclass' => ' on lhpalloc.classid = lhpclass.classid ',
     ),
-    'group_by' => 'lhpclass.classid, lhpstaff.sname',
+    'group_by' => 'lhpclass.classid, lhpstaff.sname, lhpsubject.sbjid',
     );
 
 $report = $model->getRows($tblName, $conditions);
