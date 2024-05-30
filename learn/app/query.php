@@ -615,7 +615,7 @@ $conditions = array(
         'LEFT JOIN lhpquestion ON lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.status = 1 AND lhpquestion.term = "' . $activeTerm . '" AND lhpquestion.staffid = "' . $activeSession . '"',
         'LEFT JOIN lhpfeedback ON lhpalloc.sbjid = lhpfeedback.sbjid AND lhpfeedback.term = "' . $activeTerm . '"',
     ),
-    'group_by' => 'lhpclass.classid',
+    'group_by' => 'lhpalloc.classid',
 );
 $report = $model->getRows($tblName, $conditions);
 
