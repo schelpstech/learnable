@@ -604,12 +604,12 @@ $conditions = array(
         'lhpalloc.staffid' => $activeSession,
         'lhpalloc.term' => $activeTerm,
     ),
-    'join' => array(
+    'joinl' => array(
         'lhpstaff' => ' ON lhpalloc.staffid = lhpstaff.sname ',
         'lhpsubject' => ' ON lhpalloc.sbjid = lhpsubject.sbjid ',
         'lhpclass' => ' ON lhpalloc.classid = lhpclass.classid ',
     ),
-    'leftjoin' => array(
+    'joinl' => array(
         'LEFT JOIN lhpscheme ON lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.status = 1 AND lhpscheme.term = "' . $activeTerm . '" AND lhpscheme.staffid = "' . $activeSession . '"',
         'LEFT JOIN lhpnote ON lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.status = 1 AND lhpnote.term = "' . $activeTerm . '" AND lhpnote.staffid = "' . $activeSession . '"',
         'LEFT JOIN lhpquestion ON lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.status = 1 AND lhpquestion.term = "' . $activeTerm . '" AND lhpquestion.staffid = "' . $activeSession . '"',
