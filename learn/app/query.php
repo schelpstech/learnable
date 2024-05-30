@@ -586,6 +586,9 @@ $subject_list = $model->getRows($tblName, $conditions);
 
 //Allocated Subjects
 $tblName = 'lhpalloc';
+$activeTerm = $active_term["term"];
+$activeSession = $_SESSION["active"];
+
 $conditions = array(
     'select' => '
         lhpclass.classid, lhpclass.classname, 
@@ -596,25 +599,26 @@ $conditions = array(
         lhpquestion.questid, lhpquestion.status, lhpquestion.term, lhpquestion.staffid,
         lhpscheme.schmid, lhpscheme.status, lhpscheme.term, lhpscheme.staffid, lhpscheme.subject,
 
-                (SELECT count(lhpscheme.schmid) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject and lhpscheme.status = 1 and lhpscheme.term ="' . $active_term["term"] . '"and lhpscheme.staffid ="' . $_SESSION["active"] . '") as topic ,
-                (SELECT count(lhpnote.sbjid) FROM lhpnote WHERE lhpalloc.sbjid = lhpnote.sbjid and lhpnote.status = 1 and lhpnote.term ="' . $active_term["term"] . '"and lhpnote.staffid ="' . $_SESSION["active"] . '") as note ,
-                (SELECT count(lhpquestion.questid) FROM lhpquestion WHERE  lhpalloc.sbjid = lhpquestion.sbjid and lhpquestion.status = 1 and lhpquestion.term ="' . $active_term["term"] . '"and lhpquestion.staffid ="' . $_SESSION["active"] . '") as task, 
-                (SELECT count(lhpfeedback.fid) FROM lhpfeedback WHERE  lhpalloc.sbjid = lhpfeedback.sbjid and lhpfeedback.term ="' . $active_term["term"] . '") as feedback 
-                ',
+        (SELECT COUNT(lhpscheme.schmid) FROM lhpscheme WHERE lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.status = 1 AND lhpscheme.term = "' . $activeTerm . '" AND lhpscheme.staffid = "' . $activeSession . '") AS topic ,
+        (SELECT COUNT(lhpnote.sbjid) FROM lhpnote WHERE lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.status = 1 AND lhpnote.term = "' . $activeTerm . '" AND lhpnote.staffid = "' . $activeSession . '") AS note ,
+        (SELECT COUNT(lhpquestion.questid) FROM lhpquestion WHERE lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.status = 1 AND lhpquestion.term = "' . $activeTerm . '" AND lhpquestion.staffid = "' . $activeSession . '") AS task, 
+        (SELECT COUNT(lhpfeedback.fid) FROM lhpfeedback WHERE lhpalloc.sbjid = lhpfeedback.sbjid AND lhpfeedback.term = "' . $activeTerm . '") AS feedback 
+    ',
     'where' => array(
-        'lhpalloc.staffid' => $_SESSION['active'],
-        'lhpalloc.term' => $active_term["term"],
+        'lhpalloc.staffid' => $activeSession,
+        'lhpalloc.term' => $activeTerm,
     ),
     'joinl' => array(
-        'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname ',
-        'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid ',
-        'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid ',
-        'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject ',
-        'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',
-        'lhpclass' => ' on lhpalloc.classid = lhpclass.classid ',
+        'lhpstaff' => ' ON lhpalloc.staffid = lhpstaff.sname ',
+        'lhpnote' => ' ON lhpalloc.sbjid = lhpnote.sbjid ',
+        'lhpquestion' => ' ON lhpalloc.sbjid = lhpquestion.sbjid ',
+        'lhpscheme' => ' ON lhpalloc.sbjid = lhpscheme.subject ',
+        'lhpsubject' => ' ON lhpalloc.sbjid = lhpsubject.sbjid ',
+        'lhpclass' => ' ON lhpalloc.classid = lhpclass.classid ',
     ),
-    'group_by' => 'lhpclass.classid, lhpstaff.sname, lhpsubject.sbjid, lhpalloc.aid,firsthon_lhp.lhpnote.status,lhpnote.term',
-    );
+    'group_by' => 'lhpclass.classid',
+);
+
 
 $report = $model->getRows($tblName, $conditions);
 
