@@ -609,13 +609,13 @@ $conditions = array(
         'lhpsubject' => ' ON lhpalloc.sbjid = lhpsubject.sbjid ',
         'lhpclass' => ' ON lhpalloc.classid = lhpclass.classid ',
     ),
-    'joinl' => array(
+    'joinr' => array(
         'LEFT JOIN lhpscheme ON lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.status = 1 AND lhpscheme.term = "' . $activeTerm . '" AND lhpscheme.staffid = "' . $activeSession . '"',
         'LEFT JOIN lhpnote ON lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.status = 1 AND lhpnote.term = "' . $activeTerm . '" AND lhpnote.staffid = "' . $activeSession . '"',
         'LEFT JOIN lhpquestion ON lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.status = 1 AND lhpquestion.term = "' . $activeTerm . '" AND lhpquestion.staffid = "' . $activeSession . '"',
         'LEFT JOIN lhpfeedback ON lhpalloc.sbjid = lhpfeedback.sbjid AND lhpfeedback.term = "' . $activeTerm . '"',
     ),
-    'group_by' => 'lhpalloc.classid',
+    'group_by' => 'lhpclass.classid, lhpalloc.aid',
 );
 $report = $model->getRows($tblName, $conditions);
 
