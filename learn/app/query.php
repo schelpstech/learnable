@@ -586,7 +586,6 @@ $subject_list = $model->getRows($tblName, $conditions);
 
 //Allocated Subjects
 $tblName = 'lhpalloc';
-$tblName = 'lhpalloc';
 $activeTerm = $active_term["term"];
 $activeSession = $_SESSION["active"];
 
@@ -618,9 +617,6 @@ $conditions = array(
     ),
     'group_by' => 'lhpclass.classid',
 );
-
-
-
 $report = $model->getRows($tblName, $conditions);
 
 
