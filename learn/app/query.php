@@ -607,10 +607,10 @@ $conditions = array(
         'lhpclass' => ' on lhpalloc.classid = lhpclass.classid ',
     ),
     'joinl' => array(
-        'lhpnote' => " on lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.status = 1 AND lhpnote.term = '{$active_term['term']}' AND lhpnote.staffid = '{$active_user}' ",
-        'lhpquestion' => " on lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.status = 1 AND lhpquestion.term = '{$active_term['term']}' AND lhpquestion.staffid = '{$active_user}' ",
-        'lhpscheme' => " on lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.status = 1 AND lhpscheme.term = '{$active_term['term']}' AND lhpscheme.staffid = '{$active_user}' ",
-        'lhpfeedback' => " on lhpalloc.sbjid = lhpfeedback.sbjid AND lhpfeedback.term = '{$active_term['term']}' ",
+        'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.status = 1 AND lhpnote.term = "' . $active_term["term"] . '" AND lhpnote.staffid = "' . $_SESSION["active"] . '" ',
+        'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.status = 1 AND lhpquestion.term = "' . $active_term["term"] . '"AND lhpquestion.staffid = "' . $_SESSION["active"] . '" ',
+        'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.status = 1 AND lhpscheme.term = "' . $active_term["term"] . '" AND lhpscheme.staffid = "' . $_SESSION["active"] . '"',
+        'lhpfeedback' => ' on lhpalloc.sbjid = lhpfeedback.sbjid AND lhpfeedback.term = "' . $active_term["term"] . '"',
     ),
     'group_by' => 'lhpclass.classid',
 );
