@@ -606,7 +606,7 @@ $conditions = array(
         'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',
         'lhpclass' => ' on lhpalloc.classid = lhpclass.classid ',
     ),
-    'joinl_left' => array(
+    'joinl' => array(
         'lhpnote' => " on lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.status = 1 AND lhpnote.term = '{$active_term['term']}' AND lhpnote.staffid = '{$active_user}' ",
         'lhpquestion' => " on lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.status = 1 AND lhpquestion.term = '{$active_term['term']}' AND lhpquestion.staffid = '{$active_user}' ",
         'lhpscheme' => " on lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.status = 1 AND lhpscheme.term = '{$active_term['term']}' AND lhpscheme.staffid = '{$active_user}' ",
