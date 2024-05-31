@@ -71,6 +71,17 @@ class Model
             $sql .= ' LEFT JOIN ' . $conditions['leftjoin'];
         }
     
+
+        if (array_key_exists("join_mulitple", $conditions)) {
+            $sql .= ' JOIN ';
+            $i = 0;
+            foreach ($conditions['joinx'] as $key => $value) {
+                $pre = ($i > 0) ? ' INNER JOIN ' : '';
+                $sql .= $pre . $key  . $value;
+                $i++;
+            }
+        }
+
         if (array_key_exists("joinx", $conditions)) {
             $sql .= ' INNER JOIN ';
             $i = 0;
