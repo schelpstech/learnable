@@ -59,19 +59,34 @@ class Model
 
     public function getRows($table, $conditions = array())
     {
+
         $sql = 'SELECT ';
         $sql .= array_key_exists("select", $conditions) ? $conditions['select'] : '*';
         $sql .= ' FROM ' . $table;
-    
         if (array_key_exists("join", $conditions)) {
             $sql .= ' INNER JOIN ' . $conditions['join'];
         }
-    
         if (array_key_exists("leftjoin", $conditions)) {
             $sql .= ' LEFT JOIN ' . $conditions['leftjoin'];
         }
-    
-
+        if (array_key_exists("joinx", $conditions)) {
+            $sql .= ' INNER JOIN ';
+            $i = 0;
+            foreach ($conditions['joinx'] as $key => $value) {
+                $pre = ($i > 0) ? ' INNER JOIN ' : '';
+                $sql .= $pre . $key  . $value;
+                $i++;
+            }
+        }
+        if (array_key_exists("joinl", $conditions)) {
+            $sql .= ' LEFT JOIN ';
+            $i = 0;
+            foreach ($conditions['joinl'] as $key => $value) {
+                $pre = ($i > 0) ? ' LEFT JOIN ' : '';
+                $sql .= $pre . $key  . $value;
+                $i++;
+            }
+        }
         if (array_key_exists("join_mulitple", $conditions)) {
             $sql .= ' JOIN ';
             $i = 0;
@@ -81,77 +96,10 @@ class Model
                 $i++;
             }
         }
-
-        if (array_key_exists("joinx", $conditions)) {
-            $sql .= ' INNER JOIN ';
-            $i = 0;
-            foreach ($conditions['joinx'] as $key => $value) {
-                $pre = ($i > 0) ? ' INNER JOIN ' : '';
-                $sql .= $pre . $key  . $value;
-                $i++;
-            }
-        }
-    
-        if (array_key_exists("joinl", $conditions)) {
-            $sql .= ' LEFT JOIN ';
-            $i = 0;
-            foreach ($conditions['joinl'] as $key => $value) {
-                $pre = ($i > 0) ? ' LEFT JOIN ' : '';
-                $sql .= $pre . $key  . $value;
-                $i++;
-            }
-        }
-    
         if (array_key_exists("joinr", $conditions)) {
             $sql .= ' RIGHT JOIN ';
             $i = 0;
             foreach ($conditions['joinr'] as $key => $value) {
-                $pre = ($i > 0) ? ' RIGHT JOIN ' : '';
-                $sql .= $pre . $key  . $value;
-                $i++;
-            }
-        }
-    
-        if (array_key_exists("where", $conditions)) {
-            $sql .= ' WHERE ';
-            $i = 0;
-            foreach ($conditions['where'] as $key => $value) {
-                $pre = ($i > 0) ? ' AND ' : '';
-                $sql .= $pre . $key . " = '" . $value . "'";
-                $i++;
-            }
-        }
-        $sql = 'SELECT ';
-        $sql .= array_key_exists("select", $conditions) ? $conditions['select'] : '*';
-        $sql .= ' FROM ' . $table;
-        if (array_key_exists("join", $conditions)) {
-            $sql .= ' INNER JOIN ' . $conditions['join'];
-        }
-        if (array_key_exists("leftjoin", $conditions)) {
-            $sql .= ' LEFT JOIN ' . $conditions['leftjoin'];
-        }
-        if (array_key_exists("joinx", $conditions)) {
-            $sql .= ' INNER JOIN ';
-            $i = 0;
-            foreach ($conditions['joinx'] as $key => $value) {
-                $pre = ($i > 0) ? ' INNER JOIN ' : '';
-                $sql .= $pre . $key  . $value;
-                $i++;
-            }
-        }
-        if (array_key_exists("joinl", $conditions)) {
-            $sql .= ' LEFT JOIN ';
-            $i = 0;
-            foreach ($conditions['joinl'] as $key => $value) {
-                $pre = ($i > 0) ? ' LEFT JOIN ' : '';
-                $sql .= $pre . $key  . $value;
-                $i++;
-            }
-        }
-        if (array_key_exists("joinr", $conditions)) {
-            $sql .= ' RIGHT JOIN ';
-            $i = 0;
-            foreach ($conditions['joinl'] as $key => $value) {
                 $pre = ($i > 0) ? ' RIGHT JOIN ' : '';
                 $sql .= $pre . $key  . $value;
                 $i++;
