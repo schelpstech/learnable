@@ -602,9 +602,10 @@ $conditions = array(
         'lhpalloc.term' => $active_term['term'],
     ),
     'join_mulitple' => array(
+        'lhpclass' => ' on lhpalloc.classid = lhpclass.classid ',
         'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname ',
         'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',
-        'lhpclass' => ' on lhpalloc.classid = lhpclass.classid ',
+        
     ),
     'joinl' => array(
         'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.status = 1 AND lhpnote.term = "' . $active_term["term"] . '" AND lhpnote.staffid = "' . $_SESSION["active"] . '" ',
