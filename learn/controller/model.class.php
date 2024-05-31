@@ -75,7 +75,7 @@ class Model
         if (array_key_exists("join_mulitple", $conditions)) {
             $sql .= ' JOIN ';
             $i = 0;
-            foreach ($conditions['joinx'] as $key => $value) {
+            foreach ($conditions['join_mulitple'] as $key => $value) {
                 $pre = ($i > 0) ? ' INNER JOIN ' : '';
                 $sql .= $pre . $key  . $value;
                 $i++;
