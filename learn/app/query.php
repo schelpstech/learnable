@@ -613,7 +613,10 @@ $conditions = array(
         'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.status = 1 AND lhpscheme.term = "' . $active_term["term"] . '" AND lhpscheme.staffid = "' . $_SESSION["active"] . '"',
         'lhpfeedback' => ' on lhpalloc.sbjid = lhpfeedback.sbjid AND lhpfeedback.term = "' . $active_term["term"] . '"',
     ),
-    'group_by' => 'lhpclass.classid',
+    'group_by' => 'lhpclass.classid, lhpclass.classname, 
+    lhpstaff.sname, lhpstaff.staffname, 
+    lhpsubject.sbjid, lhpsubject.sbjname, 
+    lhpalloc.aid, lhpalloc.term, lhpalloc.staffid, lhpalloc.sbjid',
 );
 
 $report = $model->getRows($tblName, $conditions);
