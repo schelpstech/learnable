@@ -335,10 +335,13 @@ $conditions = array(
         'lhpalloc.classid' => $learner_profile['classid'],
         'lhpalloc.term' => $active_term['term'],
     ),
-    'joinl' => array(
+
+    'join_multiple' => array(
         'lhpclass' => ' ON lhpalloc.classid = lhpclass.classid',
         'lhpstaff' => ' ON lhpalloc.staffid = lhpstaff.sname',
         'lhpsubject' => ' ON lhpalloc.sbjid = lhpsubject.sbjid',
+    ),
+    'joinl' => array(
         'lhpnote' => ' ON lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.status = 1 AND lhpnote.term = "' . $active_term["term"] . '"',
         'lhpquestion' => ' ON lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.status = 1 AND lhpquestion.term = "' . $active_term["term"] . '"',
         'lhpfeedback' => ' ON lhpalloc.sbjid = lhpfeedback.sbjid AND lhpfeedback.stdid = "' . $_SESSION['active'] . '" AND lhpfeedback.term = "' . $active_term["term"] . '"',
@@ -603,7 +606,7 @@ $conditions = array(
         'lhpalloc.staffid' => $_SESSION['active'],
         'lhpalloc.term' => $active_term['term'],
     ),
-    'join_mulitple' => array(
+    'join_multiple' => array(
         'lhpclass' => ' on lhpalloc.classid = lhpclass.classid ',
         'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname ',
         'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',

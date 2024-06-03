@@ -87,10 +87,10 @@ class Model
                 $i++;
             }
         }
-        if (array_key_exists("join_mulitple", $conditions)) {
+        if (array_key_exists("join_multiple", $conditions)) {
             $sql .= ' JOIN ';
             $i = 0;
-            foreach ($conditions['join_mulitple'] as $key => $value) {
+            foreach ($conditions['join_multiple'] as $key => $value) {
                 $pre = ($i > 0) ? ' INNER JOIN ' : '';
                 $sql .= $pre . $key  . $value;
                 $i++;
