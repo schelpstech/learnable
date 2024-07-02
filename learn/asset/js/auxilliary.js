@@ -610,35 +610,6 @@ function remove_task() {
     }
 }
 
-function class_dashboard() {
-    var allocated_class = $("#allocated_class").val();
-    var action = 'load_dashboard';
-    if (allocated_class != "") {
-        $.ajax({
-            url: "../../app/ajax_query.php",
-            method: "POST",
-            data: {
-                allocated_class: allocated_class,
-                action: action,
-                beforeSend: function () {
-                    // Show image container
-                    $("#loader").show();
-                    $("#board").hide();
-                },
-            },
-            success: function (data) {
-                $("#class_dashboard").html(data);
-            },
-            cache: false,
-            complete: function (data) {
-                // Hide image container
-                $("#loader").hide();
-            }
-        });
-    } else {
-        alert("Select Allocated Class");
-    }
-}
 
 function class_dashboard() {
     var allocated_class = $("#allocated_class").val();
