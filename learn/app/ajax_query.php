@@ -997,7 +997,7 @@ if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($a
     }
 }
 
-if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
+if ($_POST['action'] == 'affective_manager' && isset($active_term['term'])) {
     $scoresheet_type = 'AFFECTIVE';
     $tblName = 'lhpresultconfig';
     $conditions = array(
