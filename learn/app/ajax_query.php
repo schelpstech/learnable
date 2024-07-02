@@ -1248,8 +1248,13 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     }
 
     echo $response;
-} elseif ($_POST['action'] == 'compute_class_broasdsheet') {
-
+} else  {
+        $response .=
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+                          <div class="alert-text">Error!  Action is :' . $_POST['action'] . '</div>
+                                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div> <br>';
+                  echo $response;
 }
 
 
