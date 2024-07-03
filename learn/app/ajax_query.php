@@ -397,6 +397,8 @@ if ( $_POST['action'] == 'load_dashboard') {
     );
     $class_allocated = $model->getRows($tblName, $conditions);
     include_once '../view/include/classmanager/widget.php';
+}else{
+    include_once '../view/include/classmanager/widget.php';  
 }
 //CLASS MANAGER - show LEARNERS
 if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_learners') {
