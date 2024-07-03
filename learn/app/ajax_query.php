@@ -5,7 +5,7 @@ include './query.php';
 <?php
 // Check if classid is set in POST data, active session is set, active_term is set, and action is 'fetchsubject'
 if (isset($_POST['classid']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'fetchsubject') {
-    
+
     // Define table name for the query
     $tblName = 'lhpalloc';
 
@@ -23,7 +23,7 @@ if (isset($_POST['classid']) && isset($_SESSION['active']) && isset($active_term
 
     // Fetch rows from database using the model's getRows method with defined table name and conditions
     $subject_allocated = $model->getRows($tblName, $conditions);
-    ?>
+?>
 
     <!-- HTML output for dropdown options -->
     <option value="">Select Subject</option>
@@ -33,9 +33,9 @@ if (isset($_POST['classid']) && isset($_SESSION['active']) && isset($active_term
     if (!empty($subject_allocated)) {
         // Loop through fetched subjects and create option elements
         foreach ($subject_allocated as $data) {
-            ?>
+    ?>
             <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['sbjname']; ?></option>
-            <?php
+<?php
         }
     } else {
         // If no subjects were allocated, show a message in the dropdown
@@ -93,13 +93,13 @@ if (isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic'
         $action = $model->insert_data($tblName, $schemedata);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Topic added to scheme successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to add topic to scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -112,13 +112,13 @@ if (isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic'
         $action = $model->upDate($tblName, $schemedata, $conditons);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Scheme of work modified successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to modify scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -134,13 +134,13 @@ if (isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic'
         $action = $model->upDate($tblName, $schemedata, $conditons);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Topic removed from Scheme of work  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to remove topic from scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -160,15 +160,15 @@ if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term
         'order_by' => 'week ASC',
     );
     $topic_created = $model->getRows($tblName, $conditions);
-    ?>
+?>
     <option value="">Select Topic</option>
     <?php
     if (!empty($topic_created)) {
         foreach ($topic_created as $data) {
-            ?>
+    ?>
 
             <option value="<?php echo $data['schmid'] ?>"><?php echo $data['week'] . " - " . $data['topic'] ?></option>
-            <?php
+<?php
         }
     } else {
         echo '<option value="">No Topic has been added to scheme of work for the selected Subject</option>';
@@ -209,13 +209,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
         $action = $model->insert_data($tblName, $notedata);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>e-Note has been added  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to add e-Note to the portal</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -228,13 +228,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
         $action = $model->upDate($tblName, $notedata, $conditons);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>e-Note has been modified successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to modify e-Note</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -250,13 +250,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
         $action = $model->upDate($tblName, $notedata, $conditons);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>e-Note removed from Scheme of work  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to remove e-Note from scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -300,13 +300,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
         $action = $model->insert_data($tblName, $notedata);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>e-Assessment has been added  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to add Assessment to the portal</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -319,13 +319,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
         $action = $model->upDate($tblName, $notedata, $conditons);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Assessment has been modified successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to modify Assessment</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -341,13 +341,13 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
         $action = $model->upDate($tblName, $notedata, $conditons);
         if ($action) {
             echo
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Success! <b>Assessment removed from Scheme of work  successfully</b>!</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
         } else {
             echo
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error! Unable to remove Assessment from scheme of work</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>';
@@ -356,7 +356,7 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
 }
 
 //CLASS MANAGER - DASHBOARD
-if ( $_POST['action'] == 'load_dashboard') {
+if ($_POST['action'] == 'load_dashboard') {
     $tblName = 'lhpuser';
     $conditions = array(
         'select' => '
@@ -365,29 +365,7 @@ if ( $_POST['action'] == 'load_dashboard') {
         (SELECT COUNT(lhpalloc.aid)  from lhpalloc WHERE lhpalloc.classid = "' . $_POST["allocated_class"] . '" 
                     and lhpalloc.term = "' . $active_term["term"] . '") as subject,
         (SELECT COUNT(lhpaffective.uname)  from lhpaffective WHERE lhpaffective.classid = "' . $_POST["allocated_class"] . '" 
-                    and lhpaffective.term = "' . $active_term["term"] . '") as affective,
-        (SELECT COUNT(DISTINCT lhpuser.uname) from lhpuser 
-         	WHERE lhpuser.classid =  "' . $_POST["allocated_class"] . '" and
-				(SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
-                 	WHERE 	lhpassignedfee.stdid = lhpuser.uname and 
-                 			lhpassignedfee.term = "' . $active_term["term"] . '"
-                 			GROUP BY lhpassignedfee.stdid)  <= 
-				(SELECT sum(lhptransaction.amount) FROM lhptransaction
-                 	WHERE 	lhptransaction.stdid = lhpuser.uname  and 
-                 			lhptransaction.term = "' . $active_term["term"] . '" 
-                 			GROUP BY lhptransaction.stdid)) as paid,
-                            
-        (SELECT COUNT(DISTINCT lhpuser.uname) from lhpuser 
-         	WHERE lhpuser.classid =  "' . $_POST["allocated_class"] . '" and
-				(SELECT sum(lhpassignedfee.amount) FROM lhpassignedfee 
-                 	WHERE 	lhpassignedfee.stdid = lhpuser.uname and 
-                 			lhpassignedfee.term = "' . $active_term["term"] . '"
-                 			GROUP BY lhpassignedfee.stdid)  > 
-				(SELECT sum(lhptransaction.amount) FROM lhptransaction
-                 	WHERE 	lhptransaction.stdid = lhpuser.uname  and 
-                 			lhptransaction.term = "' . $active_term["term"] . '" 
-                 			GROUP BY lhptransaction.stdid)) as debtor
-                        ',
+                    and lhpaffective.term = "' . $active_term["term"] . '") as affective',
         'return_type' => 'single',
         'joinl' => array(
             'lhptransaction' => ' on lhpuser.uname = lhptransaction.stdid ',
@@ -397,9 +375,7 @@ if ( $_POST['action'] == 'load_dashboard') {
     );
     $class_allocated = $model->getRows($tblName, $conditions);
     include_once '../view/include/classmanager/widget.php';
-}else{
-    include_once '../view/include/classmanager/widget.php';  
-}
+} 
 //CLASS MANAGER - show LEARNERS
 if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_learners') {
     $tblName = 'lhpuser';
@@ -556,13 +532,13 @@ if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_o
     $action = $model->upDate($tblName, $profile_data, $conditions);
     if ($action) {
         echo
-            '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
+        '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
                       <div class="alert-text">Success! <b>Learner profile has been modified successfully</b>!</div>
                               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>';
     } else {
         echo
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                       <div class="alert-text">Error! Unable to modify learner profile</div>
                               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>';
@@ -1261,13 +1237,13 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     }
 
     echo $response;
-} else  {
-        $response .=
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
+} else {
+    $response .=
+        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                           <div class="alert-text">Error!  Action is :' . $_POST['action'] . '</div>
                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div> <br>';
-                  echo $response;
+    echo $response;
 }
 
 
