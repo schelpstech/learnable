@@ -614,34 +614,44 @@ function remove_task() {
 function class_dashboard() {
     var allocated_class = $("#allocated_class").val();
     var action = 'load_dashboard';
+    
     if (allocated_class != "") {
         $.ajax({
             url: "../../app/ajax_query.php",
             method: "POST",
             data: {
                 allocated_class: allocated_class,
-                action: action,
-                beforeSend: function () {
-                    // Show image container
-                    $("#loader").show();
-                    $("#board").hide();
-                },
+                action: action
+            },
+            beforeSend: function () {
+                // Show loader before AJAX request starts
+                $("#loader").show();
+                $("#board").hide();
             },
             success: function (data) {
+                // Update class_dashboard div with received data
                 $("#class_dashboard").html(data);
             },
-            cache: false,
-            complete: function (data) {
-                // Hide image container
+            error: function (xhr, status, error) {
+                // Handle any AJAX errors
+                console.error("AJAX Error: " + status + " - " + error);
+                // Optionally show an error message to the user
+                $("#class_dashboard").html("<p>Error loading dashboard. Please try again.</p>");
+            },
+            complete: function () {
+                // Hide loader after AJAX request completes
                 $("#loader").hide();
+                $("#board").show(); // Show board after loading data
             }
         });
     } else {
-        err = '<option value="">Select Allocated Class</option>';
+        // Handle case where allocated_class is empty
+        var err = '<option value="">Select Allocated Class</option>';
         alert("Select Allocated Class");
         $("#allocated_class").html(err);
     }
 }
+
 function show_learners() {
     var allocated_class = $("#allocated_class").val();
     var action = 'show_learners';
