@@ -613,9 +613,9 @@ function remove_task() {
 
 function class_dashboard() {
     var allocated_class = $("#allocated_class").val();
-    var action = 'load_dashboard';
+    var action = "load_dashboard";
     
-    if (allocated_class != "") {
+    if (allocated_class !== "" && action !== "") {
         $.ajax({
             url: "../../app/ajax_query.php",
             method: "POST",
@@ -636,7 +636,7 @@ function class_dashboard() {
                 // Handle any AJAX errors
                 console.error("AJAX Error: " + status + " - " + error);
                 // Optionally show an error message to the user
-                $("#class_dashboard").html("<p>Error loading dashboard. Please try again.</p>");
+                $("#class_dashboard").html(action + "<p> Error loading dashboard. Please try again.</p>");
             },
             complete: function () {
                 // Hide loader after AJAX request completes
@@ -647,7 +647,7 @@ function class_dashboard() {
     } else {
         // Handle case where allocated_class is empty
         var err = '<option value="">Select Allocated Class</option>';
-        alert("Select Allocated Class");
+        alert(action + "Select Allocated Class");
         $("#allocated_class").html(err);
     }
 }
