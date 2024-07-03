@@ -613,7 +613,7 @@ function remove_task() {
 
 function class_dashboard() {
     var allocated_class = $("#allocated_class").val();
-    var action = "load_dashboard";
+    var action = "load_dashboardss";
     
     if (allocated_class !== "" && action !== "") {
         $.ajax({

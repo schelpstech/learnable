@@ -356,7 +356,7 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
 }
 
 //CLASS MANAGER - DASHBOARD
-if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'load_dashboard') {
+if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'load_dashboardss') {
     $tblName = 'lhpuser';
     $conditions = array(
         'select' => '
@@ -368,21 +368,12 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
                     and lhpaffective.term = "' . $active_term["term"] . '") as affective',
         'return_type' => 'single',
         'joinl' => array(
-            'lhptransaction' => ' on lhpuser.uname = lhptransaction.stdid ',
-            'lhpassignedfee' => ' on lhpuser.uname = lhpassignedfee.stdid ',
             'lhpalloc' => ' on lhpuser.classid = lhpalloc.classid ',
         )
     );
     $class_allocated = $model->getRows($tblName, $conditions);
     include_once '../view/include/classmanager/widget.php';
-}else {
-    echo 
-    $class_allocated['population'] = $_POST['action'];
-    $class_allocated['subject'] = $_POST['action'];
-    $class_allocated['affective'] = $_POST['action'];
-    include_once '../view/include/classmanager/widget.php';
-    ;
-} 
+}
 //CLASS MANAGER - show LEARNERS
 if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_learners') {
     $tblName = 'lhpuser';
