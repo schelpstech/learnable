@@ -344,7 +344,7 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
 ?>
 <?php
 //CLASS MANAGER - DASHBOARD
-if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'load_dashboard') {
+if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && $_POST['action'] == 'load_dashboard') {
     $tblName = 'lhpuser';
     $conditions = array(
         'select' => '
