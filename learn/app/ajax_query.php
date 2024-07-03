@@ -1,33 +1,49 @@
 <?php
+// Include necessary file for database queries
 include './query.php';
+?>
+<?php
+// Check if classid is set in POST data, active session is set, active_term is set, and action is 'fetchsubject'
 if (isset($_POST['classid']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'fetchsubject') {
-    //All classes where subject have been allocated
+    
+    // Define table name for the query
     $tblName = 'lhpalloc';
+
+    // Define conditions for the query
     $conditions = array(
         'where' => array(
-            'lhpalloc.staffid' => $_SESSION['active'],
-            'lhpalloc.term' => $active_term['term'],
-            'lhpalloc.classid' => $_POST['classid'],
+            'lhpalloc.staffid' => $_SESSION['active'],   // Staff ID from session
+            'lhpalloc.term' => $active_term['term'],     // Active term
+            'lhpalloc.classid' => $_POST['classid'],     // Class ID from POST data
         ),
         'joinl' => array(
-            'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',
+            'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid ',  // Join with 'lhpsubject' table on sbjid
         )
     );
+
+    // Fetch rows from database using the model's getRows method with defined table name and conditions
     $subject_allocated = $model->getRows($tblName, $conditions);
     ?>
+
+    <!-- HTML output for dropdown options -->
     <option value="">Select Subject</option>
+
     <?php
+    // Check if subjects were fetched
     if (!empty($subject_allocated)) {
+        // Loop through fetched subjects and create option elements
         foreach ($subject_allocated as $data) {
             ?>
             <option value="<?php echo $data['sbjid'] ?>"><?php echo $data['sbjname']; ?></option>
             <?php
         }
     } else {
+        // If no subjects were allocated, show a message in the dropdown
         echo '<option value="">No Subject Allocated in Selected Class</option>';
     }
 }
 ?>
+
 <?php
 if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'fetchscheme') {
     $tblName = 'lhpscheme';
@@ -177,8 +193,7 @@ if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term
     $list_note = $model->getRows($tblName, $conditions);
     include_once '../view/include/pages/selectnote.php';
 }
-?>
-<?php
+
 if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic']) && isset($_POST['note_type']) && isset($_POST['content']) && isset($_SESSION['active']) && isset($active_term)) {
     $tblName = 'lhpnote';
     $notedata = array(
@@ -248,8 +263,7 @@ if (isset($_POST['context']) && $_POST['context'] == 'enote' && isset($_POST['su
         }
     }
 }
-?>
-<?php
+
 //TASK AND ASSEMENT 
 if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'fetchtask') {
     $tblName = 'lhpquestion';
@@ -268,8 +282,7 @@ if (isset($_POST['subject']) && isset($_SESSION['active']) && isset($active_term
     $list_task = $model->getRows($tblName, $conditions);
     include_once '../view/include/pages/selectask.php';
 }
-?>
-<?php
+
 if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['subject']) && isset($_POST['classid']) && isset($_POST['topic']) && isset($_POST['note_type']) && isset($_POST['content']) && isset($_SESSION['active']) && isset($active_term)) {
     $tblName = 'lhpquestion';
     $notedata = array(
@@ -341,8 +354,7 @@ if (isset($_POST['context']) && $_POST['context'] == 'task' && isset($_POST['sub
         }
     }
 }
-?>
-<?php
+
 //CLASS MANAGER - DASHBOARD
 if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && $_POST['action'] == 'load_dashboard') {
     $tblName = 'lhpuser';
@@ -504,8 +516,7 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
 
     include_once '../view/include/classmanager/broadsheet.php';
 }
-?>
-<?php
+
 //CLASS MANAGER - Modify Data
 if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_of_birth']) && isset($_POST['phone']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'modify_learner') {
     $tblName = 'lhpuser';
