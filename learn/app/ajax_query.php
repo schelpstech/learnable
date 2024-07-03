@@ -375,6 +375,13 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
     );
     $class_allocated = $model->getRows($tblName, $conditions);
     include_once '../view/include/classmanager/widget.php';
+}else {
+    echo 
+    $class_allocated['population'] = $_POST['action'];
+    $class_allocated['subject'] = $_POST['action'];
+    $class_allocated['affective'] = $_POST['action'];
+    include_once '../view/include/classmanager/widget.php';
+    ;
 } 
 //CLASS MANAGER - show LEARNERS
 if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_learners') {
