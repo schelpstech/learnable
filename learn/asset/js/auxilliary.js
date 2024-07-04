@@ -998,7 +998,7 @@ function total_score_manager(){
 
 
 
-function before_submit_affective() {
+function submit_affective() {
     var action = "record_attendance_for_all";
     var affective_class = $("#allocated_class").val();
     var present = document.getElementsByName('total_present[]');
@@ -1047,7 +1047,8 @@ function before_submit_affective() {
                 beforeSend: function () {
                     // Show image container
                     $("#response_loader").show();
-                    $("#response").
+                    $("#response").html("");
+                    $("#response").hide()
                 },
             },
             success: function (data) {
@@ -1079,7 +1080,7 @@ function before_submit_affective() {
     }
 }
 
-function submit_affective() {
+function pro_submit_affective() {
     var action = "record_attendance_for_all";
     var affective_class = $("#allocated_class").val();
 
@@ -1115,7 +1116,7 @@ function submit_affective() {
             beforeSend: function () {
                 // Show loader and hide response container before sending request
                 $("#response_loader").show();
-                $("#response").empty();
+                $("#response").html("");
                 $("#response").hide();
             },
             success: function (data) {
