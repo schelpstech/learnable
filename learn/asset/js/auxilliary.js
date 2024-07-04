@@ -1115,6 +1115,7 @@ function submit_affective() {
             beforeSend: function () {
                 // Show loader and hide response container before sending request
                 $("#response_loader").show();
+                $("#response").empty();
                 $("#response").hide();
             },
             success: function (data) {
