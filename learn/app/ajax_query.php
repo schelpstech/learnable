@@ -412,6 +412,32 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
 if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_subjects') {
 
     $tblName = 'lhpalloc';
+    $conditions = array(
+        'select' => '   lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, 
+                            lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
+                            lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, 
+                            lhpclass.classid, lhpclass.classname, 
+                             lhpclass.classname AS class_name,
+                            COUNT(DISTINCT CASE WHEN lhpnote.status = 1 AND lhpnote.term = "'.$active_term["term"].'" THEN lhpnote.sbjid END) AS note,
+                            COUNT(DISTINCT CASE WHEN lhpquestion.status = 1 AND lhpquestion.term = "'.$active_term["term"].'" THEN lhpquestion.sbjid END) AS task,
+                            COUNT(DISTINCT CASE WHEN lhpscheme.status = 1 AND lhpscheme.term = "'.$active_term["term"].'" THEN lhpscheme.subject END) AS topic',
+        'where' => array(
+            'lhpalloc.classid' => $_POST['allocated_class'],
+            'lhpalloc.term' => $active_term['term'],
+        ),
+        'join_multiple' => array(
+            'lhpclass' => ' on lhpalloc.classid = lhpclass.classid',
+            'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname',
+            'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid',
+            'lhpnote' => ' on lhpalloc.sbjid = lhpnote.sbjid',
+            'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid',
+            'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject',
+        ),
+        'group_by' =>       'lhpalloc.staffid, lhpstaff.sname, lhpalloc.sbjid, lhpsubject.sbjname, 
+                   lhpalloc.classid, lhpalloc.term, lhpclass.classname',
+    );
+
+    $tblName = 'lhpalloc';
 $conditions = array(
     'select' => 'lhpalloc.staffid, lhpstaff.sname AS staff_name, lhpalloc.sbjid AS sbjid_ref, 
                  lhpsubject.sbjname AS subject_name, lhpalloc.classid, lhpalloc.term, 
@@ -423,13 +449,15 @@ $conditions = array(
         'lhpalloc.classid' => $_POST['allocated_class'],
         'lhpalloc.term' => $active_term['term'],
     ),
-    'only_join_many' => array(
-        'lhpclass' => ' on lhpalloc.classid = lhpclass.classid',
-        'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname',
-        'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid',
-        'lhpnote' => '  on lhpnote.sbjid = lhpalloc.sbjid ',
-        'lhpquestion' => '  on lhpquestion.sbjid = lhpalloc.sbjid',
-        'lhpscheme' => '  on lhpscheme.subject = lhpalloc.sbjid',
+    'join_multiple' => array(
+        'lhpclass' => 'lhpalloc.classid = lhpclass.classid',
+        'lhpstaff' => 'lhpalloc.staffid = lhpstaff.sname',
+        'lhpsubject' => 'lhpalloc.sbjid = lhpsubject.sbjid',
+    ),
+    'joinl' => array(
+        'lhpnote' => 'lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.term = "' . $active_term['term'] . '"',
+        'lhpquestion' => 'lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.term = "' . $active_term['term'] . '"',
+        'lhpscheme' => 'lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.term = "' . $active_term['term'] . '"',
     ),
     'group_by' => 'lhpalloc.staffid, lhpstaff.sname, lhpalloc.sbjid, lhpsubject.sbjname, 
                    lhpalloc.classid, lhpalloc.term, lhpclass.classname',
