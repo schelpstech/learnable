@@ -437,35 +437,6 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
                    lhpalloc.classid, lhpalloc.term, lhpclass.classname',
     );
 
-    $tblName = 'lhpalloc';
-$conditions = array(
-    'select' => 'lhpalloc.staffid, lhpstaff.sname AS staff_name, lhpalloc.sbjid AS sbjid_ref, 
-                 lhpsubject.sbjname AS subject_name, lhpalloc.classid, lhpalloc.term, 
-                 lhpclass.classname AS class_name, 
-                 COUNT(DISTINCT CASE WHEN lhpnote.status = 1 THEN lhpnote.sbjid END) AS note_count,
-                 COUNT(DISTINCT CASE WHEN lhpquestion.status = 1 THEN lhpquestion.sbjid END) AS task_count,
-                 COUNT(DISTINCT CASE WHEN lhpscheme.status = 1 THEN lhpscheme.subject END) AS topic_count',
-    'where' => array(
-        'lhpalloc.classid' => $_POST['allocated_class'],
-        'lhpalloc.term' => $active_term['term'],
-    ),
-    'join_multiple' => array(
-        'lhpclass' => 'lhpalloc.classid = lhpclass.classid',
-        'lhpstaff' => 'lhpalloc.staffid = lhpstaff.sname',
-        'lhpsubject' => 'lhpalloc.sbjid = lhpsubject.sbjid',
-    ),
-    'joinl' => array(
-        'lhpnote' => 'lhpalloc.sbjid = lhpnote.sbjid AND lhpnote.term = "' . $active_term['term'] . '"',
-        'lhpquestion' => 'lhpalloc.sbjid = lhpquestion.sbjid AND lhpquestion.term = "' . $active_term['term'] . '"',
-        'lhpscheme' => 'lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.term = "' . $active_term['term'] . '"',
-    ),
-    'group_by' => 'lhpalloc.staffid, lhpstaff.sname, lhpalloc.sbjid, lhpsubject.sbjname, 
-                   lhpalloc.classid, lhpalloc.term, lhpclass.classname',
-);
-
-// Assuming $model->getRows() is a method to fetch rows based on the conditions
-$results = $model->getRows($tblName, $conditions);
-
     $subject_list = $model->getRows($tblName, $conditions);
 
 
