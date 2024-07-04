@@ -757,68 +757,87 @@ function toggle_modify() {
 
 
 function modify_learner() {
-    var fullname = $("#fullname").val();
-    var gender = $("#gender").val();
-    var date_of_birth = $("#date_of_birth").val();
-    var phone = $("#phone").val();
-    var email = $("#email").val();
-    var action = 'modify_learner';
-    var img = $("#imageInput").val();
-    if (img != "") {
-        upload = 'yes';
-        var imagebase64data = myCanvas.toDataURL("image/png");
-        imagebase64data = imagebase64data.replace('data:image/png;base64,', '');
-    } else {
-        upload = 'no';
+    // Gather input values
+    var fullname = $("#fullname").val().trim();
+    var gender = $("#gender").val().trim();
+    var date_of_birth = $("#date_of_birth").val().trim();
+    var phone = $("#phone").val().trim();
+    var email = $("#email").val().trim();
+    var img = $("#imageInput").val().trim();
+
+    // Validate required fields
+    if (fullname === "" || gender === "" || date_of_birth === "" || phone === "" || email === "") {
+        alert("One of the required information is missing");
+        return;
     }
 
-    if (fullname != "" & gender != "" & date_of_birth != "" & phone != "" & email != "") {
-        $.ajax({
-            url: "../../app/ajax_query.php",
-            method: "POST",
-            data: {
-                fullname: fullname,
-                gender: gender,
-                date_of_birth: date_of_birth,
-                phone: phone,
-                email: email,
-                imagebase64data: imagebase64data,
-                action: action,
-                upload: upload,
-                beforeSend: function () {
-                    // Show image container
-                    $("#view_profile").hide();
-                    $("#edit_profile").hide();
-                    $("#loader").show();
-                },
-            },
-            success: function (data) {
-                $("#info").html(data);
-            },
-            cache: false,
-            complete: function (data) {
-                // Hide image container
-                $("#edit_profile").show();
-                $("#loader").hide();
-            }
-        });
-        var allocated_class = $("#classid").val();
-        var action = 'show_learners';
-        $.ajax({
-            url: "../../app/ajax_query.php",
-            method: "POST",
-            data: {
-                allocated_class: allocated_class,
-                action: action,
-            },
-            success: function (data) {
-                $("#response").html(data);
-            },
-        });
-    } else {
-        alert("One of the required information is missing");
+    // Prepare data for AJAX request
+    var action = 'modify_learner';
+    var upload = (img !== "") ? 'yes' : 'no';
+    var imagebase64data = '';
+
+    if (upload === 'yes') {
+        var imageCanvas = document.getElementById("myCanvas");
+        if (imageCanvas) {
+            imagebase64data = imageCanvas.toDataURL("image/png").replace('data:image/png;base64,', '');
+        }
     }
-}   
+
+    // AJAX request to modify learner information
+    $.ajax({
+        url: "../../app/ajax_query.php",
+        method: "POST",
+        data: {
+            fullname: fullname,
+            gender: gender,
+            date_of_birth: date_of_birth,
+            phone: phone,
+            email: email,
+            imagebase64data: imagebase64data,
+            action: action,
+            upload: upload,
+        },
+        beforeSend: function () {
+            // Show loader and hide UI elements
+            $("#view_profile, #edit_profile").hide();
+            $("#loader").show();
+        },
+        success: function (data) {
+            // Update info div with server response
+            $("#info").html(data);
+        },
+        complete: function () {
+            // Hide loader and show edit profile button
+            $("#loader").hide();
+            $("#edit_profile").show();
+        },
+        error: function () {
+            // Handle AJAX error if needed
+            alert("Error: Unable to process request.");
+        }
+    });
+
+    // AJAX request to fetch updated learner list
+    var allocated_class = $("#classid").val();
+    action = 'show_learners';
+
+    $.ajax({
+        url: "../../app/ajax_query.php",
+        method: "POST",
+        data: {
+            allocated_class: allocated_class,
+            action: action,
+        },
+        success: function (data) {
+            // Update response div with updated learner list
+            $("#response").html(data);
+        },
+        error: function () {
+            // Handle AJAX error if needed
+            alert("Error: Unable to fetch learner list.");
+        }
+    });
+}
 
 
 function scoresheet_dashboard() {
