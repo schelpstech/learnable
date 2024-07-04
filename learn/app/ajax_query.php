@@ -434,7 +434,7 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
             'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject',
         ),
         'group_by' =>       'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, 
-                            lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
+                            lhpalloc.sbjid, lhpsubject.sbjid, lhpsubject.sbjname, 
                             lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, 
                             lhpclass.classid, lhpclass.classname',
     );
