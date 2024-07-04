@@ -998,7 +998,7 @@ function total_score_manager(){
 
 
 
-function submit_affective() {
+function before_submit_affective() {
     var action = "record_attendance_for_all";
     var affective_class = $("#allocated_class").val();
     var present = document.getElementsByName('total_present[]');
@@ -1047,7 +1047,7 @@ function submit_affective() {
                 beforeSend: function () {
                     // Show image container
                     $("#response_loader").show();
-                    $("#response").hide();
+                    $("#response").
                 },
             },
             success: function (data) {
@@ -1075,6 +1075,85 @@ function submit_affective() {
             }
         });
     } else {
+        alert("Select Allocated Subject");
+    }
+}
+
+function submit_affective() {
+    var action = "record_attendance_for_all";
+    var affective_class = $("#allocated_class").val();
+
+    // Prepare arrays to collect data from form inputs
+    var all_users = [];
+    var all_present = [];
+    var all_comment = [];
+
+    // Collect values from table rows
+    $('tr').each(function () {
+        var userid = $(this).find('[name="userid[]"]').val().trim() || 0;
+        var present_days = $(this).find('[name="total_present[]"]').val().trim() || 0;
+        var comment_tab = $(this).find('[name="comment[]"]').val().trim() || "";
+
+        all_users.push(userid);
+        all_present.push(present_days);
+        all_comment.push(comment_tab);
+    });
+
+    // Check if affective_class is selected
+    if (affective_class !== "") {
+        // AJAX request to record attendance for all users
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                affective_class: affective_class,
+                all_users: all_users,
+                all_present: all_present,
+                all_comment: all_comment,
+                action: action,
+            },
+            beforeSend: function () {
+                // Show loader and hide response container before sending request
+                $("#response_loader").show();
+                $("#response").hide();
+            },
+            success: function (data) {
+                // Update info div with success message or relevant data
+                $("#info").html(data);
+            },
+            complete: function () {
+                // Hide loader and show response container after request completes
+                $("#response_loader").hide();
+                $("#response").show();
+            },
+            error: function (xhr, status, error) {
+                // Handle AJAX errors here (optional)
+                console.error("Error:", error);
+                alert("Failed to record attendance. Please try again.");
+            }
+        });
+
+        // AJAX request to update affective manager
+        action = 'affective_manager';
+        $.ajax({
+            url: "../../app/ajax_query.php",
+            method: "POST",
+            data: {
+                affective_class: affective_class,
+                action: action,
+            },
+            success: function (data) {
+                // Update response div with new data from affective manager
+                $("#response").html(data);
+            },
+            error: function (xhr, status, error) {
+                // Handle AJAX errors here (optional)
+                console.error("Error:", error);
+                alert("Failed to update affective manager. Please try again.");
+            }
+        });
+    } else {
+        // Alert if affective_class is not selected
         alert("Select Allocated Subject");
     }
 }
