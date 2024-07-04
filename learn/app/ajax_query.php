@@ -429,9 +429,9 @@ $conditions = array(
         'lhpsubject' => 'lhpalloc.sbjid = lhpsubject.sbjid',
     ),
     'joinl' => array(
-        'lhpnote' => 'lhpnote.sbjid = lhpalloc.sbjid AND lhpnote.term = "' . $active_term['term'] . '"',
-        'lhpquestion' => 'lhpquestion.sbjid = lhpalloc.sbjid AND lhpquestion.term = "' . $active_term['term'] . '"',
-        'lhpscheme' => 'lhpscheme.subject = lhpalloc.sbjid AND lhpscheme.term = "' . $active_term['term'] . '"',
+        'lhpnote' => ' lhpnote.sbjid = lhpalloc.sbjid AND lhpnote.term = "' . $active_term['term'] . '"',
+        'lhpquestion' => ' lhpquestion.sbjid = lhpalloc.sbjid AND lhpquestion.term = "' . $active_term['term'] . '"',
+        'lhpscheme' => ' lhpscheme.subject = lhpalloc.sbjid AND lhpscheme.term = "' . $active_term['term'] . '"',
     ),
     'group_by' => 'lhpalloc.staffid, lhpstaff.sname, lhpalloc.sbjid, lhpsubject.sbjname, 
                    lhpalloc.classid, lhpalloc.term, lhpclass.classname',
