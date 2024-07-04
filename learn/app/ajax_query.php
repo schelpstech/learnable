@@ -427,8 +427,6 @@ $conditions = array(
         'lhpclass' => 'lhpalloc.classid = lhpclass.classid',
         'lhpstaff' => 'lhpalloc.staffid = lhpstaff.sname',
         'lhpsubject' => 'lhpalloc.sbjid = lhpsubject.sbjid',
-    ),
-    'joinl' => array(
         'lhpnote' => ' lhpnote.sbjid = lhpalloc.sbjid AND lhpnote.term = "' . $active_term['term'] . '"',
         'lhpquestion' => ' lhpquestion.sbjid = lhpalloc.sbjid AND lhpquestion.term = "' . $active_term['term'] . '"',
         'lhpscheme' => ' lhpscheme.subject = lhpalloc.sbjid AND lhpscheme.term = "' . $active_term['term'] . '"',
