@@ -423,7 +423,7 @@ $conditions = array(
         'lhpalloc.classid' => $_POST['allocated_class'],
         'lhpalloc.term' => $active_term['term'],
     ),
-    'join_multiple' => array(
+    'only_join_many' => array(
         'lhpclass' => 'lhpalloc.classid = lhpclass.classid',
         'lhpstaff' => 'lhpalloc.staffid = lhpstaff.sname',
         'lhpsubject' => 'lhpalloc.sbjid = lhpsubject.sbjid',

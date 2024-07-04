@@ -88,10 +88,19 @@ class Model
             }
         }
         if (array_key_exists("join_multiple", $conditions)) {
-            $sql .= ' JOIN ';
+            $sql .= ' INNER JOIN ';
             $i = 0;
             foreach ($conditions['join_multiple'] as $key => $value) {
                 $pre = ($i > 0) ? ' INNER JOIN ' : '';
+                $sql .= $pre . $key  . $value;
+                $i++;
+            }
+        }
+        if (array_key_exists("only_join_many", $conditions)) {
+            $sql .= ' JOIN ';
+            $i = 0;
+            foreach ($conditions['only_join_many'] as $key => $value) {
+                $pre = ($i > 0) ? ' JOIN ' : '';
                 $sql .= $pre . $key  . $value;
                 $i++;
             }
