@@ -425,7 +425,7 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
             'lhpalloc.classid' => $_POST['allocated_class'],
             'lhpalloc.term' => $active_term['term'],
         ),
-        'joinl' => array(
+        'join_multiple' => array(
             'lhpclass' => ' on lhpalloc.classid = lhpclass.classid',
             'lhpstaff' => ' on lhpalloc.staffid = lhpstaff.sname',
             'lhpsubject' => ' on lhpalloc.sbjid = lhpsubject.sbjid',
@@ -433,7 +433,10 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
             'lhpquestion' => ' on lhpalloc.sbjid = lhpquestion.sbjid',
             'lhpscheme' => ' on lhpalloc.sbjid = lhpscheme.subject',
         ),
-        'group_by' => 'lhpalloc.sbjid',
+        'group_by' =>       'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, 
+                            lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
+                            lhpnote.sbjid, lhpalloc.classid, lhpalloc.term, 
+                            lhpclass.classid, lhpclass.classname',
     );
     $subject_list = $model->getRows($tblName, $conditions);
 
@@ -1235,7 +1238,7 @@ if ($_POST['action'] == 'affective_manager' && isset($active_term)) {
     }
 
     echo $response;
-} 
+}
 
 
 ?>
