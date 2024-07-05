@@ -610,11 +610,10 @@ function remove_task() {
     }
 }
 
-
+//Load dashboard for classmanager
 function class_dashboard() {
     var allocated_class = $("#allocated_class").val();
-    var action = "load_dashboardss";
-    
+    var action = "load_dashboard";
     if (allocated_class !== "" && action !== "") {
         $.ajax({
             url: "../../app/ajax_query.php",
