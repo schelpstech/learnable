@@ -1,4 +1,3 @@
 <?php
 include './query.php';
-$backup->runBackup();
-?>
+$back_up->runBackup();
