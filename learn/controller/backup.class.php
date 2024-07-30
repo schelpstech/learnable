@@ -82,7 +82,7 @@ class DBBackup
 
     private function saveBackupToFile($content)
     {
-        $filename = 'db_backup_' . $this->suffix . '.sql';
+        $filename = 'db_backup_' . $this->suffix . '.zip';
         file_put_contents($filename, $content);
         echo '<a href="./' . $filename . '">Click to download backup file</a>';
     }
