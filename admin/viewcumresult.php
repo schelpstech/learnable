@@ -755,18 +755,18 @@ $tutorname = $row["staffname"];
                     <tr>
                       <td><strong>
                           <h4 style="text-align: center;">
-                            <?php echo round($firstterm, 2) ?>%
+                            <?php echo round($firstTerm, 2) ?>%
                           </h4>
                         </strong></td>
                       <td><strong>
                           <h4 style="text-align: center;">
-                            <?php echo round($secondterm, 2) ?>%
+                            <?php echo round($secondTerm, 2) ?>%
                           </h4>
                         </strong></td>
 
                       <td><strong>
                           <h4 style="text-align: center;">
-                            <?php echo round($thirdterm, 2) ?>%
+                            <?php echo round($thirdTerm, 2) ?>%
                           </h4>
                         </strong></td>
 
