@@ -7,7 +7,7 @@ if (!isset($_SESSION['unamed'])) {
 }
 ?>
 <?php
-require_once("DBController.php");
+require_once ("DBController.php");
 $db_handle = new DBController();
 $query = "SELECT * FROM lhpclass";
 $classresult = $db_handle->runQuery($query);
@@ -19,7 +19,7 @@ $result = mysqli_query($con, $sql);
 $row = mysqli_fetch_array($result);
 $sess = $row['sessionid'];
 
-require_once("DBController.php");
+require_once ("DBController.php");
 $db_handle = new DBController();
 $query = "SELECT term FROM lpterm Order by `status` DESC ";
 $feeresult = $db_handle->runQuery($query);
@@ -35,57 +35,57 @@ $feeresult = $db_handle->runQuery($query);
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- favicon
-		============================================ -->
+    ============================================ -->
   <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
   <!-- Google Fonts
-		============================================ -->
+    ============================================ -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
   <!-- Bootstrap CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <!-- font awesome CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <!-- owl.carousel CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/owl.carousel.css">
   <link rel="stylesheet" href="css/owl.theme.css">
   <link rel="stylesheet" href="css/owl.transitions.css">
   <!-- meanmenu CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/meanmenu/meanmenu.min.css">
   <!-- animate CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/animate.css">
   <!-- normalize CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/normalize.css">
   <!-- wave CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/wave/waves.min.css">
   <link rel="stylesheet" href="css/wave/button.css">
   <!-- mCustomScrollbar CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/scrollbar/jquery.mCustomScrollbar.min.css">
   <!-- Notika icon CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/notika-custom-icon.css">
   <!-- Data Table JS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
   <!-- main CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/main.css">
   <!-- style CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="style.css">
   <!-- responsive CSS
-		============================================ -->
+    ============================================ -->
   <link rel="stylesheet" href="css/responsive.css">
   <!-- modernizr JS
-		============================================ -->
+    ============================================ -->
   <script src="js/html2pdf.bundle.min.js"></script>
 
 
@@ -123,7 +123,7 @@ $feeresult = $db_handle->runQuery($query);
         type: "GET",
         url: "get_fee.php",
         data: 'classid=' + str,
-        success: function(data) {
+        success: function (data) {
           $("#std-list").html(data);
         }
       });
@@ -145,7 +145,7 @@ $feeresult = $db_handle->runQuery($query);
         type: "GET",
         url: "get_fee.php",
         data: 'feetype=' + str,
-        success: function(data) {
+        success: function (data) {
           $("#fee-list").html(data);
         }
       });
@@ -184,7 +184,7 @@ $feeresult = $db_handle->runQuery($query);
         type: "GET",
         url: "get_fee.php",
         data: 'feeid=' + str,
-        success: function(data) {
+        success: function (data) {
           $("#amounta").html(data);
         }
       });
@@ -265,18 +265,19 @@ $feeresult = $db_handle->runQuery($query);
                     <h2>Welcome Admin</h2>
                     <h2> <?php
 
-                          if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
-                            printf('<b>%s</b>', $_SESSION['feemessage']);
-                            unset($_SESSION['feemessage']);
-                          }
-                          ?></h2>
+                    if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
+                      printf('<b>%s</b>', $_SESSION['feemessage']);
+                      unset($_SESSION['feemessage']);
+                    }
+                    ?></h2>
                     <p><span class="bread-ntd"></span></p>
                   </div>
                 </div>
               </div>
               <div class="col-lg-3 col-md-6 col-sm-6 col-xs-3">
                 <div class="breadcomb-report">
-                  <button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i class="notika-icon notika-sent"></i></button>
+                  <button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i
+                      class="notika-icon notika-sent"></i></button>
                 </div>
               </div>
             </div>
@@ -338,9 +339,9 @@ $feeresult = $db_handle->runQuery($query);
 
                   <?php
                   foreach ($classresult as $classd) {
-                  ?>
+                    ?>
                     <option value="<?php echo $classd["classid"]; ?>"><?php echo $classd["classname"]; ?></option>
-                  <?php
+                    <?php
                   }
                   ?>
                 </select>
@@ -377,9 +378,9 @@ $feeresult = $db_handle->runQuery($query);
 
                   <?php
                   foreach ($feeresult as $termd) {
-                  ?>
+                    ?>
                     <option value="<?php echo $termd["term"]; ?>"><?php echo $termd["term"]; ?></option>
-                  <?php
+                    <?php
                   }
                   ?>
                 </select>
@@ -399,7 +400,7 @@ $feeresult = $db_handle->runQuery($query);
                   <option value="">Select Fee Type</option>
                   <?php
 
-                  require_once("DBController.php");
+                  require_once ("DBController.php");
                   $db_handle = new DBController();
 
                   $query = "SELECT DISTINCT classid FROM lhpfeelist WHERE `session` = '$sess' AND status = 1;";
@@ -426,10 +427,10 @@ $feeresult = $db_handle->runQuery($query);
                     }
 
 
-                  ?>
+                    ?>
 
                     <option value="<?php echo $dname; ?>"><?php echo $feeclass; ?> FEE </option>
-                  <?php
+                    <?php
                   }
                   ?>
                 </select>
@@ -447,7 +448,8 @@ $feeresult = $db_handle->runQuery($query);
                 <i class="notika-icon notika-wifi"></i>
               </div>
               <div class="nk-int-st">
-                <select type="text" required="yes" class="form-control" name="feeid" id="fee-list" onChange="getfeeamount();">
+                <select type="text" required="yes" class="form-control" name="feeid" id="fee-list"
+                  onChange="getfeeamount();">
                   <option value="">Select Fee Name</option>
 
                 </select>
@@ -560,21 +562,37 @@ $feeresult = $db_handle->runQuery($query);
                   include_once './conn.php';
 
                   $count = 1;
-                  $query = $conn->prepare("SELECT * FROM `lhpassignedfee` 
-                        LEFT JOIN lhpfeelist on lhpassignedfee.feeid = lhpfeelist.feeid
-                        left join lhpsession on lhpsession.sessionid = lhpfeelist.session
-                        WHERE lhpsession.status = 1 ORDER BY lhpassignedfee.status and lhpassignedfee.term  DESC");
+                  $query = $conn->prepare(" SELECT lhpassignedfee.assid, 
+       lhpassignedfee.term, 
+       lhpassignedfee.stdid,
+       lhpassignedfee.feeid, 
+       lhpassignedfee.classid, 
+       lhpassignedfee.discount, 
+       lhpassignedfee.type, 
+       lhpassignedfee.status, 
+       lhpassignedfee.amount,
+       lhpfeelist.feeid AS lhpfeelist_feeid, 
+       lhpfeelist.session AS lhpfeelist_session,
+       lhpsession.sessionid AS lhpsession_sessionid, 
+       lhpsession.status AS lhpsession_status
+FROM lhpassignedfee
+LEFT JOIN lhpfeelist ON lhpassignedfee.feeid = lhpfeelist.feeid
+LEFT JOIN lhpsession ON lhpsession.sessionid = lhpfeelist.session
+WHERE lhpsession.status = 1
+ORDER BY lhpassignedfee.status, lhpassignedfee.term DESC;
+;
+                        ");
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {
-                    $assid =  $row->assid;
-                    $term =  $row->term;
-                    $stdid =  $row->stdid;
-                    $feeid =  $row->feeid;
-                    $classid =  $row->classid;
-                    $discount =  $row->discount;
-                    $type =  $row->type;
-                    $status =  $row->status;
+                    $assid = $row->assid;
+                    $term = $row->term;
+                    $stdid = $row->stdid;
+                    $feeid = $row->feeid;
+                    $classid = $row->classid;
+                    $discount = $row->discount;
+                    $type = $row->type;
+                    $status = $row->status;
                     $feeamount = $row->amount;
 
 
@@ -611,17 +629,17 @@ $feeresult = $db_handle->runQuery($query);
                       $feestatus = '<a href="activatefee.php?ref=' . $assid . '" type="button"  class="btn btn-danger" >Inactive - Click to Activate</a>';
                     }
 
-                  ?>
+                    ?>
                     <tr><strong>
                         <td><?php echo $count++ ?></td>
                         <td><?php echo $term ?></td>
                         <td><?php echo $feeclass ?></td>
                         <td><?php echo $std ?></td>
                         <td><?php echo $type ?></td>
-                        <td><?php echo  $usename ?></td>
+                        <td><?php echo $usename ?></td>
                         <td><?php echo $feeamount ?></td>
                         <td><?php echo $discount ?></td>
-                        <td><?php echo $pay = $feeamount - $discount;  ?></td>
+                        <td><?php echo $pay = $feeamount - $discount; ?></td>
                         <td><?php echo $feestatus ?></td>
 
                       </strong>
@@ -659,70 +677,70 @@ $feeresult = $db_handle->runQuery($query);
 
 
   <!-- jquery
-		============================================ -->
+    ============================================ -->
   <script src="js/vendor/jquery-1.12.4.min.js"></script>
   <!-- bootstrap JS
-		============================================ -->
+    ============================================ -->
   <script src="js/bootstrap.min.js"></script>
   <!-- wow JS
-		============================================ -->
+    ============================================ -->
   <script src="js/wow.min.js"></script>
   <!-- price-slider JS
-		============================================ -->
+    ============================================ -->
   <script src="js/jquery-price-slider.js"></script>
   <!-- owl.carousel JS
-		============================================ -->
+    ============================================ -->
   <script src="js/owl.carousel.min.js"></script>
   <!-- scrollUp JS
-		============================================ -->
+    ============================================ -->
   <script src="js/jquery.scrollUp.min.js"></script>
   <!-- meanmenu JS
-		============================================ -->
+    ============================================ -->
   <script src="js/meanmenu/jquery.meanmenu.js"></script>
   <!-- counterup JS
-		============================================ -->
+    ============================================ -->
   <script src="js/counterup/jquery.counterup.min.js"></script>
   <script src="js/counterup/waypoints.min.js"></script>
   <script src="js/counterup/counterup-active.js"></script>
   <!-- mCustomScrollbar JS
-		============================================ -->
+    ============================================ -->
   <script src="js/scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
   <!-- sparkline JS
-		============================================ -->
+    ============================================ -->
   <script src="js/sparkline/jquery.sparkline.min.js"></script>
   <script src="js/sparkline/sparkline-active.js"></script>
   <!-- flot JS
-		============================================ -->
+    ============================================ -->
   <script src="js/flot/jquery.flot.js"></script>
   <script src="js/flot/jquery.flot.resize.js"></script>
   <script src="js/flot/flot-active.js"></script>
   <!-- knob JS
-		============================================ -->
+    ============================================ -->
   <script src="js/knob/jquery.knob.js"></script>
   <script src="js/knob/jquery.appear.js"></script>
   <script src="js/knob/knob-active.js"></script>
   <!--  Chat JS
-		============================================ -->
+    ============================================ -->
   <script src="js/chat/jquery.chat.js"></script>
   <!--  todo JS
-		============================================ -->
+    ============================================ -->
   <script src="js/todo/jquery.todo.js"></script>
   <!--  wave JS
-		============================================ -->
+    ============================================ -->
   <script src="js/wave/waves.min.js"></script>
   <script src="js/wave/wave-active.js"></script>
   <!-- plugins JS
-		============================================ -->
+    ============================================ -->
   <script src="js/plugins.js"></script>
   <!-- Data Table JS
-		============================================ -->
+    ============================================ -->
   <script src="js/data-table/jquery.dataTables.min.js"></script>
   <script src="js/data-table/data-table-act.js"></script>
   <!-- main JS
-		============================================ -->
+    ============================================ -->
   <script src="js/main.js"></script>
   <!-- tawk chat JS
-		============================================ -->
+    ============================================ -->
   <script src="js/tawk-chat.js"></script>
 </body>
 
