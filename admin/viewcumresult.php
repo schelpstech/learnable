@@ -543,49 +543,12 @@ $tutorname = $row["staffname"];
                       }
 
                       $x = $rate1 + $rate2 + $rate3;
+                      $y = $sum1 + $sum2 + $sum3;
                       if ($x == 0) {
                         $cum = '';
                       } else {
-                        $cum = round((($sum1 + $sum2 + $sum3) / $x), 2);
+                        $cum = evaluatePerformance($y, $x);
                       }
-
-
-                      if ($cum != '') {
-                        if ($cum >= 75) {
-                          $grade = "A";
-                        } elseif ($cum >= 65) {
-                          $grade = "B";
-                        } elseif ($cum >= 50) {
-                          $grade = "C";
-                        } elseif ($cum >= 45) {
-                          $grade = "D";
-                        } elseif ($cum >= 40) {
-                          $grade = "E";
-                        } elseif ($cum >= 1) {
-                          $grade = "F";
-                        }
-                      } else {
-                        $grade = "";
-                      }
-                      if ($cum != '') {
-                        if ($cum >= 75) {
-                          $remarks = "Excellent";
-                        } elseif ($cum >= 65) {
-                          $remarks = "Very Good";
-                        } elseif ($cum >= 50) {
-                          $remarks = "Moderate";
-                        } elseif ($cum >= 45) {
-                          $remarks = "Fair";
-                        } elseif ($cum >= 40) {
-                          $remarks = "Needs Help";
-                        } elseif ($cum >= 0) {
-                          $remarks = "Needs Help";
-                        }
-                      } else {
-                        $remarks = "";
-                      }
-
-                     
 
                       // Get scores for each term
                       $firstTermData = getCumAverageScore($con, $lname, $firsttermref);
@@ -645,17 +608,17 @@ $tutorname = $row["staffname"];
                           </strong></td>
                         <td><strong>
                             <h4 style="text-align: center;">
-                              <?php echo $cum ?>
+                              <?php echo $cum['score']?>
                             </h4>
                           </strong></td>
                         <td><strong>
                             <h4 style="text-align: center;">
-                              <?php echo $grade ?>
+                              <?php echo $cum['grade'] ?>
                             </h4>
                           </strong></td>
                         <td><strong>
                             <h4 style="text-align: center;">
-                              <?php echo $remarks ?>
+                              <?php echo $cum['remarks'] ?>
                             </h4>
                           </strong></td>
                       </tr>
@@ -711,7 +674,7 @@ $tutorname = $row["staffname"];
 
                       <td><strong>
                           <h3 style="text-align: center;">
-                            <?php echo round(($y / $a), 2) ?>%
+                            <?php echo $result['score'] ?>%
                           </h3>
                         </strong></td>
                       <td><strong>
