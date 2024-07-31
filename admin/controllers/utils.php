@@ -77,3 +77,68 @@ function evaluatePerformance(float $marksObtained, float $totalMarks): array
 
     return $result;
 }
+
+
+function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname) {
+    // Initialize variables
+    $termScores = [
+        'term1' => ['score' => 0, 'rate' => 0],
+        'term2' => ['score' => 0, 'rate' => 0],
+        'term3' => ['score' => 0, 'rate' => 0],
+        'ca' => '',
+        'exam' => ''
+    ];
+
+    // Helper function to fetch term scores
+    function fetchTermScore($con, $term, $subjectid, $lname) {
+        $sql = "SELECT `totalscore`, `score`, `examscore` FROM `lhpresultrecord` WHERE `term` = ? AND `subjid` = ? AND `lid` = ?";
+        $stmt = $con->prepare($sql);
+        $stmt->bind_param('sss', $term, $subjectid, $lname);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
+    // 1st Term Score
+    $row = fetchTermScore($con, $firsttermref, $subjectid, $lname);
+    if (!empty($row["totalscore"])) {
+        $termScores['term1']['score'] = $row["totalscore"];
+        $termScores['term1']['rate'] = 1;
+    }
+
+    // 2nd Term Score
+    $row = fetchTermScore($con, $secondtermref, $subjectid, $lname);
+    if (!empty($row["totalscore"])) {
+        $termScores['term2']['score'] = $row["totalscore"];
+        $termScores['term2']['rate'] = 1;
+    }
+
+    // 3rd Term Score
+    $row = fetchTermScore($con, $term, $subjectid, $lname);
+    if (!empty($row["score"])) {
+        $termScores['ca'] = $row["score"];
+    }
+    if (!empty($row["examscore"])) {
+        $termScores['exam'] = $row["examscore"];
+    }
+    if (!empty($row["totalscore"])) {
+        $termScores['term3']['score'] = $row["totalscore"];
+        $termScores['term3']['rate'] = 1;
+    }
+
+    // Calculate sums and rates
+    $x = $termScores['term1']['rate'] + $termScores['term2']['rate'] + $termScores['term3']['rate'];
+    $y = $termScores['term1']['score'] + $termScores['term2']['score'] + $termScores['term3']['score'];
+
+    return [
+        'termScores' => $termScores,
+        'x' => $x,
+        'y' => $y
+    ];
+}
+
+// Example usage
+$result = getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname);
+$termScores = $result['termScores'];
+$x = $result['x'];
+$y = $result['y'];
