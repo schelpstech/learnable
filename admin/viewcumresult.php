@@ -585,7 +585,7 @@ $tutorname = $row["staffname"];
                       }
 
                       // Function to get average score for a term
-                      function getAverageScore(mysqli $con, string $lname, string $term): array
+                      function getCumAverageScore(mysqli $con, string $lname, string $term): array
                       {
                         // Prepare the SQL statement
                         $stmt = $con->prepare("SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE lid = ? AND term = ?");
@@ -607,9 +607,9 @@ $tutorname = $row["staffname"];
                       }
 
                       // Get scores for each term
-                      $firstTermData = getAverageScore($con, $lname, $firsttermref);
-                      $secondTermData = getAverageScore($con, $lname, $secondtermref);
-                      $thirdTermData = getAverageScore($con, $lname, $term);
+                      $firstTermData = getCumAverageScore($con, $lname, $firsttermref);
+                      $secondTermData = getCumAverageScore($con, $lname, $secondtermref);
+                      $thirdTermData = getCumAverageScore($con, $lname, $term);
 
                       // Calculate totals
                       $firstTerm = $firstTermData['score'];
