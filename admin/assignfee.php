@@ -560,7 +560,10 @@ $feeresult = $db_handle->runQuery($query);
                   include_once './conn.php';
 
                   $count = 1;
-                  $query = $conn->prepare("select * from lhpassignedfee ORDER BY status and term  DESC");
+                  $query = $conn->prepare("SELECT * FROM `lhpassignedfee` 
+                        LEFT JOIN lhpfeelist on lhpassignedfee.feeid = lhpfeelist.feeid
+                        left join lhpsession on lhpsession.sessionid = lhpfeelist.session
+                        WHERE lhpsession.status = 1 ORDER BY lhpassignedfee.status and lhpassignedfee.term  DESC");
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {
