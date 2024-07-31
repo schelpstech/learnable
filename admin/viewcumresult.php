@@ -584,87 +584,92 @@ $tutorname = $row["staffname"];
                         $remarks = "";
                       }
 
-                      //cumulatives
+                      // Function to get average score for a term
+                      function getAverageScore(mysqli $con, string $lname, string $term): array
+                      {
+                        // Prepare the SQL statement
+                        $stmt = $con->prepare("SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE lid = ? AND term = ?");
+                        $stmt->bind_param('ss', $lname, $term);
+                        $stmt->execute();
 
-                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$firsttermref' ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-                      if (!empty($row["score"])) {
-                        $firstterm = $row["score"];
-                        $t1 = 1;
-                      } else {
-                        $firstterm = 0;
-                        $t1 = 0;
+                        // Get the result
+                        $result = $stmt->get_result();
+                        $row = $result->fetch_assoc();
+
+                        // Close the statement
+                        $stmt->close();
+
+                        // Return the result
+                        return [
+                          'score' => $row['score'] ?? 0,
+                          'exists' => !empty($row['score'])
+                        ];
                       }
 
-                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$secondtermref' ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-                      if (!empty($row["score"])) {
-                        $secondterm = $row["score"];
-                        $t2 = 1;
-                      } else {
-                        $secondterm = 0;
-                        $t2 = 0;
-                      }
+                      // Get scores for each term
+                      $firstTermData = getAverageScore($con, $lname, $firsttermref);
+                      $secondTermData = getAverageScore($con, $lname, $secondtermref);
+                      $thirdTermData = getAverageScore($con, $lname, $term);
 
-                      $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term = '$term' ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-                      if (!empty($row["score"])) {
-                        $thirdterm = $row["score"];
-                        $t3 = 1;
-                      } else {
-                        $thirdterm = 0;
-                        $t3 = 0;
-                      }
+                      // Calculate totals
+                      $firstTerm = $firstTermData['score'];
+                      $secondTerm = $secondTermData['score'];
+                      $thirdTerm = $thirdTermData['score'];
 
-                      $y = $firstterm + $secondterm + $thirdterm;
+                      $t1 = $firstTermData['exists'] ? 1 : 0;
+                      $t2 = $secondTermData['exists'] ? 1 : 0;
+                      $t3 = $thirdTermData['exists'] ? 1 : 0;
+
+                      $y = $firstTerm + $secondTerm + $thirdTerm;
                       $a = $t1 + $t2 + $t3;
 
+                      // Define the function to calculate grade, remarks, and term remarks
+                      function evaluatePerformance(float $marksObtained, float $totalMarks): array
+                      {
+                        // Calculate percentage
+                        $percentage = ($marksObtained / $totalMarks);
 
-                      if (($y / $a) >= 75) {
-                        $cgrade = "A";
-                      } elseif (($y / $a) >= 65) {
-                        $cgrade = "B";
-                      } elseif (($y / $a) >= 50) {
-                        $cgrade = "C";
-                      } elseif (($y / $a) >= 45) {
-                        $cgrade = "D";
-                      } elseif (($y / $a) >= 40) {
-                        $cgrade = "E";
-                      } else {
-                        $cgrade = "F";
+                        // Initialize result array
+                        $result = [
+                          'grade' => '',
+                          'remarks' => '',
+                          'termRemarks' => ''
+                        ];
+
+                        // Determine the grade
+                        if ($percentage >= 75) {
+                          $result['grade'] = 'A';
+                          $result['remarks'] = 'Excellent';
+                          $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is excellent; keep up the good work to sustain this excellent performance in subsequent terms. Keep it up!';
+                        } elseif ($percentage >= 65) {
+                          $result['grade'] = 'B';
+                          $result['remarks'] = 'Very Good';
+                          $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is impressive, but you need to work harder to achieve higher grades next term. Well done!';
+                        } elseif ($percentage >= 50) {
+                          $result['grade'] = 'C';
+                          $result['remarks'] = 'Moderate';
+                          $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is moderate, but with more effort towards studying, you will achieve higher grades next term. Cheer up!';
+                        } elseif ($percentage >= 45) {
+                          $result['grade'] = 'D';
+                          $result['remarks'] = 'Fair';
+                          $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is fair. You can do better if you commit more effort and time to studying thoroughly next term.';
+                        } elseif ($percentage >= 40) {
+                          $result['grade'] = 'E';
+                          $result['remarks'] = 'Needs Help';
+                          $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is fair. You can do better if you commit more effort and time to studying thoroughly next term.';
+                        } else {
+                          $result['grade'] = 'F';
+                          $result['remarks'] = 'Needs Help';
+                          $result['termRemarks'] = 'Your academic performance this term is below the pass grade. You can do better if you commit more effort and time to studying thoroughly next term.';
+                        }
+
+                        return $result;
                       }
 
-                      if (($y / $a) >= 75) {
-                        $cremarks = "Excellent";
-                      } elseif (($y / $a) >= 65) {
-                        $cremarks = "Very Good";
-                      } elseif (($y / $a) >= 50) {
-                        $cremarks = "Moderate";
-                      } elseif (($y / $a) >= 45) {
-                        $cremarks = "Fair";
-                      } elseif (($y / $a) >= 40) {
-                        $cremarks = "Needs Help";
-                      } else {
-                        $cremarks = "Needs Help";
-                      }
+
+                      $result = evaluatePerformance($y, $a);
 
 
-                      if (($y / $a) >= 75) {
-                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is excellent; you need to keep up the good work to sustain this excellent performance in subsequent terms. Keep it Up!";
-                      } elseif (($y / $a) >= 65) {
-                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is impressive but you need to work harder to achieve higher grades next term. Well done!";
-                      } elseif (($y / $a) >= 50) {
-                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is moderate but with more effort towards studying, you will achieve higher grades next term. Cheer up!";
-                      } elseif (($y / $a) >= 45) {
-                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
-                      } elseif (($y / $a) >= 40) {
-                        $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
-                      } else {
-                        $tremarks = "Your academic performance this term is below the pass grade. You can do better if you can commit more effort and time to studying thoroughly next term.";
-                      }
                       ?>
 
                       <tr>
@@ -772,17 +777,17 @@ $tutorname = $row["staffname"];
                         </strong></td>
                       <td><strong>
                           <h4 style="text-align: center;">
-                            <?php echo $cgrade ?>
+                            <?php echo $result['grade'] ?>
                           </h4>
                         </strong></td>
                       <td><strong>
                           <h4 style="text-align: center;">
-                            <?php echo $cremarks ?>
+                            <?php echo $result['remarks'] ?>
                           </h4>
                         </strong></td>
                       <td>
                         <h5 style="text-align: center;">
-                          <?php echo $tremarks ?>
+                          <?php echo $result['termRemarks'] ?>
                         </h5>
                       </td>
                       <?php if (!is_null($comment)) {
@@ -813,26 +818,26 @@ $tutorname = $row["staffname"];
     </div>
 
     <div class="breadcomb-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="breadcomb-list">
-                        <div class="row">
-                            <div class="breadcomb-icon">
-                                <image src="../admin/archive/<?php echo $sign; ?>" height="100" width="100" />
-                                <h3 style="text-align: left;">
-                                    <?php echo $schowner; ?>
-                                </h3>
-                                <h4 style="text-align: left;"> Chief Learning Officer </h4>
-
-                            </div>
-
-                        </div>
-                    </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="breadcomb-list">
+              <div class="row">
+                <div class="breadcomb-icon">
+                  <image src="../admin/archive/<?php echo $sign; ?>" height="100" width="100" />
+                  <h3 style="text-align: left;">
+                    <?php echo $schowner; ?>
+                  </h3>
+                  <h4 style="text-align: left;"> Chief Learning Officer </h4>
 
                 </div>
+
+              </div>
             </div>
+
+          </div>
         </div>
+      </div>
     </div>
 
     <div class="breadcomb-area">
