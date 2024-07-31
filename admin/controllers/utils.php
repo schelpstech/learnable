@@ -36,7 +36,7 @@ function evaluatePerformance(float $marksObtained, float $totalMarks): array
         'termRemarks' => ''
     ];
 
-    if ($marksObtained > 1 && $totalMarks > 0 ) {
+    if ($marksObtained > 1 && $totalMarks > 0) {
         // Calculate percentage
         $percentage = round(($marksObtained / $totalMarks), 2);
 

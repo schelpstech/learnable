@@ -131,7 +131,7 @@ $tutorname = $row["staffname"];
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Learner's Profile - Learnable</title>
+  <title> <?php echo $stname.' '.$term. ' Result - '. $schname ?></title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- favicon
