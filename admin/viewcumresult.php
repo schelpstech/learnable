@@ -524,27 +524,43 @@ $tutorname = $row["staffname"];
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScoresData['termScores']['term1']['score']  ?>
+                              <?php echo 
+                              $termScoresData['termScores']['term1']['score']  = 
+                              $termScoresData['termScores']['term1']['score'] == 0 ? "" : 
+                              $termScoresData['termScores']['term1']['score'];
+                              ?>
                             </p>
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScoresData['termScores']['term2']['score']  ?>
+                              <?php echo 
+                              $termScoresData['termScores']['term2']['score']  = 
+                              $termScoresData['termScores']['term2']['score'] == 0 ? "" : 
+                              $termScoresData['termScores']['term2']['score'];
+                              ?>
                             </p>
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScoresData['termScores']['ca']   ?>
+                              <?php echo $termScoresData['termScores']['ca'] = 
+                              $termScoresData['termScores']['ca'] == 0 ? " " : 
+                              $termScoresData['termScores']['ca']; ?>
                             </p>
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScoresData['termScores']['exam'] ?>
+                            <?php echo $termScoresData['termScores']['exam'] = 
+                              $termScoresData['termScores']['exam'] == 0 ? " " : 
+                              $termScoresData['termScores']['exam']; ?>
                             </p>
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScoresData['termScores']['term3']['score'] ?>
+                            <?php echo 
+                              $termScoresData['termScores']['term3']['score']  = 
+                              $termScoresData['termScores']['term3']['score'] == 0 ? "" : 
+                              $termScoresData['termScores']['term3']['score'];
+                              ?>
                             </p>
                           </strong></td>
                         <td><strong>
