@@ -579,7 +579,7 @@ FROM lhpassignedfee
 LEFT JOIN lhpfeelist ON lhpassignedfee.feeid = lhpfeelist.feeid
 LEFT JOIN lhpsession ON lhpsession.sessionid = lhpfeelist.session
 WHERE lhpsession.status = 1
-ORDER BY lhpassignedfee.status, lhpassignedfee.term DESC;
+ORDER BY lhpassignedfee.status DESC, lhpassignedfee.term DESC;
 ;
                         ");
                   $query->setFetchMode(PDO::FETCH_OBJ);
