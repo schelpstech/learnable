@@ -139,9 +139,3 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
     ];
 }
 
-// Example usage
-$result = getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname);
-
-$termScores = $result['termScores'];
-$x = $result['x'];
-$y = $result['y'];
