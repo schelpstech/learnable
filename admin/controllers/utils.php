@@ -27,7 +27,7 @@ function getCumAverageScore(mysqli $con, string $lname, string $term): array
 function evaluatePerformance(float $marksObtained, float $totalMarks): array
 {
     // Calculate percentage
-    $percentage = round(($marksObtained / $totalMarks),2);
+    $percentage = round(($marksObtained / $totalMarks), 2);
 
     // Initialize result array
     $result = [
@@ -63,12 +63,12 @@ function evaluatePerformance(float $marksObtained, float $totalMarks): array
         $result['grade'] = 'E';
         $result['remarks'] = 'Needs Help';
         $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is fair. You can do better if you commit more effort and time to studying thoroughly next term.';
-    } elseif($percentage < 40) {
+    } elseif ($percentage < 40) {
         $result['score'] = $percentage;
         $result['grade'] = 'F';
         $result['remarks'] = 'Needs Help';
         $result['termRemarks'] = 'Your academic performance this term is below the pass grade. You can do better if you commit more effort and time to studying thoroughly next term.';
-    }else {
+    } else {
         $result['score'] = $percentage;
         $result['grade'] = '';
         $result['remarks'] = '';
@@ -78,8 +78,17 @@ function evaluatePerformance(float $marksObtained, float $totalMarks): array
     return $result;
 }
 
-
-function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname) {
+function fetchTermScore($con, $term, $subjectid, $lname)
+    {
+        $sql = "SELECT `totalscore`, `score`, `examscore` FROM `lhpresultrecord` WHERE `term` = ? AND `subjid` = ? AND `lid` = ?";
+        $stmt = $con->prepare($sql);
+        $stmt->bind_param('sss', $term, $subjectid, $lname);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname)
+{
     // Initialize variables
     $termScores = [
         'term1' => ['score' => 0, 'rate' => 0],
@@ -90,14 +99,7 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
     ];
 
     // Helper function to fetch term scores
-    function fetchTermScore($con, $term, $subjectid, $lname) {
-        $sql = "SELECT `totalscore`, `score`, `examscore` FROM `lhpresultrecord` WHERE `term` = ? AND `subjid` = ? AND `lid` = ?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param('sss', $term, $subjectid, $lname);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
+    
 
     // 1st Term Score
     $row = fetchTermScore($con, $firsttermref, $subjectid, $lname);
@@ -139,6 +141,7 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
 
 // Example usage
 $result = getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname);
+
 $termScores = $result['termScores'];
 $x = $result['x'];
 $y = $result['y'];

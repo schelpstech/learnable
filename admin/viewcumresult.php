@@ -487,62 +487,9 @@ $tutorname = $row["staffname"];
                       $row = mysqli_fetch_array($result);
                       $secondtermref = $row["term"];
 
-                      //1st Term Score
-
-                      $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$firsttermref' and `subjid`  = '$subjectid' and lid = '$lname'  ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-                      if (!empty($row["totalscore"])) {
-                        $term1 = $row["totalscore"];
-                        $sum1 = $row["totalscore"];
-                        $rate1 = 1;
-                      } else {
-                        $term1 = '';
-                        $sum1 = 0;
-                        $rate1 = 0;
-                      }
-                      //2nd Term Score
-
-                      $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$secondtermref' and `subjid`  = '$subjectid' and lid = '$lname' ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-                      if (!empty($row["totalscore"])) {
-                        $term2 = $row["totalscore"];
-                        $sum2 = $row["totalscore"];
-                        $rate2 = 1;
-                      } else {
-                        $term2 = '';
-                        $sum2 = 0;
-                        $rate2 = 0;
-                      }
-
-                      //3rd Term Score
-
-                      $sql = "SELECT score, examscore, `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname'  ";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_array($result);
-                      if (!empty($row["score"])) {
-                        $ca = $row["score"];
-                      } else {
-                        $ca = '';
-                      }
-
-                      if (!empty($row["examscore"])) {
-                        $exam = $row["examscore"];
-                      } else {
-                        $exam = '';
-                      }
-                      if (!empty($row["totalscore"])) {
-                        $term3 = $row["totalscore"];
-                        $sum3 = $row["totalscore"];
-                        $rate3 = 1;
-                      } else {
-                        $term3 = '';
-                        $sum3 = 0;
-                        $rate3 = 0;
-                      }
 
                       $termScores = getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname);
+
                       $cum = evaluatePerformance($termScores['y'], $termScores['x']);
                       // Get scores for each term
                       $firstTermData = getCumAverageScore($con, $lname, $firsttermref);
@@ -602,7 +549,7 @@ $tutorname = $row["staffname"];
                           </strong></td>
                         <td><strong>
                             <h4 style="text-align: center;">
-                              <?php echo $cum['score']?>
+                              <?php echo $cum['score'] ?>
                             </h4>
                           </strong></td>
                         <td><strong>
