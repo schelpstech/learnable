@@ -486,10 +486,8 @@ $tutorname = $row["staffname"];
                       $result = mysqli_query($con, $sql);
                       $row = mysqli_fetch_array($result);
                       $secondtermref = $row["term"];
-
-
+                      
                       $termScoresData = getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname);
-
                       $cum = evaluatePerformance($termScoresData['y'], $termScoresData['x']);
                       // Get scores for each term
                       $firstTermData = getCumAverageScore($con, $lname, $firsttermref);
@@ -500,19 +498,12 @@ $tutorname = $row["staffname"];
                       $firstTerm = $firstTermData['score'];
                       $secondTerm = $secondTermData['score'];
                       $thirdTerm = $thirdTermData['score'];
-
                       $t1 = $firstTermData['exists'] ? 1 : 0;
                       $t2 = $secondTermData['exists'] ? 1 : 0;
                       $t3 = $thirdTermData['exists'] ? 1 : 0;
-
                       $y = $firstTerm + $secondTerm + $thirdTerm;
                       $a = $t1 + $t2 + $t3;
-
-
-
                       $result = evaluatePerformance($y, $a);
-
-
                       ?>
 
                       <tr>

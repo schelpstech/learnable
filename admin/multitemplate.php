@@ -16,8 +16,7 @@ $serial = $seriala . $serialb;
                                 <tbody>
                                     <tr>
                                         <td style="text-align: center;">
-                                            <image src="../learn/asset/img/school/<?php echo $schlogo; ?>" width="150"
-                                                height="150" /><br>
+                                            <image src="../learn/asset/img/school/<?php echo $schlogo; ?>" width="150" height="150" /><br>
                                             <strong>Founded:
                                                 <?php echo $schyear; ?>
                                             </strong>
@@ -45,8 +44,7 @@ $serial = $seriala . $serialb;
                                         </td>
 
                                         <td style="text-align: center;">
-                                            <image src="../learn/asset/img/passport/<?php echo $pix; ?>" width="150"
-                                                height="150" /><br>
+                                            <image src="../learn/asset/img/passport/<?php echo $pix; ?>" width="150" height="150" /><br>
                                             <strong>
                                                 <?php echo $lname; ?>
                                             </strong>
@@ -59,9 +57,7 @@ $serial = $seriala . $serialb;
 
                             </table>
 
-                            <table class="table table-bordered"
-                                style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;"
-                                border="1">
+                            <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                                 <thead>
                                     <tr>
                                         <th style="text-align: center;">Learners ID</th>
@@ -114,9 +110,7 @@ $serial = $seriala . $serialb;
                                 </tbody>
                             </table>
 
-                            <table class="table table-hover"
-                                style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;"
-                                border="1">
+                            <table class="table table-hover" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                                 <thead>
                                     <br>
                                     <strong>
@@ -183,9 +177,7 @@ $serial = $seriala . $serialb;
 
                             </table>
                             <!--  Result-->
-                            <table class="table table-bordered"
-                                style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;"
-                                border="1"><br>
+                            <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1"><br>
                                 <strong>
                                     <p style="text-align: center;">Academic Performance Report</p>
                                 </strong>
@@ -219,7 +211,7 @@ $serial = $seriala . $serialb;
                                     while ($row = $query->fetch()) {
                                         $subjectname = $row->subjectname;
                                         $subjectid = $row->subjectid;
-                                        ?>
+                                    ?>
                                         <?php
                                         $sql = "SELECT `session` FROM `lhpsession` WHERE `status`  = 1 ";
                                         $result = mysqli_query($con, $sql);
@@ -244,184 +236,24 @@ $serial = $seriala . $serialb;
                                         $row = mysqli_fetch_array($result);
                                         $secondtermref = $row["term"];
 
-                                        //1st Term Score
-                                    
-                                        $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$firsttermref' and `subjid`  = '$subjectid' and lid = '$lname'  ";
-                                        $result = mysqli_query($con, $sql);
-                                        $row = mysqli_fetch_array($result);
-                                        if (!empty($row["totalscore"])) {
-                                            $term1 = $row["totalscore"];
-                                            $sum1 = $row["totalscore"];
-                                            $rate1 = 1;
-                                        } else {
-                                            $term1 = '';
-                                            $sum1 = 0;
-                                            $rate1 = 0;
-                                        }
-                                        //2nd Term Score
-                                    
-                                        $sql = "SELECT `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$secondtermref' and `subjid`  = '$subjectid' and lid = '$lname' ";
-                                        $result = mysqli_query($con, $sql);
-                                        $row = mysqli_fetch_array($result);
-                                        if (!empty($row["totalscore"])) {
-                                            $term2 = $row["totalscore"];
-                                            $sum2 = $row["totalscore"];
-                                            $rate2 = 1;
-                                        } else {
-                                            $term2 = '';
-                                            $sum2 = 0;
-                                            $rate2 = 0;
-                                        }
 
-                                        //3rd Term Score
-                                    
-                                        $sql = "SELECT score, examscore, `totalscore` FROM `lhpresultrecord` WHERE `term`  = '$term' and `subjid`  = '$subjectid' and lid = '$lname'  ";
-                                        $result = mysqli_query($con, $sql);
-                                        $row = mysqli_fetch_array($result);
-                                        if (!empty($row["score"])) {
-                                            $ca = $row["score"];
-                                        } else {
-                                            $ca = '';
-                                        }
+                                        $termScoresData = getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname);
+                                        $cum = evaluatePerformance($termScoresData['y'], $termScoresData['x']);
+                                        // Get scores for each term
+                                        $firstTermData = getCumAverageScore($con, $lname, $firsttermref);
+                                        $secondTermData = getCumAverageScore($con, $lname, $secondtermref);
+                                        $thirdTermData = getCumAverageScore($con, $lname, $term);
 
-                                        if (!empty($row["examscore"])) {
-                                            $exam = $row["examscore"];
-                                        } else {
-                                            $exam = '';
-                                        }
-                                        if (!empty($row["totalscore"])) {
-                                            $term3 = $row["totalscore"];
-                                            $sum3 = $row["totalscore"];
-                                            $rate3 = 1;
-                                        } else {
-                                            $term3 = '';
-                                            $sum3 = 0;
-                                            $rate3 = 0;
-                                        }
-
-                                        $x = $rate1 + $rate2 + $rate3;
-                                        if ($x == 0) {
-                                            $cum = '';
-                                        } else {
-                                            $cum = round((($sum1 + $sum2 + $sum3) / $x), 2);
-
-                                        }
-
-
-                                        if ($cum != '') {
-                                            if ($cum >= 75) {
-                                                $grade = "A";
-                                            } elseif ($cum >= 65) {
-                                                $grade = "B";
-                                            } elseif ($cum >= 50) {
-                                                $grade = "C";
-                                            } elseif ($cum >= 45) {
-                                                $grade = "D";
-                                            } elseif ($cum >= 40) {
-                                                $grade = "E";
-                                            } elseif ($cum >= 1) {
-                                                $grade = "F";
-                                            }
-                                        } else {
-                                            $grade = "";
-                                        }
-                                        if ($cum != '') {
-                                            if ($cum >= 75) {
-                                                $remarks = "Excellent";
-                                            } elseif ($cum >= 65) {
-                                                $remarks = "Very Good";
-                                            } elseif ($cum >= 50) {
-                                                $remarks = "Moderate";
-                                            } elseif ($cum >= 45) {
-                                                $remarks = "Fair";
-                                            } elseif ($cum >= 40) {
-                                                $remarks = "Needs Help";
-                                            } elseif ($cum >= 0) {
-                                                $remarks = "Needs Help";
-                                            }
-                                        } else {
-                                            $remarks = "";
-                                        }
-                                        //cumulatives
-                                        $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$firsttermref' ";
-                                        $result = mysqli_query($con, $sql);
-                                        $row = mysqli_fetch_array($result);
-                                        if (!empty($row["score"])) {
-                                            $firstterm = $row["score"];
-                                            $t1 = 1;
-                                        } else {
-                                            $firstterm = 0;
-                                            $t1 = 0;
-                                        }
-
-                                        $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term ='$secondtermref' ";
-                                        $result = mysqli_query($con, $sql);
-                                        $row = mysqli_fetch_array($result);
-                                        if (!empty($row["score"])) {
-                                            $secondterm = $row["score"];
-                                            $t2 = 1;
-                                        } else {
-                                            $secondterm = 0;
-                                            $t2 = 0;
-                                        }
-
-                                        $sql = "SELECT AVG(totalscore) AS score FROM lhpresultrecord WHERE  lid = '$lname' AND term = '$term' ";
-                                        $result = mysqli_query($con, $sql);
-                                        $row = mysqli_fetch_array($result);
-                                        if (!empty($row["score"])) {
-                                            $thirdterm = $row["score"];
-                                            $t3 = 1;
-                                        } else {
-                                            $thirdterm = 0;
-                                            $t3 = 0;
-                                        }
-
-                                        $y = $firstterm + $secondterm + $thirdterm;
+                                        // Calculate totals
+                                        $firstTerm = $firstTermData['score'];
+                                        $secondTerm = $secondTermData['score'];
+                                        $thirdTerm = $thirdTermData['score'];
+                                        $t1 = $firstTermData['exists'] ? 1 : 0;
+                                        $t2 = $secondTermData['exists'] ? 1 : 0;
+                                        $t3 = $thirdTermData['exists'] ? 1 : 0;
+                                        $y = $firstTerm + $secondTerm + $thirdTerm;
                                         $a = $t1 + $t2 + $t3;
-
-
-                                        if (($y / $a) >= 75) {
-                                            $cgrade = "A";
-                                        } elseif (($y / $a) >= 65) {
-                                            $cgrade = "B";
-                                        } elseif (($y / $a) >= 50) {
-                                            $cgrade = "C";
-                                        } elseif (($y / $a) >= 45) {
-                                            $cgrade = "D";
-                                        } elseif (($y / $a) >= 40) {
-                                            $cgrade = "E";
-                                        } else {
-                                            $cgrade = "F";
-                                        }
-
-                                        if (($y / $a) >= 75) {
-                                            $cremarks = "Excellent";
-                                        } elseif (($y / $a) >= 65) {
-                                            $cremarks = "Very Good";
-                                        } elseif (($y / $a) >= 50) {
-                                            $cremarks = "Moderate";
-                                        } elseif (($y / $a) >= 45) {
-                                            $cremarks = "Fair";
-                                        } elseif (($y / $a) >= 40) {
-                                            $cremarks = "Needs Help";
-                                        } else {
-                                            $cremarks = "Needs Help";
-                                        }
-
-
-                                        if (($y / $a) >= 75) {
-                                            $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is excellent; you need to keep up the good work to sustain this excellent performance in subsequent terms. Keep it Up!";
-                                        } elseif (($y / $a) >= 65) {
-                                            $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is impressive but you need to work harder to achieve higher grades next term. Well done!";
-                                        } elseif (($y / $a) >= 50) {
-                                            $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is moderate but with more effort towards studying, you will achieve higher grades next term. Cheer up!";
-                                        } elseif (($y / $a) >= 45) {
-                                            $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
-                                        } elseif (($y / $a) >= 40) {
-                                            $tremarks = "Congratulations! You have been promoted to the next. Your academic performance this term is fair. You can do better if you can commit more effort and time to studying thoroughly next term.";
-                                        } else {
-                                            $tremarks = "Your academic performance this term is below the pass grade. You can do better if you can commit more effort and time to studying thoroughly next term.";
-                                        }
+                                        $result = evaluatePerformance($y, $a);
                                         ?>
 
                                         <tr>
@@ -433,83 +265,86 @@ $serial = $seriala . $serialb;
                                                 </strong></td>
                                             <td><strong>
                                                     <p style="text-align: left;">
-                                                        <?php echo $term1 ?>
+                                                        <?php echo
+                                                        $termScoresData['termScores']['term1']['score'] =
+                                                            $termScoresData['termScores']['term1']['score'] == 0 ? "" :
+                                                            $termScoresData['termScores']['term1']['score'];
+                                                        ?>
                                                     </p>
                                                 </strong></td>
                                             <td><strong>
                                                     <p style="text-align: left;">
-                                                        <?php echo $term2 ?>
+                                                        <?php echo
+                                                        $termScoresData['termScores']['term2']['score'] =
+                                                            $termScoresData['termScores']['term2']['score'] == 0 ? "" :
+                                                            $termScoresData['termScores']['term2']['score'];
+                                                        ?>
                                                     </p>
                                                 </strong></td>
                                             <td><strong>
                                                     <p style="text-align: left;">
-                                                        <?php echo $ca ?>
+                                                        <?php echo $termScoresData['termScores']['ca'] =
+                                                            $termScoresData['termScores']['ca'] == 0 ? " " :
+                                                            $termScoresData['termScores']['ca']; ?>
                                                     </p>
                                                 </strong></td>
                                             <td><strong>
                                                     <p style="text-align: left;">
-                                                        <?php echo $exam ?>
+                                                        <?php echo $termScoresData['termScores']['exam'] =
+                                                            $termScoresData['termScores']['exam'] == 0 ? " " :
+                                                            $termScoresData['termScores']['exam']; ?>
                                                     </p>
                                                 </strong></td>
                                             <td><strong>
                                                     <p style="text-align: left;">
-                                                        <?php echo $term3 ?>
+                                                        <?php echo
+                                                        $termScoresData['termScores']['term3']['score'] =
+                                                            $termScoresData['termScores']['term3']['score'] == 0 ? "" :
+                                                            $termScoresData['termScores']['term3']['score'];
+                                                        ?>
                                                     </p>
                                                 </strong></td>
                                             <td><strong>
                                                     <h4 style="text-align: center;">
-                                                        <?php echo $cum ?>
+                                                        <?php echo $cum['score'] ?>
                                                     </h4>
                                                 </strong></td>
                                             <td><strong>
                                                     <h4 style="text-align: center;">
-                                                        <?php echo $grade ?>
+                                                        <?php echo $cum['grade'] ?>
                                                     </h4>
                                                 </strong></td>
                                             <td><strong>
                                                     <h4 style="text-align: center;">
-                                                        <?php echo $remarks ?>
+                                                        <?php echo $cum['remarks'] ?>
                                                     </h4>
                                                 </strong></td>
-
                                         </tr>
                                     <?php } ?>
                                 </tbody>
                             </table>
 
                             <!--Remarks-->
-
-
-                            <table class="table table-bordered"
-                                style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;"
-                                border="1">
+                            <table class="table table-bordered" style="width:100%; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;padding-right: 5px;" border="1">
                                 <br>
                                 <strong>
                                     <p style="text-align: center;"> Performance Remarks</p>
                                 </strong>
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">1st Term
-                                            Cumuative</th>
-                                        <th style="text-align: center;">2nd Term
-                                            Cumulative</th>
-                                        <th style="text-align: center;">3rd Term
-                                            Cumulative</th>
-                                        <th style="text-align: center;">
-                                            Cumulative Score</th>
-                                        <th style="text-align: center;"> Grade
-                                        </th>
-                                        <th style="text-align: center;"> Remarks
-                                        </th>
-                                        <th style="text-align: center;">
-                                            Performance Remarks</th>
+                                        <th style="text-align: center;">1st Term Cumuative</th>
+                                        <th style="text-align: center;">2nd Term Cumulative</th>
+                                        <th style="text-align: center;">3rd Term Cumulative</th>
+                                        <th style="text-align: center;"> Cumulative Score</th>
+                                        <th style="text-align: center;"> Grade</th>
+                                        <th style="text-align: center;"> Remarks</th>
+                                        <th style="text-align: center;"> Performance Remarks</th>
                                         <?php if (!is_null($comment)) {
                                             echo '<th style="text-align: center;"> Teacher' . "'s" . ' Comment</th>';
                                         }
                                         ?>
 
-                                        <th style="text-align: center;"> School
-                                            Resumes</th>
+                                        <th style="text-align: center;"> School Resumes</th>
 
 
                                     </tr>
@@ -517,10 +352,58 @@ $serial = $seriala . $serialb;
 
 
                                 <tbody>
+                                    <tr>
+                                        <td><strong>
+                                                <h4 style="text-align: center;">
+                                                    <?php echo round($firstTerm, 2) ?>%
+                                                </h4>
+                                            </strong></td>
+                                        <td><strong>
+                                                <h4 style="text-align: center;">
+                                                    <?php echo round($secondTerm, 2) ?>%
+                                                </h4>
+                                            </strong></td>
 
+                                        <td><strong>
+                                                <h4 style="text-align: center;">
+                                                    <?php echo round($thirdTerm, 2) ?>%
+                                                </h4>
+                                            </strong></td>
 
-
-
+                                        <td><strong>
+                                                <h3 style="text-align: center;">
+                                                    <?php echo $result['score'] ?>%
+                                                </h3>
+                                            </strong></td>
+                                        <td><strong>
+                                                <h4 style="text-align: center;">
+                                                    <?php echo $result['grade'] ?>
+                                                </h4>
+                                            </strong></td>
+                                        <td><strong>
+                                                <h4 style="text-align: center;">
+                                                    <?php echo $result['remarks'] ?>
+                                                </h4>
+                                            </strong></td>
+                                        <td>
+                                            <h5 style="text-align: center;">
+                                                <?php echo $result['termRemarks'] ?>
+                                            </h5>
+                                        </td>
+                                        <?php if (!is_null($comment)) {
+                                            echo '<td><strong>
+                                 <h5 style="text-align: center;">' . $comment . '</h5>
+                                 </strong></td>';
+                                        }
+                                        ?>
+                                        <td><strong>
+                                                <p style="text-align: center;">
+                                                    <?php echo $resumedate ?>
+                                                </p>
+                                            </strong></td>
+                                    </tr>
+                                    </thead>
+                                <tbody>
 
                                     <tr>
                                         <td><strong>
@@ -610,8 +493,7 @@ $serial = $seriala . $serialb;
     </div>
 
 </div>
-<button id="cmd" onclick="generatePDF<?php echo $serial ?>()" class="btn btn-default btn-icon-notika"><i
-        class="notika-icon notika-down-arrow"></i>
+<button id="cmd" onclick="generatePDF<?php echo $serial ?>()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i>
     <h3>Download Result</h3>
 </button>
 <script>

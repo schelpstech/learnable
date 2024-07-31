@@ -1,5 +1,6 @@
 <?php
 include "conf.php";
+include "./controllers/utils.php";
 if (!isset($_SESSION['unamed'])) {
     header('Location: ../index.php');
   }
