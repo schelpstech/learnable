@@ -349,8 +349,6 @@ $serial = $seriala . $serialb;
 
                                     </tr>
                                 </thead>
-
-
                                 <tbody>
                                     <tr>
                                         <td><strong>
@@ -402,66 +400,7 @@ $serial = $seriala . $serialb;
                                                 </p>
                                             </strong></td>
                                     </tr>
-                                    </thead>
-                                <tbody>
-
-                                    <tr>
-                                        <td><strong>
-                                                <h4 style="text-align: center;">
-                                                    <?php echo round($firstterm, 2) ?>%
-                                                </h4>
-                                            </strong></td>
-                                        <td><strong>
-                                                <h4 style="text-align: center;">
-                                                    <?php echo round($secondterm, 2) ?>%
-                                                </h4>
-                                            </strong></td>
-
-                                        <td><strong>
-                                                <h4 style="text-align: center;">
-                                                    <?php echo round($thirdterm, 2) ?>%
-                                                </h4>
-                                            </strong></td>
-
-                                        <td><strong>
-                                                <h3 style="text-align: center;">
-                                                    <?php echo round(($y / $a), 2) ?>%
-                                                </h3>
-                                            </strong></td>
-                                        <td><strong>
-                                                <h4 style="text-align: center;">
-                                                    <?php echo $cgrade ?>
-                                                </h4>
-                                            </strong></td>
-                                        <td><strong>
-                                                <h4 style="text-align: center;">
-                                                    <?php echo $cremarks ?>
-                                                </h4>
-                                            </strong></td>
-                                        <td>
-                                            <h5 style="text-align: center;">
-                                                <?php echo $tremarks ?>
-                                            </h5>
-                                        </td>
-                                        <?php if (!is_null($comment)) {
-                                            echo '<td><strong>
-                                 <h5 style="text-align: center;">' . $comment . '</h5>
-                                 </strong></td>';
-                                        }
-                                        ?>
-
-                                        <td><strong>
-                                                <p style="text-align: center;">
-                                                    <?php echo $resumedate ?>
-                                                </p>
-                                            </strong></td>
-
-                                    </tr>
-
                                 </tbody>
-
-                                </tbody>
-
                             </table>
                         </div>
                     </div>
