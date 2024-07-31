@@ -488,9 +488,9 @@ $tutorname = $row["staffname"];
                       $secondtermref = $row["term"];
 
 
-                      $termScores = getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname);
+                      $termScoresData = getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname);
 
-                      $cum = evaluatePerformance($termScores['y'], $termScores['x']);
+                      $cum = evaluatePerformance($termScoresData['y'], $termScoresData['x']);
                       // Get scores for each term
                       $firstTermData = getCumAverageScore($con, $lname, $firsttermref);
                       $secondTermData = getCumAverageScore($con, $lname, $secondtermref);
@@ -524,27 +524,27 @@ $tutorname = $row["staffname"];
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScores['term1']['score']  ?>
+                              <?php echo $termScoresData['termScores']['term1']['score']  ?>
                             </p>
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScores['term2']['score']  ?>
+                              <?php echo $termScoresData['termScores']['term2']['score']  ?>
                             </p>
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScores['ca']   ?>
+                              <?php echo $termScoresData['termScores']['ca']   ?>
                             </p>
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScores['exam'] ?>
+                              <?php echo $termScoresData['termScores']['exam'] ?>
                             </p>
                           </strong></td>
                         <td><strong>
                             <p style="text-align: left;">
-                              <?php echo $termScores['term3']['score'] ?>
+                              <?php echo $termScoresData['termScores']['term3']['score'] ?>
                             </p>
                           </strong></td>
                         <td><strong>
