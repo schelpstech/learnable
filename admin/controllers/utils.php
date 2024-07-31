@@ -26,8 +26,7 @@ function getCumAverageScore(mysqli $con, string $lname, string $term): array
 // Define the function to calculate grade, remarks, and term remarks
 function evaluatePerformance(float $marksObtained, float $totalMarks): array
 {
-    // Calculate percentage
-    $percentage = round(($marksObtained / $totalMarks), 2);
+
 
     // Initialize result array
     $result = [
@@ -37,39 +36,44 @@ function evaluatePerformance(float $marksObtained, float $totalMarks): array
         'termRemarks' => ''
     ];
 
-    // Determine the grade
-    if ($percentage >= 75) {
-        $result['score'] = $percentage;
-        $result['grade'] = 'A';
-        $result['remarks'] = 'Excellent';
-        $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is excellent; keep up the good work to sustain this excellent performance in subsequent terms. Keep it up!';
-    } elseif ($percentage >= 65) {
-        $result['score'] = $percentage;
-        $result['grade'] = 'B';
-        $result['remarks'] = 'Very Good';
-        $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is impressive, but you need to work harder to achieve higher grades next term. Well done!';
-    } elseif ($percentage >= 50) {
-        $result['score'] = $percentage;
-        $result['grade'] = 'C';
-        $result['remarks'] = 'Moderate';
-        $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is moderate, but with more effort towards studying, you will achieve higher grades next term. Cheer up!';
-    } elseif ($percentage >= 45) {
-        $result['score'] = $percentage;
-        $result['grade'] = 'D';
-        $result['remarks'] = 'Fair';
-        $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is fair. You can do better if you commit more effort and time to studying thoroughly next term.';
-    } elseif ($percentage >= 40) {
-        $result['score'] = $percentage;
-        $result['grade'] = 'E';
-        $result['remarks'] = 'Needs Help';
-        $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is fair. You can do better if you commit more effort and time to studying thoroughly next term.';
-    } elseif ($percentage < 40) {
-        $result['score'] = $percentage;
-        $result['grade'] = 'F';
-        $result['remarks'] = 'Needs Help';
-        $result['termRemarks'] = 'Your academic performance this term is below the pass grade. You can do better if you commit more effort and time to studying thoroughly next term.';
+    if ($marksObtained > 1 && $totalMarks > 0 ) {
+        // Calculate percentage
+        $percentage = round(($marksObtained / $totalMarks), 2);
+
+        // Determine the grade
+        if ($percentage >= 75) {
+            $result['score'] = $percentage;
+            $result['grade'] = 'A';
+            $result['remarks'] = 'Excellent';
+            $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is excellent; keep up the good work to sustain this excellent performance in subsequent terms. Keep it up!';
+        } elseif ($percentage >= 65) {
+            $result['score'] = $percentage;
+            $result['grade'] = 'B';
+            $result['remarks'] = 'Very Good';
+            $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is impressive, but you need to work harder to achieve higher grades next term. Well done!';
+        } elseif ($percentage >= 50) {
+            $result['score'] = $percentage;
+            $result['grade'] = 'C';
+            $result['remarks'] = 'Moderate';
+            $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is moderate, but with more effort towards studying, you will achieve higher grades next term. Cheer up!';
+        } elseif ($percentage >= 45) {
+            $result['score'] = $percentage;
+            $result['grade'] = 'D';
+            $result['remarks'] = 'Fair';
+            $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is fair. You can do better if you commit more effort and time to studying thoroughly next term.';
+        } elseif ($percentage >= 40) {
+            $result['score'] = $percentage;
+            $result['grade'] = 'E';
+            $result['remarks'] = 'Needs Help';
+            $result['termRemarks'] = 'Congratulations! You have been promoted to the next class. Your academic performance this term is fair. You can do better if you commit more effort and time to studying thoroughly next term.';
+        } else {
+            $result['score'] = $percentage;
+            $result['grade'] = 'F';
+            $result['remarks'] = 'Needs Help';
+            $result['termRemarks'] = 'Your academic performance this term is below the pass grade. You can do better if you commit more effort and time to studying thoroughly next term.';
+        }
     } else {
-        $result['score'] = $percentage;
+        $result['score'] = '';
         $result['grade'] = '';
         $result['remarks'] = '';
         $result['termRemarks'] = '';
@@ -79,14 +83,14 @@ function evaluatePerformance(float $marksObtained, float $totalMarks): array
 }
 
 function fetchTermScore($con, $term, $subjectid, $lname)
-    {
-        $sql = "SELECT `totalscore`, `score`, `examscore` FROM `lhpresultrecord` WHERE `term` = ? AND `subjid` = ? AND `lid` = ?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param('sss', $term, $subjectid, $lname);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
+{
+    $sql = "SELECT `totalscore`, `score`, `examscore` FROM `lhpresultrecord` WHERE `term` = ? AND `subjid` = ? AND `lid` = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param('sss', $term, $subjectid, $lname);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
 function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $lname)
 {
     // Initialize variables
@@ -99,7 +103,7 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
     ];
 
     // Helper function to fetch term scores
-    
+
 
     // 1st Term Score
     $row = fetchTermScore($con, $firsttermref, $subjectid, $lname);
@@ -138,4 +142,3 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
         'y' => $y
     ];
 }
-
