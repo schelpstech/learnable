@@ -111,7 +111,7 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
         $termScores['term1']['score'] = $row["totalscore"];
         $termScores['term1']['rate'] = 1;
     }else{
-        $termScores['term1']['score'] = "";
+        $termScores['term1']['score'] = 0;
         $termScores['term1']['rate'] = 0;
     }
 
@@ -121,7 +121,7 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
         $termScores['term2']['score'] = $row["totalscore"];
         $termScores['term2']['rate'] = 1;
     }else{
-        $termScores['term2']['score'] = "";
+        $termScores['term2']['score'] = 0;
         $termScores['term2']['rate'] = 0;
     }
 
