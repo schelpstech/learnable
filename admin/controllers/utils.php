@@ -110,6 +110,9 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
     if (!empty($row["totalscore"])) {
         $termScores['term1']['score'] = $row["totalscore"];
         $termScores['term1']['rate'] = 1;
+    }else{
+        $termScores['term1']['score'] = "";
+        $termScores['term1']['rate'] = 0;
     }
 
     // 2nd Term Score
@@ -117,6 +120,9 @@ function getTermScores($con, $firsttermref, $secondtermref, $term, $subjectid, $
     if (!empty($row["totalscore"])) {
         $termScores['term2']['score'] = $row["totalscore"];
         $termScores['term2']['rate'] = 1;
+    }else{
+        $termScores['term2']['score'] = "";
+        $termScores['term2']['rate'] = 0;
     }
 
     // 3rd Term Score
