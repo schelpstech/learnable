@@ -594,9 +594,6 @@ ORDER BY lhpassignedfee.status DESC, lhpassignedfee.term DESC;
                     $type = $row->type;
                     $status = $row->status;
                     $feeamount = $row->amount;
-
-
-
                     if (is_numeric($classid) == true) {
                       $sql = "SELECT classname FROM lhpclass WHERE classid  = '$classid'";
                       $result = mysqli_query($con, $sql);
