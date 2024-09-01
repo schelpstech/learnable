@@ -364,10 +364,10 @@ if (!isset($_SESSION['unamed'])) {
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="data-table-list">
             <div class="basic-tb-hd">
-              <h2>Assigned Fee Table
+              <h2>Awarded Discount Table
 
               </h2>
-              <p>Here is a list of all the fees assigned to learners </p>
+              <p>Here is a list of all the discounts awarded to learners </p>
             </div>
             <div class="table-responsive">
               <table id="data-table-basic" class="table table-striped">
@@ -382,7 +382,6 @@ if (!isset($_SESSION['unamed'])) {
                     <th>Amount </th>
                     <th> Discount</th>
                     <th> Payable</th>
-                    <th> Status</th>
 
                   </tr>
                 </thead>
