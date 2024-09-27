@@ -1,5 +1,9 @@
 <?php
 include '../app/query.php';
+session_start();
+
+// Set the account status variable. You can change this dynamically based on your logic.
+$account_status = 'locked'; // Change to 'active' to enable the form.
 ?>
 <!DOCTYPE html>
 <html lang="zxx">
@@ -22,12 +26,23 @@ include '../app/query.php';
                 <img src="../asset/img/school/<?php echo $sch_details['logo'] ?>" alt="<?php echo $sch_details['schname'] ?>">
 
                 <div class="col-md-8 offset-md-2 text-center">
-
                     <div class="col-lg-12">
                         <div class="white_box mb_30">
                             <div class="row justify-content-center">
                                 <div class="col-lg-6">
                                     <?php
+                                    if ($account_status == 'locked') {
+                                        // Account is locked, show locked image or message
+                                        echo '<div class="modal-content cs_modal">';
+                                        echo '<div class="modal-header justify-content-center theme_bg_1">';
+                                        echo '<h5 class="modal-title text_red">Account Locked</h5>';
+                                        echo '</div>';
+                                        echo '<div class="modal-body">';
+                                        echo '<p>Your account has been locked. Please contact the administrator for assistance.</p>';
+                                        echo '</div>';
+                                        echo '</div>';
+                                    } else {
+                                        // Account is active, show login form
                                         if (isset($_SESSION['msg'])) {
                                             printf('<b>%s</b>', $_SESSION['msg']);
                                             unset($_SESSION['msg']);
@@ -53,12 +68,15 @@ include '../app/query.php';
                                             </form>
                                         </div>
                                     </div>
+                                    <?php
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="error_btn  text-center">
+                <div class="error_btn text-center">
                     <div class="col-lg-12">
                         <div class="footer_iner text-center">
                             <p>
