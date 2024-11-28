@@ -61,12 +61,12 @@ include '../include/navigator.php';
                             <div class="row mb-3">
                                 <label for="inputPassword3" class="form-label col-sm-4 col-form-label">Password</label>
                                 <div class="col-sm-8">
-                                    <input type="password" class="form-control" id="inputPassword3" minlength="8" maxlength="8" required="yes" name="password" value="<?php echo $learner_profile['upwd'] ?? ''; ?>">
+                                    <input type="password" class="form-control" id="inputPassword3" minlength="8" required="yes" name="password" value="<?php echo $learner_profile['upwd'] ?? ''; ?>">
                                 </div>
                             </div>
                             <div class=" row">
                                 <div class="col-sm-10">
-                                    <button type="submit" name="update" value="update_profile" class="btn btn-primary">Update Information</button>
+                                    <button type="submit" name="update" value="update_staff_profile" class="btn btn-primary">Update Information</button>
                                 </div>
                             </div>
                         </form>
