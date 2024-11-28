@@ -95,14 +95,14 @@ if ($_POST['update'] === 'update_profile') {
                                     <div class="alert-text">Success! <b>Profile updated successfully</b>!</div>
                                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>';
-                $model->redirect('../view/learner/index.php');
+                $model->redirect('../view/instructor/index.php');
             } else {
                 $_SESSION['msg'] =
                     '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
                                     <div class="alert-text">Error! <br>' . $valErr . '</div>
                                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>';
-                $model->redirect('../view/learner/index.php');
+                $model->redirect('../view/instructor/index.php');
             }
         } else {
             $_SESSION['msg'] =
@@ -110,7 +110,7 @@ if ($_POST['update'] === 'update_profile') {
                         <div class="alert-text">Error! <br>' . $valErr . '</div>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>';
-            $model->redirect('../view/learner/index.php');
+            $model->redirect('../view/instructor/index.php');
         }
     } else {
         $valErr .= 'Access Denied! You must be logged in to continue.<br/>';
