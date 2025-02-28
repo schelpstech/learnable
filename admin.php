@@ -2,7 +2,7 @@
 session_start();
 
 // Set the account status variable. You can change this dynamically based on your logic.
-$account_status = 'locked'; // Change this to 'active' to enable the form.
+$account_status = 'active'; // Change this to 'active' to enable the form.
 ?>
 
 <!DOCTYPE html>
