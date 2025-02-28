@@ -28,6 +28,7 @@ $termd = $db_handle->runQuery($query);
 ?>
 <?php
 if (isset($_GET['transref'])) {
+    $_SESSION['transref'] = $_GET['transref'];
     require_once('DBController.php');
     $db_handle = new DBController();
     $transref = $_GET['transref'];
@@ -189,7 +190,7 @@ if (isset($_GET['transref'])) {
             <br>
             <br>
             <div class="row">
-                <form method="POST" action="modpayment.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+                <form method="POST" action="recordpayment.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
 
                     <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
                         <label>Current Term</label>
@@ -307,7 +308,7 @@ if (isset($_GET['transref'])) {
                     <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
                         <div class="form-group ic-cmp-int">
                             <div class="nk-int-st">
-                                <input type="submit" class="form-control" name="updatepaybill" value="  Record Payment for  Selected Learner  " />
+                                <input type="submit" class="form-control" name="updatepaybill" value="  Modify Record Payment for  Selected Learner  " />
                             </div>
                         </div>
                     </div>
