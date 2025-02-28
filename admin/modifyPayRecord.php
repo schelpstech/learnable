@@ -28,6 +28,8 @@ $termd = $db_handle->runQuery($query);
 ?>
 <?php
 if (isset($_GET['transref'])) {
+    require_once('DBController.php');
+    $db_handle = new DBController();
     $transref = mysqli_real_escape_string($conn, $_GET['transref']);
     $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName
         FROM lhptransaction
