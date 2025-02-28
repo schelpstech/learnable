@@ -31,7 +31,7 @@ if (isset($_GET['transref'])) {
     require_once('DBController.php');
     $db_handle = new DBController();
     $transref = $_GET['transref'];
-    $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName, lhpclass.classid as classid,
+    $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName, lhpclass.classid as classid
         FROM lhptransaction
         LEFT JOIN lhpclass ON lhptransaction.classid = lhpclass.classid
         LEFT JOIN lhpuser ON lhptransaction.stdid = lhpuser.uname
