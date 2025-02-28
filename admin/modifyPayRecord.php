@@ -31,7 +31,7 @@ if (isset($_GET['transref'])) {
     require_once('DBController.php');
     $db_handle = new DBController();
     $transref = $_GET['transref'];
-    $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName
+    $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName, lhpclass.classid as classid,
         FROM lhptransaction
         LEFT JOIN lhpclass ON lhptransaction.classid = lhpclass.classid
         LEFT JOIN lhpuser ON lhptransaction.stdid = lhpuser.uname
@@ -290,7 +290,7 @@ if (isset($_GET['transref'])) {
                                     <?php
                                     foreach ($refTransaction as $tm) {
                                     ?>
-                                        <option value="<?php echo $tm['lhpclass.classid']; ?>"><?php echo $tm['className']; ?></option>
+                                        <option value="<?php echo $tm['classid']; ?>"><?php echo $tm['className']; ?></option>
                                     <?php
                                     }
                                     ?>
@@ -310,7 +310,7 @@ if (isset($_GET['transref'])) {
                                     <?php
                                     foreach ($refTransaction as $tm) {
                                     ?>
-                                        <option value="<?php echo $tm['lhptransaction.stdid']; ?>"><?php echo $tm['fullName']; ?></option>
+                                        <option value="<?php echo $tm['stdid']; ?>"><?php echo $tm['fullName']; ?></option>
                                     <?php
                                     }
                                     ?>
