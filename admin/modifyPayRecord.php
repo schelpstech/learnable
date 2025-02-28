@@ -30,7 +30,7 @@ $termd = $db_handle->runQuery($query);
 if (isset($_GET['transref'])) {
     require_once('DBController.php');
     $db_handle = new DBController();
-    $transref = mysqli_real_escape_string($conn, $_GET['transref']);
+    $transref = $_GET['transref'];
     $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName
         FROM lhptransaction
         LEFT JOIN lhpclass ON lhptransaction.classid = lhpclass.classid
