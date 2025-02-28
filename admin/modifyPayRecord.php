@@ -296,11 +296,9 @@ if (isset($_GET['transref'])) {
                                 foreach ($refTransaction as $tm) {
                                 ?>
                                     <input type="number" required="yes" class="form-control" value="<?php echo $tm['amount']; ?>" name="amountpaid" min="100">
-
                                 <?php
                                 }
                                 ?>
-                                <input type="number" required="yes" class="form-control" name="amountpaid" min="100">
                             </div>
                         </div>
                     </div>
@@ -309,7 +307,7 @@ if (isset($_GET['transref'])) {
                     <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
                         <div class="form-group ic-cmp-int">
                             <div class="nk-int-st">
-                                <input type="submit" class="form-control" name="paybill" value="  Record Payment for  Selected Learner  " />
+                                <input type="submit" class="form-control" name="updatepaybill" value="  Record Payment for  Selected Learner  " />
                             </div>
                         </div>
                     </div>
