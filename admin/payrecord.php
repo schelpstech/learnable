@@ -453,7 +453,7 @@ if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
                   include_once './conn.php';
 
                   $count = 1;
-                  $query = $conn->prepare('select * from lhptransaction ORDER BY status and term DESC');
+                  $query = $conn->prepare('select * from lhptransaction ORDER BY paydate DESC , rectime DESC');
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {
