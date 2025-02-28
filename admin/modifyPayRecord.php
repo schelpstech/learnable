@@ -31,7 +31,9 @@ if (isset($_GET['transref'])) {
     require_once('DBController.php');
     $db_handle = new DBController();
     $transref = $_GET['transref'];
-    $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName, lhpclass.classid as classid
+    $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, 
+    lhpuser.fname as fullName, lhpclass.classid as classid, lhptransaction.stdid as stdid,
+    lhptransaction.amount as amount, lhptransaction.status as tstatus
         FROM lhptransaction
         LEFT JOIN lhpclass ON lhptransaction.classid = lhpclass.classid
         LEFT JOIN lhpuser ON lhptransaction.stdid = lhpuser.uname
@@ -101,72 +103,6 @@ if (isset($_GET['transref'])) {
     <!-- modernizr JS
 		============================================ -->
     <script src="js/html2pdf.bundle.min.js"></script>
-
-
-    <script>
-        function generatePDF() {
-            // Choose the element that our invoice is rendered in.
-            const element = document.getElementById("doc");
-            // Choose the element and save the PDF for our user.
-            html2pdf()
-                .set({
-                    html2canvas: {
-                        scale: 4
-                    }
-                })
-                .from(element)
-                .save();
-
-
-        }
-    </script>
-
-    <script>
-        function getstudent() {
-            var str = '';
-            var val = document.getElementById('classtn');
-            for (i = 0; i < val.length; i++) {
-                if (val[i].selected) {
-                    str += val[i].value + ',';
-                }
-            }
-            var str = str.slice(0, str.length - 1);
-
-            $.ajax({
-                type: "GET",
-                url: "get_fee.php",
-                data: 'classid=' + str,
-                success: function(data) {
-                    $("#std-list").html(data);
-                }
-            });
-        }
-    </script>
-
-    <script>
-        function getamount() {
-            var str = '';
-            var val = document.getElementById('std-list');
-            for (i = 0; i < val.length; i++) {
-                if (val[i].selected) {
-                    str += val[i].value + ',';
-                }
-            }
-            var str = str.slice(0, str.length - 1);
-
-            $.ajax({
-                type: "GET",
-                url: "getamt.php",
-                data: 'stdid=' + str,
-                success: function(data) {
-                    $("#amount").html(data);
-                }
-            });
-        }
-    </script>
-
-
-
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
@@ -284,9 +220,7 @@ if (isset($_GET['transref'])) {
                             </div>
 
                             <div class="nk-int-st">
-                                <select type="text" class="form-control" name="classname" id="classtn" onChange="getstudent();" required="yes">
-                                    <option value="">Select Class</option>
-
+                                <select type="text" class="form-control" name="classname" required="yes">
                                     <?php
                                     foreach ($refTransaction as $tm) {
                                     ?>
@@ -306,7 +240,7 @@ if (isset($_GET['transref'])) {
                             </div>
 
                             <div class="nk-int-st">
-                                <select type="text" class="form-control" name="learner" id="std-list" onChange="getamount();" required="yes">
+                                <select type="text" class="form-control" name="learner" required="yes">
                                     <?php
                                     foreach ($refTransaction as $tm) {
                                     ?>
@@ -332,6 +266,20 @@ if (isset($_GET['transref'])) {
                                     <option value="">Select Current Payment Status</option>
                                     <option value="1">Payment Value Successfully Received</option>
                                     <option value="2">Payment Value is Pending</option>
+                                    <?php
+                                    foreach ($refTransaction as $tm) {
+                                    ?>
+                                        <option value="<?php echo $tm['tstatus']; ?>"><?php
+                                                                                        if ($tm['tstatus'] == 1) {
+                                                                                            echo "Payment Value Successfully Received";
+                                                                                        } elseif ($tm['tstatus'] == 2) {
+                                                                                            echo "Payment Value is Pending";
+                                                                                        } else {
+                                                                                            echo "Unknown Payment Status";
+                                                                                        }; ?></option>
+                                    <?php
+                                    }
+                                    ?>
                                 </select>
                             </div>
                         </div>
@@ -344,6 +292,14 @@ if (isset($_GET['transref'])) {
                                 <i class="notika-icon notika-calendar"></i>
                             </div>
                             <div class="nk-int-st">
+                                <?php
+                                foreach ($refTransaction as $tm) {
+                                ?>
+                                    <input type="number" required="yes" class="form-control" value="<?php echo $tm['amount']; ?>" name="amountpaid" min="100">
+
+                                <?php
+                                }
+                                ?>
                                 <input type="number" required="yes" class="form-control" name="amountpaid" min="100">
                             </div>
                         </div>
