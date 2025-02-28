@@ -264,9 +264,7 @@ if (isset($_GET['transref'])) {
                             </div>
                             <div class="nk-int-st">
                                 <select type="text" class="form-control" name="status">
-                                    <option value="">Select Current Payment Status</option>
-                                    <option value="1">Payment Value Successfully Received</option>
-                                    <option value="2">Payment Value is Pending</option>
+                                    
                                     <?php
                                     foreach ($refTransaction as $tm) {
                                     ?>
@@ -281,6 +279,9 @@ if (isset($_GET['transref'])) {
                                     <?php
                                     }
                                     ?>
+                                    <option value="">Change Payment Status</option>
+                                    <option value="1">Payment Value Successfully Received</option>
+                                    <option value="2">Payment Value is Pending</option>
                                 </select>
                             </div>
                         </div>
