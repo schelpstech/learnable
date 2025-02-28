@@ -487,7 +487,7 @@ if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
                     } elseif ($status == 0) {
                       $feestatus = '<a href="#" type="button"  class="btn btn-danger" >Unsuccessful Transaction</a>';
                     }
-                    $modifypayment = '<a href="modifyPayRecord.php?term=' . $term . '&lid=' . $stdid . '&classid=' . $classid . '" type="button"  class="btn btn-primary" >Modify</a>';
+                    $modifypayment = '<a href="modifyPayRecord.php?transref=' . $tid. '" type="button"  class="btn btn-primary" >Modify</a>';
                     ?>
                     <tr><strong>
                         <td><?php echo $count++ ?></td>

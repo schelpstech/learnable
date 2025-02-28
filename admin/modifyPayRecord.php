@@ -25,6 +25,17 @@ require_once('DBController.php');
 $db_handle = new DBController();
 $query = 'SELECT * FROM lpterm where status = 1';
 $termd = $db_handle->runQuery($query);
+
+
+if (isset($_GET['transref'])) {
+    $transref = mysqli_real_escape_string($conn, $_GET['transref']);
+    $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName
+        FROM lhptransaction
+        LEFT JOIN lhpclass ON lhptransaction.classid = lhpclass.classid
+        LEFT JOIN lhpuser ON lhptransaction.stdid = lhpuser.uname
+        WHERE lhptransaction.transid = '$transref'";
+    $refTransaction = $db_handle->runQuery($transquery);
+}
 ?>
 <!doctype html>
 <html class="no-js" lang="">
@@ -240,7 +251,7 @@ $termd = $db_handle->runQuery($query);
             <br>
             <br>
             <div class="row">
-                <form method="POST" action="recordpayment.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+                <form method="POST" action="modpayment.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
 
                     <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
                         <label>Current Term</label>
@@ -252,9 +263,9 @@ $termd = $db_handle->runQuery($query);
                             <div class="nk-int-st">
                                 <select type="text" class="form-control" name="term" required="yes">
                                     <?php
-                                    foreach ($termd as $tm) {
+                                    foreach ($refTransaction as $tm) {
                                     ?>
-                                        <option value="<?php echo $tm['term']; ?>"><?php echo $tm['term']; ?></option>
+                                        <option value="<?php echo $tm['nterm']; ?>"><?php echo $tm['nterm']; ?></option>
                                     <?php
                                     }
                                     ?>
@@ -275,9 +286,9 @@ $termd = $db_handle->runQuery($query);
                                     <option value="">Select Class</option>
 
                                     <?php
-                                    foreach ($classresult as $classd) {
+                                    foreach ($refTransaction as $tm) {
                                     ?>
-                                        <option value="<?php echo $classd['classid']; ?>"><?php echo $classd['classname']; ?></option>
+                                        <option value="<?php echo $tm['lhpclass.classid']; ?>"><?php echo $tm['className']; ?></option>
                                     <?php
                                     }
                                     ?>
@@ -294,51 +305,19 @@ $termd = $db_handle->runQuery($query);
 
                             <div class="nk-int-st">
                                 <select type="text" class="form-control" name="learner" id="std-list" onChange="getamount();" required="yes">
-                                    <option value="">Select Learner</option>
+                                    <?php
+                                    foreach ($refTransaction as $tm) {
+                                    ?>
+                                        <option value="<?php echo $tm['lhptransaction.stdid']; ?>"><?php echo $tm['fullName']; ?></option>
+                                    <?php
+                                    }
+                                    ?>
                                 </select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                        <label>Mode of Payment</label>
-                        <div class="form-group ic-cmp-int">
-                            <div class="form-ic-cmp">
-                                <i class="notika-icon notika-support"></i>
-                            </div>
-                            <div class="nk-int-st">
-                                <select type="text" class="form-control" name="mode" required="yes">
-                                    <option value="">Select Mode of Payment</option>
-                                    <option value="transfer">Bank Transfer</option>
-                                    <option value="deposit">Bank Deposit</option>
-                                    <option value="epayment">E-Payment</option>
-                                    <option value="cash">Cash Payment</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                        <label>Transaction Reference Number </label>
-                        <div class="form-group ic-cmp-int">
-                            <div class="form-ic-cmp">
-                                <i class="notika-icon notika-calendar"></i>
-                            </div>
-                            <div class="nk-int-st">
-                                <input type="text" required="yes" class="form-control" name="payref">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                        <label>Payment Date </label>
-                        <div class="form-group ic-cmp-int">
-                            <div class="form-ic-cmp">
-                                <i class="notika-icon notika-calendar"></i>
-                            </div>
-                            <div class="nk-int-st">
-                                <input type="date" required="yes" class="form-control" name="paydate" max="<?php echo date('Y-m-d') ?>">
 
-                            </div>
-                        </div>
-                    </div>
+
 
                     <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
                         <label>Payment Status </label>
@@ -355,19 +334,7 @@ $termd = $db_handle->runQuery($query);
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-                        <label>Total Outstanding Payment </label>
-                        <div class="form-group ic-cmp-int">
-                            <div class="form-ic-cmp">
-                                <i class="notika-icon notika-support"></i>
-                            </div>
-                            <div class="nk-int-st">
-                                <select type="text" class="form-control" name="paid" id="amount">
-                                    <option value="">Select Student to show current balance</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
                         <label>Amount Paid </label>
                         <div class="form-group ic-cmp-int">
@@ -393,112 +360,7 @@ $termd = $db_handle->runQuery($query);
         </div>
     </div>
     <!-- Breadcomb area End-->
-    <!-- Data Table area Start-->
-    <div id="doc" class="data-table-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="data-table-list">
-                        <div class="basic-tb-hd">
-                            <h2>School Fees Payment History
-                            </h2>
-                            <p>Here is a list of all school fees made by learners </p>
-                        </div>
-                        <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>S/N</th>
-                                        <th>Payment Date</th>
-                                        <th>Term</th>
-                                        <th>Class</th>
-                                        <th>Full name</th>
-                                        <th> Amount Paid</th>
-                                        <th> Payment Mode</th>
-                                        <th>Transaction Reference </th>
-                                        <th> Status</th>
-                                        <th> Modify</th>
 
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    include_once './conn.php';
-
-                                    $count = 1;
-                                    $query = $conn->prepare('select * from lhptransaction ORDER BY status and term DESC');
-                                    $query->setFetchMode(PDO::FETCH_OBJ);
-                                    $query->execute();
-                                    while ($row = $query->fetch()) {
-                                        $tid = $row->transid;
-                                        $dated = $row->paydate;
-                                        $term = $row->term;
-                                        $classid = $row->classid;
-                                        $stdid = $row->stdid;
-                                        $amount = $row->amount;
-                                        $ref = $row->reference;
-                                        $mode = $row->mode;
-                                        $status = $row->status;
-
-                                        $sql = "SELECT * FROM lhpclass WHERE classid  = '$classid'";
-                                        $result = mysqli_query($con, $sql);
-                                        $row = mysqli_fetch_array($result);
-                                        if ($row['classname'] != '') {
-                                            $feeclass = $row['classname'];
-                                        } else {
-                                            $feeclass = $classid;
-                                        }
-
-                                        $sql = "SELECT * FROM lhpuser WHERE uname  = '$stdid'";
-                                        $result = mysqli_query($con, $sql);
-                                        $row = mysqli_fetch_array($result);
-                                        $std = $row['fname'] ?? '';
-                                        if ($status == 1) {
-                                            $feestatus = '<a href="receipt.php?term=' . $term . '&lid=' . $stdid . '&classid=' . $classid . '" type="button"  class="btn btn-success" >Successfully Confirmed</a>';
-                                        } elseif ($status == 2) {
-                                            $feestatus = '<a href="#" type="button"  class="btn btn-warning" >Pending Confirmation</a>';
-                                        } elseif ($status == 0) {
-                                            $feestatus = '<a href="#" type="button"  class="btn btn-danger" >Unsuccessful Transaction</a>';
-                                        }
-                                        $modifypayment = '<a href="modifyPayRecord.php?transactionID=' . $tid . '" type="button"  class="btn btn-primary" >Modify</a>';
-                                    ?>
-                                        <tr><strong>
-                                                <td><?php echo $count++ ?></td>
-                                                <td><?php echo $dated ?></td>
-                                                <td><?php echo $term ?></td>
-                                                <td><?php echo $feeclass ?></td>
-                                                <td><?php echo $std ?></td>
-                                                <td><?php echo $amount ?></td>
-                                                <td><?php echo $mode ?></td>
-                                                <td><?php echo $ref ?></td>
-                                                <td><?php echo $feestatus ?></td>
-                                                <td><?php echo $modifypayment ?></td>
-                                            </strong>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>S/N</th>
-                                        <th>Payment Date</th>
-                                        <th>Term</th>
-                                        <th>Class</th>
-                                        <th>Full name</th>
-                                        <th> Amount Paid</th>
-                                        <th> Payment Mode</th>
-                                        <th>Transaction Reference </th>
-                                        <th> Status</th>
-                                        <th> Modify</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Data Table area End-->
     <!-- Start Footer area-->
     <?php include 'foot.html'; ?>
     <!-- End Footer area-->
