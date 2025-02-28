@@ -25,8 +25,8 @@ require_once('DBController.php');
 $db_handle = new DBController();
 $query = 'SELECT * FROM lpterm where status = 1';
 $termd = $db_handle->runQuery($query);
-
-
+?>
+<?php
 if (isset($_GET['transref'])) {
     $transref = mysqli_real_escape_string($conn, $_GET['transref']);
     $transquery = "SELECT lhptransaction.term as nterm, lhpclass.classname as className, lhpuser.fname as fullName
