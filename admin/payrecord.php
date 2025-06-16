@@ -453,13 +453,14 @@ $termd = $db_handle->runQuery($query);
                 <tbody>
                   <?php
                   include_once './conn.php';
+
                   $sql = "SELECT * FROM lpterm WHERE status  = 1";
                   $result = mysqli_query($con, $sql);
                   $row = mysqli_fetch_array($result);
                   $currentTerm = $row['term'] ?? '';
 
                   $count = 1;
-                  $query = $conn->prepare("select * from lhptransaction where term = '.$currentTerm.' ORDER BY paydate DESC , rectime DESC");
+                  $query = $conn->prepare("select * from lhptransaction where term = '$currentTerm' ORDER BY paydate DESC , rectime DESC");
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {
