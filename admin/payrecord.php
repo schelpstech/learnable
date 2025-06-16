@@ -7,24 +7,26 @@ if (!isset($_SESSION['unamed'])) {
 }
 ?>
 <?php
-require_once ('DBController.php');
+require_once('DBController.php');
 $db_handle = new DBController();
 $query = 'SELECT * FROM lhpclass';
 $classresult = $db_handle->runQuery($query);
 ?>
 
 <?php
-require_once ('DBController.php');
+require_once('DBController.php');
 $db_handle = new DBController();
 $query = 'SELECT DISTINCT term FROM lhpfeelist';
 $feeresult = $db_handle->runQuery($query);
 ?>
 
 <?php
-require_once ('DBController.php');
+require_once('DBController.php');
 $db_handle = new DBController();
 $query = 'SELECT * FROM lpterm where status = 1';
 $termd = $db_handle->runQuery($query);
+
+
 ?>
 <!doctype html>
 <html class="no-js" lang="">
@@ -200,11 +202,11 @@ $termd = $db_handle->runQuery($query);
                     <h2>Welcome Admin</h2>
                     <h2> <?php
 
-if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
-  printf('<b>%s</b>', $_SESSION['feemessage']);
-  unset($_SESSION['feemessage']);
-}
-?></h2>
+                          if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
+                            printf('<b>%s</b>', $_SESSION['feemessage']);
+                            unset($_SESSION['feemessage']);
+                          }
+                          ?></h2>
                     <p><span class="bread-ntd"></span></p>
                   </div>
                 </div>
@@ -253,7 +255,7 @@ if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
                 <select type="text" class="form-control" name="term" required="yes">
                   <?php
                   foreach ($termd as $tm) {
-                    ?>
+                  ?>
                     <option value="<?php echo $tm['term']; ?>"><?php echo $tm['term']; ?></option>
                   <?php
                   }
@@ -276,7 +278,7 @@ if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
 
                   <?php
                   foreach ($classresult as $classd) {
-                    ?>
+                  ?>
                     <option value="<?php echo $classd['classid']; ?>"><?php echo $classd['classname']; ?></option>
                   <?php
                   }
@@ -451,9 +453,13 @@ if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
                 <tbody>
                   <?php
                   include_once './conn.php';
+                  $sql = "SELECT * FROM lpterm WHERE status  = 1";
+                  $result = mysqli_query($con, $sql);
+                  $row = mysqli_fetch_array($result);
+                  $currentTerm = $row['term'] ?? '';
 
                   $count = 1;
-                  $query = $conn->prepare('select * from lhptransaction ORDER BY paydate DESC , rectime DESC');
+                  $query = $conn->prepare("select * from lhptransaction where term = '.$currentTerm.' ORDER BY paydate DESC , rectime DESCcontact@eforbnigeria.com");
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {
@@ -487,8 +493,8 @@ if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
                     } elseif ($status == 0) {
                       $feestatus = '<a href="#" type="button"  class="btn btn-danger" >Unsuccessful Transaction</a>';
                     }
-                    $modifypayment = '<a href="modifyPayRecord.php?transref=' . $tid. '" type="button"  class="btn btn-primary" >Modify</a>';
-                    ?>
+                    $modifypayment = '<a href="modifyPayRecord.php?transref=' . $tid . '" type="button"  class="btn btn-primary" >Modify</a>';
+                  ?>
                     <tr><strong>
                         <td><?php echo $count++ ?></td>
                         <td><?php echo $dated ?></td>
