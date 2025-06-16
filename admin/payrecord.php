@@ -459,7 +459,7 @@ $termd = $db_handle->runQuery($query);
                   $currentTerm = $row['term'] ?? '';
 
                   $count = 1;
-                  $query = $conn->prepare("select * from lhptransaction where term = '.$currentTerm.' ORDER BY paydate DESC , rectime DESCcontact@eforbnigeria.com");
+                  $query = $conn->prepare("select * from lhptransaction where term = '.$currentTerm.' ORDER BY paydate DESC , rectime DESC");
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {
