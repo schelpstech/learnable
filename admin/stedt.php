@@ -29,7 +29,7 @@ $editresult = $db_handle->runQuery($query);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="http://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -162,13 +162,7 @@ $editresult = $db_handle->runQuery($query);
                                     </div>
 									
                                     <div class="nk-int-st">
-                                         <input type="text" required="yes" class="form-control" name="stpwd" <?php
-foreach ($editresult as $ed) {
-    ?>
- value="<?php echo $ed["spwd"]; ?>">
-<?php
-}
-?>
+                                         <input type="password" minlength="8" maxlength="64" autocomplete="new-password" class="form-control" name="stpwd" value="" placeholder="Leave blank to keep the current password">
    
                                     </div>
                                 </div>

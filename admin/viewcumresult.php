@@ -136,7 +136,7 @@ $tutorname = $row["staffname"];
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- favicon
     ============================================ -->
-  <link rel="shortcut icon" type="image/x-icon" href="https://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+  <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
   <!-- Google Fonts
     ============================================ -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -221,7 +221,6 @@ $tutorname = $row["staffname"];
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.4/angular.min.js"></script>
-  <script src="./script.js"></script>
 </head>
 
 <body>

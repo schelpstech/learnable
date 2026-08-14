@@ -50,7 +50,7 @@
                                         </td>
                                         <td>
                                             <div class="action_btns d-flex">
-                                                <a href="../../app/router.php?pageid=manage_learner&instance=<?php echo $data['uname'] ?>" class="action_btn mr_10"> <i class="ti-hand-point-up"></i> </a>
+                                                <a href="../../app/router.php?pageid=manage_learner&amp;instance=<?php echo rawurlencode($data['uname']) ?>" class="action_btn mr_10"> <i class="ti-hand-point-up"></i> </a>
                                             </div>
                                         </td>
                                     </tr>

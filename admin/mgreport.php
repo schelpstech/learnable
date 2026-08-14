@@ -22,7 +22,7 @@ $query ="SELECT DISTINCT(term) FROM lhpresultrecord";
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- favicon
 		============================================ -->
-  <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
+  <link rel="shortcut icon" type="image/x-icon" href="img/logo/favicon.png">
   <!-- Google Fonts
 		============================================ -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -293,7 +293,7 @@ $query ="SELECT DISTINCT(term) FROM lhpresultrecord";
       <br>
       <br>
       <div class="row">
-        <form method="POST" action="linkresult.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+        <form method="POST" action="" class="form-element-area" id="fupload">
 
 
 

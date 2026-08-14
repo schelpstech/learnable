@@ -49,7 +49,7 @@
                 <div class="card QA_table ">
                     <div class="card-header" style="text-align:center;">
                         <h4> Academic Performance Report Sheet for
-                            <strong><?php echo ucwords($_SESSION['ref']) ?></strong>
+                            <strong><?php echo htmlspecialchars(ucwords($routeRef), ENT_QUOTES, 'UTF-8') ?></strong>
                         </h4>
                         <span class="float-end"> <strong>Generated:</strong> <?php echo date("d-m-Y") ?></span>
                     </div>
@@ -385,7 +385,7 @@
                         <div class="float-lg-right float-none common_tab_btn2 justify-content-end">
                             <ul class="nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#"><?php echo ucwords($_SESSION['ref']) ?></a>
+                                    <a class="nav-link" href="#"><?php echo htmlspecialchars(ucwords($routeRef), ENT_QUOTES, 'UTF-8') ?></a>
                                 </li>
                             </ul>
                         </div>

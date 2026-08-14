@@ -126,7 +126,7 @@ $row=mysqli_fetch_array($result);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="https://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -213,7 +213,6 @@ $row=mysqli_fetch_array($result);
  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.4/angular.min.js"></script>
-<script src="./script.js"></script>
 </head>
 
 <body>
@@ -276,7 +275,7 @@ $row=mysqli_fetch_array($result);
                <?php echo $schphone; ?> |  <?php echo $schemail; ?> <br> <?php echo $schweb ?> </p>
               <h4 style ="text-align: center;"> <?php echo $term." "?> <br>Mid - Term Academic Reportsheets for <?php echo $dclass?></h4>
             </td>
-            <td><image  src="../learner/images/profilepix/<?php echo $pix?>" width="150" height="150"/><br>
+            <td><img src="../learn/asset/img/passport/<?php echo rawurlencode($pix); ?>" width="150" height="150" alt="Learner passport"/><br>
                   <strong>Learners ID : <?php echo $lname; ?></strong></td> 
             </tr>
            

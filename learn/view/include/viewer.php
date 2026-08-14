@@ -1,52 +1,60 @@
 <?php
+    if (!isset($portalRoute)) {
+        header('Location: ../../app/router.php?pageid=index');
+        exit;
+    }
     include 'header.php';
     include 'nav.php';
     include 'navigator.php';
 ?>
 <?php
-    if ($_SESSION['pageid'] == 'note') {
+    $pageid = $portalRoute->page();
+    $instance = $portalRoute->param('instance');
+    $item = $portalRoute->param('item');
+    $itemRef = $portalRoute->param('item_ref');
+    if ($pageid == 'note') {
         include 'pages/viewnote.php';
-    } elseif ($_SESSION['pageid'] == 'task') {
+    } elseif ($pageid == 'task') {
         include 'pages/viewtask.php';
-    } elseif ($_SESSION['pageid'] == 'work') {
+    } elseif ($pageid == 'work') {
         include 'pages/viewwork.php';
-    }elseif ($_SESSION['pageid'] == 'scheme') {
+    }elseif ($pageid == 'scheme') {
         include 'pages/viewscheme.php';
     }
     
-    elseif ($_SESSION['pageid'] == 'result') {
+    elseif ($pageid == 'result') {
         include 'pages/viewresult.php';
     }
     
-    elseif ($_SESSION['pageid'] == 'midterm_result') {
+    elseif ($pageid == 'midterm_result') {
         include 'pages/viewmidtermreport.php';
     }
     
-    elseif ($_SESSION['pageid'] == 'class_manager') {
+    elseif ($pageid == 'class_manager') {
         include 'classmanager/dashboard.php';
-    }elseif ($_SESSION['pageid'] == 'scoresheet') {
+    }elseif ($pageid == 'scoresheet') {
         include 'scoresheet/dashboard.php';
-    }elseif ($_SESSION['pageid'] == 'manage_learner' && isset($_SESSION['instance'])) {
+    }elseif ($pageid == 'manage_learner' && $instance !== null) {
         include 'form/manage_learner.php';
-    }elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'modify_topic' && isset($_SESSION['item_ref'])) {
+    }elseif ($pageid == 'resources' && $item == 'modify_topic' && $itemRef !== null) {
         include 'form/modifyscheme.php';
-    }elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'add_topic' ) {
+    }elseif ($pageid == 'resources' && $item == 'add_topic' ) {
         include 'form/addscheme.php';
-    }elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'modify_note' && isset($_SESSION['item_ref'])) {
+    }elseif ($pageid == 'resources' && $item == 'modify_note' && $itemRef !== null) {
         include 'form/modifynote.php';
-    }elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'add_note' ) {
+    }elseif ($pageid == 'resources' && $item == 'add_note' ) {
         include 'form/addnote.php';
-    }elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'modify_task' && isset($_SESSION['item_ref'])) {
+    }elseif ($pageid == 'resources' && $item == 'modify_task' && $itemRef !== null) {
         include 'form/modifytask.php';
-    }elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'add_task' ) {
+    }elseif ($pageid == 'resources' && $item == 'add_task' ) {
         include 'form/addtask.php';
-    }elseif ($_SESSION['pageid'] == 'payment' && $_SESSION['instance'] == 'bill') {
+    }elseif ($pageid == 'payment' && $instance == 'bill') {
         include 'payment/bill.php';
-    } elseif ($_SESSION['pageid'] == 'payment' && $_SESSION['instance'] == 'transaction') {
+    } elseif ($pageid == 'payment' && $instance == 'transaction') {
         include 'payment/transaction.php';
-    } elseif ($_SESSION['pageid'] == 'payment' && $_SESSION['instance'] == 'payment') {
+    } elseif ($pageid == 'payment' && $instance == 'payment') {
         include 'payment/paynow.php';
-    } elseif ($_SESSION['pageid'] == 'resources' && $_SESSION['item'] == 'add_cbt') {
+    } elseif ($pageid == 'resources' && $item == 'add_cbt') {
         include 'form/createcbt.php';
     }
 ?>

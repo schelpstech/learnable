@@ -1,10 +1,19 @@
 <?php
 
 if (file_exists('../../controller/start.inc.php')) {
-    include '../../controller/start.inc.php';
+    include_once '../../controller/start.inc.php';
 } else {
-    include '../controller/start.inc.php';
+    include_once '../controller/start.inc.php';
 };
+
+// Navigation state belongs to the current request. Authentication remains in
+// the session, but page/record selection must not leak between tabs.
+$routePage = isset($portalRoute) ? $portalRoute->page() : null;
+$routeSubjectId = isset($portalRoute) ? $portalRoute->param('subjectid') : null;
+$routeRef = isset($portalRoute) ? $portalRoute->param('ref') : null;
+$routeInstance = isset($portalRoute) ? $portalRoute->param('instance') : null;
+$routeItem = isset($portalRoute) ? $portalRoute->param('item') : null;
+$routeItemRef = isset($portalRoute) ? $portalRoute->param('item_ref') : null;
 
 //School Details
 $tblName = 'lhpschool';
@@ -12,6 +21,23 @@ $conditions = array(
     'return_type' => 'single',
 );
 $sch_details = $model->getRows($tblName, $conditions);
+
+// Older databases may reference a logo extension that is no longer present
+// on disk. Preserve the stored value and render the first safe local fallback.
+if (is_array($sch_details)) {
+    $schoolLogo = basename((string) ($sch_details['logo'] ?? ''));
+    $schoolLogoDirectory = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'asset' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'school';
+    if ($schoolLogo === '' || !is_file($schoolLogoDirectory . DIRECTORY_SEPARATOR . $schoolLogo)) {
+        foreach (array('schlogo.jpg', 'schlogo.jpeg') as $fallbackLogo) {
+            if (is_file($schoolLogoDirectory . DIRECTORY_SEPARATOR . $fallbackLogo)) {
+                $sch_details['logo'] = $fallbackLogo;
+                break;
+            }
+        }
+    } else {
+        $sch_details['logo'] = $schoolLogo;
+    }
+}
 
 //Active Term
 $tblName = 'lpterm';
@@ -35,11 +61,11 @@ $active_session = $model->getRows($tblName, $conditions);
 
 
 //List of Notes
-if (isset($_SESSION['subjectid']) && isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'note') {
+if ($routeSubjectId !== null && $routePage === 'note') {
     $tblName = 'lhpnote';
     $conditions = array(
         'where' => array(
-            'lhpnote.sbjid' => $_SESSION['subjectid'],
+            'lhpnote.sbjid' => $routeSubjectId,
             'lhpnote.term' => $active_term['term'],
             'lhpnote.status' => 1,
         ),
@@ -52,11 +78,11 @@ if (isset($_SESSION['subjectid']) && isset($_SESSION['pageid']) && $_SESSION['pa
     $list_note = $model->getRows($tblName, $conditions);
 }
 //List of Assessments
-if (isset($_SESSION['subjectid']) && isset($_SESSION['pageid']) &&  $_SESSION['pageid'] == 'task') {
+if ($routeSubjectId !== null && $routePage === 'task') {
     $tblName = 'lhpquestion';
     $conditions = array(
         'where' => array(
-            'lhpquestion.sbjid' => $_SESSION['subjectid'],
+            'lhpquestion.sbjid' => $routeSubjectId,
             'lhpquestion.term' => $active_term['term'],
             'lhpquestion.status' => 1,
         ),
@@ -70,11 +96,11 @@ if (isset($_SESSION['subjectid']) && isset($_SESSION['pageid']) &&  $_SESSION['p
 }
 
 //List of Topics- Scheme of work
-if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'scheme') {
+if ($routeRef !== null && $routePage === 'scheme') {
     $tblName = 'lhpscheme';
     $conditions = array(
         'where' => array(
-            'lhpscheme.subject' => ($_SESSION['ref']),
+            'lhpscheme.subject' => $routeRef,
             'lhpscheme.term' => $active_term['term'],
             'lhpscheme.status' => 1,
         ),
@@ -88,7 +114,7 @@ if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) && $_SESSION['pageid']
 
     $conditions = array(
         'where' => array(
-            'lhpscheme.subject' => $_SESSION['ref'],
+            'lhpscheme.subject' => $routeRef,
             'lhpscheme.term' => $active_term['term'],
             'lhpscheme.status' => 1,
         ),
@@ -101,12 +127,12 @@ if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) && $_SESSION['pageid']
     $list_scheme = $model->getRows($tblName, $conditions);
 }
 
-if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_topic') {
+if ($routePage === 'resources' && $routeItemRef !== null && $routeItem === 'modify_topic') {
 
     $tblName = 'lhpscheme';
     $conditions = array(
         'where' => array(
-            'lhpscheme.schmid' => $_SESSION['item_ref'],
+            'lhpscheme.schmid' => $routeItemRef,
             'lhpscheme.status' => 1,
         ),
         'joinl' => array(
@@ -119,13 +145,13 @@ if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_
     $mod_scheme = $model->getRows($tblName, $conditions);
 }
 
-if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_note') {
+if ($routePage === 'resources' && $routeItemRef !== null && $routeItem === 'modify_note') {
 
     $tblName = 'lhpnote';
     $conditions = array(
         'return_type' => 'single',
         'where' => array(
-            'lhpnote.noteid' => $_SESSION['item_ref'],
+            'lhpnote.noteid' => $routeItemRef,
             'lhpnote.term' => $active_term['term'],
             'lhpnote.status' => 1,
         ),
@@ -137,13 +163,13 @@ if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_
     );
     $modify_note = $model->getRows($tblName, $conditions);
 }
-if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_SESSION['item_ref']) && $_SESSION['item'] == 'modify_task') {
+if ($routePage === 'resources' && $routeItemRef !== null && $routeItem === 'modify_task') {
 
     $tblName = 'lhpquestion';
     $conditions = array(
         'return_type' => 'single',
         'where' => array(
-            'lhpquestion.questid' => $_SESSION['item_ref'],
+            'lhpquestion.questid' => $routeItemRef,
             'lhpquestion.term' => $active_term['term'],
             'lhpquestion.status' => 1,
         ),
@@ -157,12 +183,12 @@ if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'resources' && isset($_
 }
 
 //Note Details
-if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'note') {
+if ($routeRef !== null && $routePage === 'note') {
     $tblName = 'lhpnote';
     $conditions = array(
         'return_type' => 'single',
         'where' => array(
-            'lhpnote.noteid' => $_SESSION['ref'],
+            'lhpnote.noteid' => $routeRef,
             'lhpnote.term' => $active_term['term'],
             'lhpnote.status' => 1,
         ),
@@ -177,12 +203,12 @@ if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) && $_SESSION['pageid']
 
 
 //Assignment Details
-if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'task') {
+if ($routeRef !== null && $routePage === 'task') {
     $tblName = 'lhpquestion';
     $conditions = array(
         'return_type' => 'single',
         'where' => array(
-            'lhpquestion.questid' => $_SESSION['ref'],
+            'lhpquestion.questid' => $routeRef,
             'lhpquestion.term' => $active_term['term'],
             'lhpquestion.status' => 1,
         ),
@@ -354,11 +380,11 @@ $subject_list = $model->getRows($tblName, $conditions);
 
 
     //List of Submitted Assignments
-    if (isset($_SESSION['subjectid'])) {
+    if ($routeSubjectId !== null) {
         $tblName = 'lhpfeedback';
         $conditions = array(
             'where' => array(
-                'lhpfeedback.sbjid' => $_SESSION['subjectid'],
+                'lhpfeedback.sbjid' => $routeSubjectId,
                 'lhpfeedback.term' => $active_term['term'],
                 'lhpfeedback.stdid' => $learner_profile['uname'],
             ),
@@ -478,13 +504,13 @@ $subject_list = $model->getRows($tblName, $conditions);
     $view_result = $model->getRows($tblName);
     $search_result = $model->getRows($tblName, $conditions);
 
-    if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) &&  $_SESSION['pageid'] == 'midterm_result') {
+    if ($routeRef !== null && $routePage === 'midterm_result') {
         //Midterm Result
         $tblName = 'lhpresultrecord';
         $conditions = array(
             'where' => array(
                 'lhpresultrecord.lid' => $learner_profile['uname'],
-                'lhpresultrecord.term' => $_SESSION['ref'],
+                'lhpresultrecord.term' => $routeRef,
             ),
             'joinl' => array(
                 'lhpsubject' => ' on lhpresultrecord.subjid = lhpsubject.sbjid',
@@ -494,7 +520,7 @@ $subject_list = $model->getRows($tblName, $conditions);
         $show_report = $model->getRows($tblName, $conditions);
     }
 
-    if (isset($_SESSION['ref']) && isset($_SESSION['pageid']) &&  $_SESSION['pageid'] == 'result') {
+    if ($routeRef !== null && $routePage === 'result') {
 
 
 
@@ -503,7 +529,7 @@ $subject_list = $model->getRows($tblName, $conditions);
         $conditions = array(
             'where' => array(
                 'lhpresultrecord.lid' => $learner_profile['uname'],
-                'lhpresultrecord.term' => $_SESSION['ref'],
+                'lhpresultrecord.term' => $routeRef,
             ),
             'joinl' => array(
                 'lhpsubject' => ' on lhpresultrecord.subjid = lhpsubject.sbjid',
@@ -518,7 +544,7 @@ $subject_list = $model->getRows($tblName, $conditions);
             'return_type' => 'single',
             'where' => array(
                 'lhpaffective.uname' => $learner_profile['uname'],
-                'lhpaffective.term' => $_SESSION['ref'],
+                'lhpaffective.term' => $routeRef,
             ),
             'joinl' => array(
                 'lhpclass' => ' on lhpaffective.classid = lhpclass.classid',
@@ -532,9 +558,9 @@ $subject_list = $model->getRows($tblName, $conditions);
         $conditions = array(
             'return_type' => 'single',
             'select' => ' 
-                    (SELECT SUM(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $_SESSION["ref"] . '") as sumscore, 
-                    (SELECT COUNT(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $_SESSION["ref"] . '") as countscore,
-                    (SELECT AVG(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $_SESSION["ref"] . '") as avgscore
+                    (SELECT SUM(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $routeRef . '") as sumscore,
+                    (SELECT COUNT(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $routeRef . '") as countscore,
+                    (SELECT AVG(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $routeRef . '") as avgscore
                 ',
         );
         $aggregate = $model->getRows($tblName, $conditions);
@@ -668,12 +694,12 @@ $report = $model->getRows($tblName, $conditions);
 
     //Learners Profile
 
-    if (isset($_SESSION['pageid']) && $_SESSION['pageid'] == 'manage_learner' && isset($_SESSION['instance'])) {
+    if ($routePage === 'manage_learner' && $routeInstance !== null) {
         $tblName = 'lhpuser';
         $conditions = array(
             'return_type' => 'single',
             'where' => array(
-                'uname' => $_SESSION['instance'],
+                'uname' => $routeInstance,
             ),
             'joinl' => array(
                 'lhpclass' => ' on lhpuser.classid = lhpclass.classid ',

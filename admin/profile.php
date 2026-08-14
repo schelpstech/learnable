@@ -18,6 +18,10 @@ if(!isset($_SESSION['unamed'])){
               $schweb = $row["website"];
               $schaddress = $row["address"];
               $schlogo = $row["logo"];
+              $schlogo = basename((string) $schlogo);
+              if ($schlogo === '' || !is_file(__DIR__ . '/../learn/asset/img/school/' . $schlogo)) {
+                  $schlogo = is_file(__DIR__ . '/../learn/asset/img/school/schlogo.jpg') ? 'schlogo.jpg' : 'schlogo.jpeg';
+              }
               $schowner = $row["proprietor"];
        
 ?>
@@ -33,7 +37,7 @@ if(!isset($_SESSION['unamed'])){
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="https://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">

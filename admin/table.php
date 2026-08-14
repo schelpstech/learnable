@@ -1,12 +1,7 @@
 <?php
 
-// Connect to the database
-$db = mysqli_connect('localhost', 'root', '', 'lhp');
-
-// Check connection
-if (!$db) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+require_once 'conf.php';
+$db = $con;
 
 // Select all subject names from the subject table
 $subject_query = "SELECT * FROM lhpsubject where classid = 2";

@@ -78,7 +78,7 @@
         if ($search_result['midterm'] == 1) {
     ?>
         <li>
-        <a href="../../app/router.php?pageid=midterm_result&ref=<?php echo $active_term['term'] ?>" aria-expanded="false">
+        <a href="../../app/router.php?pageid=midterm_result&amp;ref=<?php echo rawurlencode($active_term['term']) ?>" aria-expanded="false">
             <div class="nav_icon_small">
                 <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
             </div>
@@ -99,7 +99,7 @@
 
 
     <li>
-        <a href="calendar.php" aria-expanded="false">
+        <a href="../learner/calendar.php" aria-expanded="false">
             <div class="nav_icon_small">
                 <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
             </div>

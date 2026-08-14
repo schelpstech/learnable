@@ -30,16 +30,16 @@ if (!empty($_GET['classid'])) {
 
 
 <?php
-$sql = "SELECT sessionid FROM lhpsession WHERE `status`  = 1 ";
+$sql = "SELECT term FROM lpterm WHERE `status` = 1 ";
 $result = mysqli_query($con, $sql);
 $row = mysqli_fetch_array($result);
-$sess = $row['sessionid'];
+$sess = $row['term'];
 
 require_once("DBController.php");
 $db_handle = new DBController();
 if (!empty($_GET['feetype'])) {
 	$feetype = $_GET["feetype"];
-	$query = "SELECT * FROM `lhpfeelist` WHERE `classid` = '$feetype' AND `session` = '$sess' AND status = 1 ";
+	$query = "SELECT * FROM lhpfeelist WHERE classid = '$feetype' AND term = '$sess' AND status = 1 ";
 	$results = $db_handle->runQuery($query);
 	?>
 

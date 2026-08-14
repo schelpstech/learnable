@@ -1,0 +1,4 @@
+.env
+*.local.env
+db_backup_*.zip
+

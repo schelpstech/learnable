@@ -9,11 +9,18 @@ if (isset($_POST['createst']) && $_POST['createst'] == 'Create Staff Account')
 	
 	$stname = mysqli_real_escape_string($con,$_POST['stname']);  
 	$stuname = mysqli_real_escape_string($con,$_POST['stuname']);  
-	$stpwd = mysqli_real_escape_string($con,$_POST['stpwd']);  
+	$plainPassword = isset($_POST['stpwd']) ? (string) $_POST['stpwd'] : '';
+	$stpwd = strlen($plainPassword) >= 8 ? mysqli_real_escape_string($con, password_hash($plainPassword, PASSWORD_DEFAULT)) : '';
 	$stmail = mysqli_real_escape_string($con,$_POST['stmail']);  
 	$stfone = mysqli_real_escape_string($con,$_POST['stfone']);  
 	$role = mysqli_real_escape_string($con,$_POST['role']); 
-	
+		if ($stpwd === '') {
+			$ssmessaged = 'Password must contain at least 8 characters.';
+			$_SESSION['ssmessaged'] = $ssmessaged;
+			header('Location: mgstaff.php');
+			exit;
+		}
+
 	
 
 

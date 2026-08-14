@@ -17,7 +17,7 @@ if(!isset($_SESSION['unamed'])){
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="http://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -179,7 +179,7 @@ function getclass() {
                              
                                 ?>
                                 </span></h2>
-                         <a href="mgclass.php">   <h4><strong>Classes</strong></h4></a>
+                         <a href="index.php?route=classes">   <h4><strong>Classes</strong></h4></a>
                         </div>
                         <div class="sparkline-bar-stats1">1,2,3,4,5</div>
                     </div>
@@ -198,7 +198,7 @@ function getclass() {
                              
                                 ?>
                             </span></h2>
-                         <a href="mgstaff.php">   <h4><strong>Instructors</strong></h4></a>
+                         <a href="index.php?route=staff">   <h4><strong>Instructors</strong></h4></a>
                         </div>
                         <div class="sparkline-bar-stats2">1,2,3,4,5</div>
                     </div>
@@ -218,7 +218,7 @@ function getclass() {
                              
                                 ?>
                             </span></h2>
-                           <a href="mglearners.php"> <h4><strong>Learners</strong></h4></a>
+                           <a href="index.php?route=learners"> <h4><strong>Learners</strong></h4></a>
                         </div>
                         <div class="sparkline-bar-stats3">1,2,3,4,5</div>
                     </div>
@@ -235,7 +235,7 @@ function getclass() {
                         echo "$row[0]";
                              
                                 ?> </span></h2>
-                          <a href="mglesson.php">  <h4><strong>Learning Resources</strong></h4></a>
+                          <a href="index.php?route=resources">  <h4><strong>Learning Resources</strong></h4></a>
                         </div>
                         <div class="sparkline-bar-stats4">1,2,3,4,5</div>
                     </div>

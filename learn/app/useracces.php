@@ -1,171 +1,132 @@
 <?php
+
 include '../app/query.php';
+
 $valErr = '';
-//LOGOUT
+
+function portal_login_message($class, $message)
+{
+    return '<div class="alert text-white bg-' . $class . ' d-flex align-items-center justify-content-between" role="alert">'
+        . '<div class="alert-text">' . $message . '</div>'
+        . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+        . '</div>';
+}
+
+function portal_login_redirect($model, $location)
+{
+    $model->redirect($location);
+    exit;
+}
+
+function portal_record_login($model, $username, $userType, $status)
+{
+    $model->insert_data('log', array(
+        'uname' => $username,
+        'utype' => $userType,
+        'uip' => substr(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown', 0, 45),
+        'stat' => $status,
+    ));
+}
+
 if (isset($_POST['logout']) && $_POST['logout'] === 'logout') {
+    $submittedToken = isset($_POST['csrf_token']) ? (string) $_POST['csrf_token'] : '';
+    $sessionToken = isset($_SESSION['portal_csrf']) ? (string) $_SESSION['portal_csrf'] : '';
+    if ($sessionToken === '' || !hash_equals($sessionToken, $submittedToken)) {
+        $_SESSION['msg'] = portal_login_message('danger', 'The logout request expired. Please try again.');
+        portal_login_redirect($model, '../view/index.php');
+    }
     $model->log_out_user();
-    session_start();
-    $_SESSION['msg'] =
-                        '<div class="alert text-white bg-info d-flex align-items-center justify-content-between" role="alert">
-                            <div class="alert-text">Bye! <b>Log out successful</b>!</div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>';
-    $model->redirect('../view/index.php');
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    $_SESSION['msg'] = portal_login_message('info', 'Bye! <b>Log out successful</b>!');
+    portal_login_redirect($model, '../view/index.php');
 }
 
-// Check if log-in form is submitted from website
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['log_in']) || $_POST['log_in'] !== 'Log in') {
+    $_SESSION['msg'] = portal_login_message('danger', 'Invalid login request.');
+    portal_login_redirect($model, '../view/index.php');
+}
 
-elseif (isset($_POST['log_in']) && $_POST['log_in'] !== 'Log in') {
-    $valErr .= 'Invalid Login request. You are attempting login from an unsecured page!.<br/>';
-} elseif(isset($_POST['log_in']) && $_POST['log_in'] == 'Log in') {
+$userid = isset($_POST['userid']) ? trim((string) $_POST['userid']) : '';
+$userpwd = isset($_POST['userpwd']) ? (string) $_POST['userpwd'] : '';
 
+if ($userid === '' || $userpwd === '' || strlen($userid) > 64 || strlen($userpwd) > 255) {
+    portal_record_login($model, $userid, 'unknown', 4);
+    $_SESSION['msg'] = portal_login_message('danger', 'Invalid login credentials.');
+    portal_login_redirect($model, '../view/index.php');
+}
 
-    // Retrieve form input
-    if (isset($_POST["userid"])) {
-        if (!isset($_POST["userid"])) {
-            $valErr .= 'Username field must not be empty!.<br/>';
-        } else {
-            $userid = htmlspecialchars($_POST["userid"]);
-        }
-    }
+$loginDetails = false;
+$userType = '';
+$passwordColumn = '';
+$usernameColumn = '';
+$tableName = '';
 
-    if (isset($_POST["userpwd"])) {
-        if (!isset($_POST["userpwd"])) {
-            $valErr .= 'Password field must not be empty!.<br/>';
-        } else {
-            $userpwd = htmlspecialchars($_POST["userpwd"]);
-        }
-    }
+$learnerStatement = $db_conn->prepare('SELECT * FROM lhpuser WHERE uname = :username LIMIT 1');
+$learnerStatement->execute(array(':username' => $userid));
+$loginDetails = $learnerStatement->fetch(PDO::FETCH_ASSOC);
 
-    //check if username exist 
-    $tblName = 'lhpuser';
-    $conditions = array(
-        'return_type' => 'count',
-        'where' => array(
-            'uname' => $userid,
-        )
-    );
-    $confirm_learner = $model->getRows($tblName, $conditions);
-
-    //check if username exist 
-    $tblName = 'lhpstaff';
-    $conditions = array(
-        'return_type' => 'count',
-        'where' => array(
-            'sname' => $userid,
-        )
-    );
-    $confirm_staff = $model->getRows($tblName, $conditions);
-
-    if ($confirm_learner == 1) {
-        $usertype = 'Learner';
-        //select password 
-        $tblName = 'lhpuser';
-        $conditions = array(
-            'return_type' => 'single',
-            'where' => array(
-                'uname' => $userid,
-            )
-        );
-        $login_details = $model->getRows($tblName, $conditions);
-    } elseif ($confirm_staff == 1) {
-        $usertype = 'Instructor';
-        //select password 
-        $tblName = 'lhpstaff';
-        $conditions = array(
-            'return_type' => 'single',
-            'where' => array(
-                'sname' => $userid,
-            )
-        );
-        $login_details = $model->getRows($tblName, $conditions);
-    } else {
-        $valErr .= 'Invalid Login Credentials!.<br/>';
-        $tablename = 'log';
-        $logindata = array(
-            'uname' => $userid,
-            'utype' => 'unknown',
-            'uip' => $_SERVER['REMOTE_ADDR'],
-            'stat' => 4,
-        );
-        $insert = $model->insert_data($tablename, $logindata);
-        $_SESSION['msg'] =
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                    <div class="alert-text">Error! <br>' . $valErr . '</div>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>';
-        $model->redirect('../view/index.php');
-    }
-    //Check Password
-
-    
-        if(isset($login_details['upwd'])){
-            $password = $login_details['upwd'];
-        }elseif(isset($login_details['spwd'])){
-            $password = $login_details['spwd'];
-        }
-        if ($password == $userpwd ) {
-        //Check Active Status
-        if (isset($login_details['status']) && $login_details['status'] == 1) {
-
-            // Record Log Access
-
-            $tablename = 'log';
-            $logindata = array(
-                'uname' => $userid,
-                'utype' => $usertype,
-                'uip' => $_SERVER['REMOTE_ADDR'],
-                'stat' => 1,
-            );
-            $insert = $model->insert_data($tablename, $logindata);
-
-            $_SESSION['msg'] =
-                '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
-                        <div class="alert-text">Welcome! <b>Log in successful</b>!</div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>';
-            if ($usertype == 'Learner') {
-                $_SESSION['active'] = $userid;
-                $_SESSION['user_type'] = $usertype;
-                $model->redirect('../view/learner/index.php');
-            } elseif ($usertype == 'Instructor') {
-                $_SESSION['active'] = $userid;
-                $_SESSION['user_type'] = $usertype;
-                $model->redirect('../view/instructor/index.php');
-            }
-        } else {
-            $valErr .= 'Access Denied! Contact school administrator.<br/>';
-            $tablename = 'log';
-            $logindata = array(
-                'uname' => $userid,
-                'utype' => $usertype,
-                'uip' => $_SERVER['REMOTE_ADDR'],
-                'stat' => 2,
-            );
-            $insert = $model->insert_data($tablename, $logindata);
-            $_SESSION['msg'] =
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                        <div class="alert-text">Error! <br>' . $valErr . '</div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>';
-            $model->redirect('../view/index.php');
-        }
-    } else {
-        // Record Log Access
-        $valErr .= 'Invalid Login Credentials!.<br/>';
-        $tablename = 'log';
-        $logindata = array(
-            'uname' => $userid,
-            'utype' => $usertype,
-            'uip' => $_SERVER['REMOTE_ADDR'],
-            'stat' => 3,
-        );
-        $insert = $model->insert_data($tablename, $logindata);
-        $_SESSION['msg'] =
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                                <div class="alert-text">Error! <br>' . $valErr . '</div>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>';
-        $model->redirect('../view/index.php');
+if ($loginDetails) {
+    $userType = 'Learner';
+    $passwordColumn = 'upwd';
+    $usernameColumn = 'uname';
+    $tableName = 'lhpuser';
+} else {
+    $staffStatement = $db_conn->prepare('SELECT * FROM lhpstaff WHERE sname = :username LIMIT 1');
+    $staffStatement->execute(array(':username' => $userid));
+    $loginDetails = $staffStatement->fetch(PDO::FETCH_ASSOC);
+    if ($loginDetails) {
+        $userType = 'Instructor';
+        $passwordColumn = 'spwd';
+        $usernameColumn = 'sname';
+        $tableName = 'lhpstaff';
     }
 }
+
+if (!$loginDetails) {
+    portal_record_login($model, $userid, 'unknown', 4);
+    $_SESSION['msg'] = portal_login_message('danger', 'Invalid login credentials.');
+    portal_login_redirect($model, '../view/index.php');
+}
+
+$storedPassword = (string) $loginDetails[$passwordColumn];
+$passwordInfo = password_get_info($storedPassword);
+$usesPasswordHash = !empty($passwordInfo['algo']);
+$passwordMatches = $usesPasswordHash
+    ? password_verify($userpwd, $storedPassword)
+    : hash_equals($storedPassword, $userpwd);
+
+if (!$passwordMatches) {
+    portal_record_login($model, $userid, $userType, 3);
+    $_SESSION['msg'] = portal_login_message('danger', 'Invalid login credentials.');
+    portal_login_redirect($model, '../view/index.php');
+}
+
+if ((int) $loginDetails['status'] !== 1) {
+    portal_record_login($model, $userid, $userType, 2);
+    $_SESSION['msg'] = portal_login_message('danger', 'Access denied. Contact the school administrator.');
+    portal_login_redirect($model, '../view/index.php');
+}
+
+// Upgrade legacy plaintext passwords after a verified login without forcing a reset.
+if (!$usesPasswordHash || password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
+    $newHash = password_hash($userpwd, PASSWORD_DEFAULT);
+    $upgradeStatement = $db_conn->prepare(
+        'UPDATE ' . $tableName . ' SET ' . $passwordColumn . ' = :password WHERE ' . $usernameColumn . ' = :username'
+    );
+    $upgradeStatement->execute(array(':password' => $newHash, ':username' => $userid));
+}
+
+portal_record_login($model, $userid, $userType, 1);
+session_regenerate_id(true);
+$_SESSION['active'] = $userid;
+$_SESSION['user_type'] = $userType;
+$_SESSION['portal_csrf'] = bin2hex(random_bytes(32));
+$_SESSION['msg'] = portal_login_message('success', 'Welcome! <b>Log in successful</b>!');
+
+if ($userType === 'Learner') {
+    portal_login_redirect($model, '../view/learner/index.php');
+}
+
+portal_login_redirect($model, '../view/instructor/index.php');

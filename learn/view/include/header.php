@@ -3,12 +3,19 @@ include '../../app/query.php';
 if(!isset($_SESSION['active'])){
     $model->redirect('../index.php');
 }
+if (empty($_SESSION['portal_csrf'])) {
+    $_SESSION['portal_csrf'] = bin2hex(random_bytes(32));
+}
 ?>
 <!DOCTYPE html>
 <html lang="zxx">
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 
 <head>
+
+    <?php if (isset($portalBaseHref)): ?>
+        <base href="<?php echo htmlspecialchars($portalBaseHref, ENT_QUOTES, 'UTF-8'); ?>">
+    <?php endif; ?>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />

@@ -1,27 +1,20 @@
 <?php
 
 // begin or resume session
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
-// Include necessary file
-include_once 'user.class.php';
-include_once 'model.class.php';
-include_once 'utility.class.php';
-include_once 'backup.class.php';
-
-// database access parameters
-$db_host = 'localhost';
-$db_user = 'root';
-$db_pass = '';
-$db_name = 'lhp';
+// Load all shared classes and database settings from the project root.
+require_once dirname(__DIR__, 2) . '/classes/autoload.php';
+require_once dirname(__DIR__, 2) . '/config/database.php';
 
 // connect to database
 try {
-    $db_conn = new PDO("mysql:host={$db_host};dbname={$db_name}", $db_user, $db_pass);
-    $db_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db_conn = database_pdo();
 } catch (PDOException $e) {
     $errors = [];
-    array_push($errors, $e->getMessage());
+    array_push($errors, 'Database connection failed.');
 }
 
 // make use of database with users

@@ -1,123 +1,84 @@
 <?php
-include "conf.php";
-$type = "Instructor";
-function getUserIpAddr(){
-    if(!empty($_SERVER['HTTP_CLIENT_IP'])){
-        //ip from share internet
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
-    }elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
-        //ip pass from proxy
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    }else{
-        $ip = $_SERVER['REMOTE_ADDR'];
-    }
-    return $ip;
+
+include 'conf.php';
+
+function legacy_staff_redirect($message)
+{
+    $_SESSION['messagef'] = $message;
+    header('Location: staff.php');
+    exit;
 }
-$uip = getUserIpAddr();
-if(isset($_POST['but_submit'])){
 
-    $uname = mysqli_real_escape_string($con,$_POST['uname']);
-    $password = mysqli_real_escape_string($con,$_POST['upass']);
-	
-
-    if ($uname != "" && $password != ""){
-
-        $sql_query = "select count(*) as cntUser from lhpstaff where sname ='".$uname."'" ;
-        $result = mysqli_query($con,$sql_query);
-        $row = mysqli_fetch_array($result);
-
-        $count = $row['cntUser'];
-		
-		
-
-        if($count == 1){
-
-            $sql_query = "select count(*) as cntUser from lhpstaff where sname='".$uname."' and spwd='".$password."'" ;
-        $result = mysqli_query($con,$sql_query);
-        $row = mysqli_fetch_array($result);
-
-        $count = $row['cntUser'];
-		
-		
-
-        if($count == 1){
-
-            $sql_query = "select count(*) as cntUser from lhpstaff where sname='".$uname."' and spwd='".$password."' and status = 1" ;
-        $result = mysqli_query($con,$sql_query);
-        $row = mysqli_fetch_array($result);
-
-        $count = $row['cntUser'];
-		
-		
-
-        if($count == 1){
-
-            $sql_query = "select role  from lhpstaff where sname='".$uname."' and spwd='".$password."' and status = 1" ;
-            $result = mysqli_query($con,$sql_query);
-            $row = mysqli_fetch_array($result);
-    
-            $role = $row['role'];
-
-
-            $sql= "INSERT INTO log  (uname,utype,stat,uip) VALUES ('$uname','$type',1, '$uip')";
-		    if(mysqli_query($con, $sql)){
-		    
-		    }
-		   if ($role == "b"){
-			$_SESSION['unamed'] = $uname;
-            header('Location: bursar/profile.php');
-           }
-           else if ($role == "t"){
-			$_SESSION['stnamed'] = $uname;
-            header('Location: instructor/profile.php');
-           }
-        }  
-    
-    else{
-        $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',2, '$uip')";
-        if(mysqli_query($con, $sql)){ 
-        session_start();
-         $messagef = "Ooops! Your account has been de-activated, kindly contact school";
-        $_SESSION['messagef'] = $messagef;
-        header("Location: staff.php");
-        }
+function legacy_staff_log($connection, $username, $status)
+{
+    $type = 'Instructor';
+    $ip = substr(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown', 0, 45);
+    $statement = mysqli_prepare($connection, 'INSERT INTO log (uname, utype, stat, uip) VALUES (?, ?, ?, ?)');
+    if ($statement) {
+        mysqli_stmt_bind_param($statement, 'ssis', $username, $type, $status, $ip);
+        mysqli_stmt_execute($statement);
+        mysqli_stmt_close($statement);
     }
 }
-        else{
-            $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',3, '$uip' )";
-            if(mysqli_query($con, $sql)){ 
-            session_start();
-             $messagef = "Incorrect Password - Contact School";
-            $_SESSION['messagef'] = $messagef;
-        	header("Location: staff.php");
-            }
-        }
-    }
-    else{
-        $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',4 , '$uip')";
-        if(mysqli_query($con, $sql)){
-        session_start();
-         $messagef = "Invalid Username - Contact School";
-        $_SESSION['messagef'] = $messagef;
-        header("Location: staff.php");
-        }
-    }
 
-    }
-    else{
-        
-         session_start();
-         $messagef = "Invalid Log in Credentials";
-        $_SESSION['messagef'] = $messagef;
-        header("Location: staff.php");
-    }
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['but_submit'])) {
+    legacy_staff_redirect('Unauthorised access');
+}
 
+$username = isset($_POST['uname']) ? trim((string) $_POST['uname']) : '';
+$password = isset($_POST['upass']) ? (string) $_POST['upass'] : '';
+if ($username === '' || $password === '' || strlen($username) > 64 || strlen($password) > 255) {
+    legacy_staff_redirect('Invalid login credentials');
 }
-else{
-        
-    session_start();
-    $messagef = "Unauthorised Access";
-   $_SESSION['messagef'] = $messagef;
-   header("Location: staff.php");
+
+$statement = mysqli_prepare($con, 'SELECT spwd, status, role FROM lhpstaff WHERE sname = ? LIMIT 1');
+mysqli_stmt_bind_param($statement, 's', $username);
+mysqli_stmt_execute($statement);
+mysqli_stmt_bind_result($statement, $storedPassword, $status, $role);
+$found = mysqli_stmt_fetch($statement);
+mysqli_stmt_close($statement);
+
+if (!$found) {
+    legacy_staff_log($con, $username, 4);
+    legacy_staff_redirect('Invalid username or password');
 }
-?>
+
+$passwordInfo = password_get_info((string) $storedPassword);
+$usesHash = !empty($passwordInfo['algo']);
+$matches = $usesHash ? password_verify($password, $storedPassword) : hash_equals((string) $storedPassword, $password);
+if (!$matches) {
+    legacy_staff_log($con, $username, 3);
+    legacy_staff_redirect('Invalid username or password');
+}
+if ((int) $status !== 1) {
+    legacy_staff_log($con, $username, 2);
+    legacy_staff_redirect('Your account is inactive. Contact the school.');
+}
+
+if (!$usesHash || password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
+    $newHash = password_hash($password, PASSWORD_DEFAULT);
+    $upgrade = mysqli_prepare($con, 'UPDATE lhpstaff SET spwd = ? WHERE sname = ?');
+    mysqli_stmt_bind_param($upgrade, 'ss', $newHash, $username);
+    mysqli_stmt_execute($upgrade);
+    mysqli_stmt_close($upgrade);
+}
+
+legacy_staff_log($con, $username, 1);
+session_regenerate_id(true);
+
+if ($role === 'b') {
+    $_SESSION['unamed'] = $username;
+    header('Location: bursar/profile.php');
+    exit;
+}
+
+if ($role === 't') {
+    $_SESSION['stnamed'] = $username;
+    $_SESSION['active'] = $username;
+    $_SESSION['user_type'] = 'Instructor';
+    $_SESSION['portal_csrf'] = bin2hex(random_bytes(32));
+    header('Location: learn/view/instructor/index.php');
+    exit;
+}
+
+legacy_staff_redirect('This staff role does not have portal access.');

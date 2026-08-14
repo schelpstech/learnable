@@ -28,7 +28,7 @@ $classresult = $db_handle->runQuery($query);
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- favicon
 		============================================ -->
-  <link rel="shortcut icon" type="image/x-icon" href="http://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+  <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
   <!-- Google Fonts
 		============================================ -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -241,7 +241,7 @@ $classresult = $db_handle->runQuery($query);
               </div>
 
               <div class="nk-int-st">
-                <input type="text" required="yes" class="form-control" name="stpwd" placeholder="Enter Staff Log in Password">
+                <input type="password" required="yes" minlength="8" maxlength="64" autocomplete="new-password" class="form-control" name="stpwd" placeholder="Enter Staff login password">
               </div>
             </div>
           </div>
@@ -331,7 +331,6 @@ $classresult = $db_handle->runQuery($query);
                     <th>Username</th>
                     <th> Phonenumber</th>
                     <th>Email </th>
-                    <th>Log in</th>
                     <th>Edit</th>
                     <th>Change Status</th>
                   </tr>
@@ -356,7 +355,6 @@ $classresult = $db_handle->runQuery($query);
                     $sname = $row->sname;
                     $sfone = $row->sfone;
                     $semail = $row->semail;
-                    $spwd = $row->spwd;
                     $status = $row->status;
 
                     if ($status == 1) {
@@ -371,8 +369,6 @@ $classresult = $db_handle->runQuery($query);
                       <td><?php echo $sname ?></td>
                       <td><?php echo $sfone ?></td>
                       <td><?php echo $semail ?></td>
-                      <td><?php echo $spwd ?></td>
-
                       <td>
                         <a href="stedt.php?un=<?php echo $row->sname ?>" type="button" class="btn btn-info">Edit</a>
                       </td>
@@ -390,7 +386,6 @@ $classresult = $db_handle->runQuery($query);
                     <th>Username</th>
                     <th> Phonenumber</th>
                     <th>Email </th>
-                    <th>Log in</th>
                     <th>Edit</th>
                     <th>Change Status</th>
                   </tr>

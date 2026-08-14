@@ -16,7 +16,7 @@ $classresult = $db_handle->runQuery($query);
 <?php
 require_once("DBController.php");
 $db_handle = new DBController();
-$query = "SELECT * FROM lhpsession WHERE status = 1";
+$query = "SELECT * FROM lpterm WHERE status = 1";
 $termresult = $db_handle->runQuery($query);
 ?>
 
@@ -32,7 +32,7 @@ $termresult = $db_handle->runQuery($query);
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- favicon
 		============================================ -->
-  <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
+  <link rel="shortcut icon" type="image/x-icon" href="img/logo/favicon.png">
   <!-- Google Fonts
 		============================================ -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -223,18 +223,18 @@ $termresult = $db_handle->runQuery($query);
 
 
           <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Select Session</label>
+            <label>Select Term</label>
             <div class="form-group ic-cmp-int">
               <div class="form-ic-cmp">
                 <i class="notika-icon notika-support"></i>
               </div>
 
               <div class="nk-int-st">
-                <select type="text" required="yes" class="form-control" name="session">
+                <select type="text" required="yes" class="form-control" name="term">
                   <?php
                   foreach ($termresult as $termd) {
                   ?>
-                    <option value="<?php echo $termd["sessionid"]; ?>"><?php echo $termd["session"]; ?></option>
+                    <option value="<?php echo htmlspecialchars($termd["term"], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($termd["term"], ENT_QUOTES, 'UTF-8'); ?></option>
                   <?php
                   }
                   ?>
@@ -380,20 +380,15 @@ $termresult = $db_handle->runQuery($query);
                   include_once './conn.php';
 
                   $count = 1;
-                  $query = $conn->prepare("select * from lhpfeelist where status = 1 ORDER BY session DESC ");
+                  $query = $conn->prepare("select * from lhpfeelist where status = 1 ORDER BY term DESC ");
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {
                     $ref = $row->feeid;
-                    $session = $row->session;
+                    $term = $row->term;
                     $cname = $row->classid;
                     $feename = $row->feename;
                     $amount = $row->amount;
-                    $sql = "SELECT * FROM lhpsession WHERE sessionid  = '$session'";
-                    $result = mysqli_query($con, $sql);
-                    $row = mysqli_fetch_array($result);
-                    $sess = $row['session'];
-
                     if (is_numeric($cname) == true) {
                       $sql = "SELECT classname FROM lhpclass WHERE classid  = '$cname'";
                       $result = mysqli_query($con, $sql);
@@ -405,7 +400,7 @@ $termresult = $db_handle->runQuery($query);
                   ?>
                     <tr>
                       <td><?php echo $count++ ?></td>
-                      <td><?php echo $sess ?></td>
+                      <td><?php echo htmlspecialchars($term, ENT_QUOTES, 'UTF-8') ?></td>
                       <td><?php echo $feeclass ?></td>
                       <td><?php echo $feename ?></td>
                       <td><?php echo $amount ?></td>
@@ -419,7 +414,7 @@ $termresult = $db_handle->runQuery($query);
                 <tfoot>
                   <tr>
                     <th>S/N</th>
-                    <th>Session</th>
+                    <th>Term</th>
                     <th>Class</th>
                     <th>Fee Name</th>
                     <th>Amount</th>

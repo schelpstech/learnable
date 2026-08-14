@@ -9,12 +9,20 @@ if (isset($_POST['createl']) && $_POST['createl'] == 'Create Learner Account')
 	
 	$stname = mysqli_real_escape_string($con,$_POST['lname']);  
 	$stuname = mysqli_real_escape_string($con,$_POST['luname']);  
-	$stpwd = mysqli_real_escape_string($con,$_POST['lpwd']);  
+	$plainPassword = isset($_POST['lpwd']) ? (string) $_POST['lpwd'] : '';
+	$stpwd = strlen($plainPassword) >= 8 ? mysqli_real_escape_string($con, password_hash($plainPassword, PASSWORD_DEFAULT)) : '';
 	$stmail = mysqli_real_escape_string($con,$_POST['lmail']);  
 	$stclass = mysqli_real_escape_string($con,$_POST['lclass']);  
 	$gender = mysqli_real_escape_string($con,$_POST['gender']);  
 	$dob = mysqli_real_escape_string($con,$_POST['dob']);  
 	
+	if ($stpwd === '') {
+		$lsmessaged = 'Status: Password must contain at least 8 characters.';
+		$_SESSION['lsmessaged'] = $lsmessaged;
+		header('Location: mglearners.php');
+		exit;
+	}
+
 	$sql = "SELECT COUNT(`uname`) as CNT FROM lhpuser WHERE uname = '$stuname' ";
 	$result=mysqli_query($con,$sql);
 	 $row=mysqli_fetch_assoc($result);

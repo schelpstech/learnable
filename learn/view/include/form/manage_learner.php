@@ -167,6 +167,7 @@
                                 </div>
                                 <input type="email" id="email" class="form-control" tabindex="4" aria-label="Fullname" aria-describedby="basic-addon1" value="<?php echo $learner_profile['email'] ?? "" ?>">
                             </div>
+                            <input type="hidden" id="learner_ref" value="<?php echo htmlspecialchars($routeInstance, ENT_QUOTES, 'UTF-8'); ?>">
                             <button tabindex="5" class="btn_1 full_width text-center" onclick="modify_learner()">Modify Learner Details</button>
                         </div>
                     </div>

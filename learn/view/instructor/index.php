@@ -52,16 +52,17 @@ include '../include/navigator.php';
                     <div class="white_card_body">
 
                         <form action="../../app/update.php" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['portal_csrf'], ENT_QUOTES, 'UTF-8'); ?>">
                             <div class="row mb-3">
                                 <label for="tel" class="form-label col-sm-4 col-form-label">Phone number</label>
                                 <div class="col-sm-8">
-                                    <input type="tel" class="form-label form-control" id="tel" minlength="11" maxlength="11" required="yes" name="phone" value="<?php echo $learner_profile['numb'] ?? ''; ?>" placeholder="<?php echo $learner_profile['numb'] ?? 'Enter Phonenumber '; ?>">
+                                    <input type="tel" class="form-label form-control" id="tel" minlength="11" maxlength="11" required="yes" name="phone" value="<?php echo htmlspecialchars($staff_details['sfone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Enter phone number">
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <label for="inputPassword3" class="form-label col-sm-4 col-form-label">Password</label>
                                 <div class="col-sm-8">
-                                    <input type="password" class="form-control" id="inputPassword3" minlength="8" required="yes" name="password" value="<?php echo $learner_profile['upwd'] ?? ''; ?>">
+                                    <input type="password" class="form-control" id="inputPassword3" minlength="8" maxlength="64" name="password" value="" autocomplete="new-password" placeholder="Leave blank to keep current password">
                                 </div>
                             </div>
                             <div class=" row">
@@ -123,7 +124,7 @@ include '../include/navigator.php';
                                 foreach ($task_list as $task) {
                             ?>
                                     <div class="single_todo d-flex justify-content-between align-items-center">
-                                        <a href="../../app/router.php?pageid=task&ref=<?php echo $task['questid'] ?>">
+                                        <a href="../../app/router.php?pageid=task&amp;ref=<?php echo rawurlencode($task['questid']) ?>">
                                             <div class="lodo_left d-flex align-items-center">
                                                 <div class="bar_line mr_10"></div>
 
@@ -150,7 +151,7 @@ include '../include/navigator.php';
                                     <p class="f_s_12 f_w_400 mb-0 text_color_8"></p>
                                 </div>
                             </div>
-                            <div class="lodo_right"> <a href="#" class="badge_complete"> as at ' . date("d-m-Y") . '</a> </div>
+                            <div class="lodo_right"> <span class="badge_complete"> as at ' . date("d-m-Y") . '</span> </div>
                         </div>';
                             }
 

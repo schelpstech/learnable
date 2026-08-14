@@ -25,7 +25,7 @@ $classresult = $db_handle->runQuery($query);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="http://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -243,7 +243,7 @@ $classresult = $db_handle->runQuery($query);
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="lpwd" placeholder="Enter Learner's Log in Password">
+                                        <input type="password" required="yes" minlength="8" maxlength="64" autocomplete="new-password" class="form-control" name="lpwd" placeholder="Enter learner login password">
                                     </div>
                                 </div>
                             </div>
@@ -329,8 +329,7 @@ foreach ($classresult as $classed) {
 										<th>Gender</th>
                     <th>Date of Birth</th>
 										<th>Email </th>
-										<th>Log in</th>
-										<th>Status</th>
+					<th>Status</th>
 										<th>Edit </th>
 										
 										
@@ -357,7 +356,6 @@ foreach ($classresult as $classed) {
              $fname = $row->fname;
               $uname = $row->uname;
                $email = $row->email;
-                $upwd = $row->upwd;
                  $status = $row->status;
                  $gender = $row->gender;
                  $dob = $row->dob;
@@ -383,7 +381,6 @@ foreach ($classresult as $classed) {
         <td><?php echo $gender ?></td>
         <td><?php echo $dob ?></td>
 				<td><?php echo $email ?></td>
-				<td><?php echo $upwd ?></td>
 				<td><?php echo $stat ?></td>
 				<td>
 				    <a href="stdedit.php?unam=<?php echo $uname ?>" type="button"  class="btn btn-info" >Edit</a>
@@ -406,8 +403,7 @@ foreach ($classresult as $classed) {
                     <th>Gender</th>
                     <th>Date of Birth</th>
 										<th>Email </th>
-										<th>Log in</th>
-										<th>Status</th>
+					<th>Status</th>
 										<th>Edit </th>
 										
                                     </tr>

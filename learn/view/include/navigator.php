@@ -8,14 +8,7 @@
                         <h3 class="f_s_25 f_w_700 dark_text">LearnAble</h3>
                         <ol class="breadcrumb page_bradcam mb-0">
                             <li class="breadcrumb-item"><a href="../../app/router.php?pageid=index">Home</a></li>
-                            <li class="breadcrumb-item"><a href="
-                                <?php
-                                $previous = "javascript:history.go(-1)";
-                                if (isset($_SERVER['HTTP_REFERER'])) {
-                                    $previous = $_SERVER['HTTP_REFERER'];
-                                }
-                                echo $previous;
-                                ?>">Back</a></li>
+                            <li class="breadcrumb-item"><button type="button" class="btn btn-link p-0" onclick="history.back()">Back</button></li>
                             <li class="breadcrumb-item active"><?php echo $_SESSION['user_type']; ?> Portal</li>
                         </ol>
                     </div>
@@ -23,7 +16,7 @@
                             <?php
                             if ($_SESSION['user_type'] === "Instructor") {
                                 echo '
-                                    <div class="page_date_button" data-bs-toggle="modal" data-bs-target="#resources">    
+                                    <div class="page_date_button" data-bs-toggle="modal" data-bs-target="#resources">
                                         Add Learning resources :'.$active_term['term'];
                             } elseif ($_SESSION['user_type'] === "Learner") {
 
@@ -32,7 +25,7 @@
                                     Active Term :'.$active_term['term']. ' :: '. $learner_class['classname'];
                             }
                             ?>
-                            
+
                         </div>
                     </div>
                 </div>

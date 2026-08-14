@@ -28,7 +28,7 @@ $classresult = $db_handle->runQuery($query);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-   <link rel="shortcut icon" type="image/x-icon" href="http://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+   <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -138,7 +138,9 @@ $classresult = $db_handle->runQuery($query);
 									<div class="breadcomb-ctn">
 										<h2>Welcome Admin</h2>
 										<h2>	 <?php
-	session_start();						
+	if (session_status() !== PHP_SESSION_ACTIVE) {
+		session_start();
+	}
     if (isset($_SESSION['clmessage']) && $_SESSION['clmessage'])
     {
       printf('<b>%s</b>', $_SESSION['clmessage']);

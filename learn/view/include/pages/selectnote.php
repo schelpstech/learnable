@@ -33,13 +33,13 @@ if (!empty($list_note)) {
 
                     </div>
                     <div class="d-grid">
-                        <a href="../../app/router.php?pageid=note&ref=<?php echo $list_note['noteid'] ?>" class="btn_3" style=" text-align:center;">Read this e-Note</a>
+                        <a href="../../app/router.php?pageid=note&amp;ref=<?php echo rawurlencode($list_note['noteid']) ?>" class="btn_3" style=" text-align:center;">Read this e-Note</a>
                     </div>
                     <?php
                     if ((isset($_SESSION['user_type']) && $_SESSION['user_type'] === "Instructor")) {
                         echo '
                             <div class="d-grid">
-                                <a href="../../app/router.php?pageid=resources&item=modify_note&item_ref='.$list_note['noteid'].'" class="btn_2" style=" text-align:center;">Modify this e-Note</a>
+                                <a href="../../app/router.php?pageid=resources&item=modify_note&item_ref='.rawurlencode($list_note['noteid']).'" class="btn_2" style=" text-align:center;">Modify this e-Note</a>
                                 </a>
                              </div>';
                     }

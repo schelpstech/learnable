@@ -4,8 +4,13 @@
             <div class="col-lg-12">
                 <div class="footer_iner text-center">
                     <p>
-                        <a href="<?php echo $sch_details['schname'] ?>">LearnAble v 1.1 :: <?php echo date("Y") ?> © :: developed for <?php echo $sch_details['schname'] ?></a>
-                        <a href="https://learnable.schelps.com.ng"> by SCHELPS</a>
+                        <?php
+                        $schoolWebsite = filter_var($sch_details['website'] ?? '', FILTER_VALIDATE_URL)
+                            ? $sch_details['website']
+                            : rtrim((string) app_env('APP_URL', '/'), '/');
+                        ?>
+                        <a href="<?php echo htmlspecialchars($schoolWebsite, ENT_QUOTES, 'UTF-8'); ?>">LearnAble v 1.1 :: <?php echo date("Y") ?> &copy; :: developed for <?php echo htmlspecialchars($sch_details['schname'], ENT_QUOTES, 'UTF-8'); ?></a>
+                        <a href="https://schelps.com.ng"> by SCHELPS</a>
                     </p>
                 </div>
             </div>

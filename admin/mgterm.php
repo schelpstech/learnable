@@ -39,7 +39,7 @@ $activeSession = $db_handle->runQuery($query);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
 		============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="img/logo/favicon.png">
     <!-- Google Fonts
 		============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">

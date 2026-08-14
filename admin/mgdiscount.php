@@ -20,7 +20,7 @@ if (!isset($_SESSION['unamed'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- favicon
 		============================================ -->
-  <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
+  <link rel="shortcut icon" type="image/x-icon" href="img/logo/favicon.png">
   <!-- Google Fonts
 		============================================ -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -397,26 +397,7 @@ if (!isset($_SESSION['unamed'])) {
                   include_once './conn.php';
 
                   $count = 1;
-                  $query = $conn->prepare(" SELECT lhpassignedfee.assid, 
-       lhpassignedfee.term, 
-       lhpassignedfee.stdid,
-       lhpassignedfee.feeid, 
-       lhpassignedfee.classid, 
-       lhpassignedfee.discount, 
-       lhpassignedfee.type, 
-       lhpassignedfee.status, 
-       lhpassignedfee.amount,
-       lhpfeelist.feeid AS lhpfeelist_feeid, 
-       lhpfeelist.session AS lhpfeelist_session,
-       lhpsession.sessionid AS lhpsession_sessionid, 
-       lhpsession.status AS lhpsession_status
-FROM lhpassignedfee
-LEFT JOIN lhpfeelist ON lhpassignedfee.feeid = lhpfeelist.feeid
-LEFT JOIN lhpsession ON lhpsession.sessionid = lhpfeelist.session
-WHERE lhpsession.status = 1 and lhpassignedfee.discount > 0
-ORDER BY lhpassignedfee.rectime ASC, lhpassignedfee.term DESC;
-;
-                        ");
+                  $query = $conn->prepare("SELECT * FROM lhpassignedfee WHERE term = (SELECT term FROM lpterm WHERE status = 1 LIMIT 1) AND discount > 0 ORDER BY rectime DESC");
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {

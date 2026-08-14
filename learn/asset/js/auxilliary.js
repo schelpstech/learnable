@@ -757,6 +757,7 @@ function toggle_modify() {
 
 function modify_learner() {
     // Gather input values
+    var learner_ref = $("#learner_ref").val().trim();
     var fullname = $("#fullname").val().trim();
     var gender = $("#gender").val().trim();
     var date_of_birth = $("#date_of_birth").val().trim();
@@ -787,6 +788,7 @@ function modify_learner() {
         url: "../../app/ajax_query.php",
         method: "POST",
         data: {
+            learner_ref: learner_ref,
             fullname: fullname,
             gender: gender,
             date_of_birth: date_of_birth,

@@ -12,7 +12,7 @@ $account_status = 'active'; // Change this to 'active' to enable the form.
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--===============================================================================================-->
-	<link rel="shortcut icon" type="image/x-icon" href="https://rabbischools.com.ng/press/wp-content/uploads/2020/04/icon.jpg">
+	<link rel="shortcut icon" type="image/x-icon" href="admin/img/favicon.ico">
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
 	<!--===============================================================================================-->
@@ -59,7 +59,7 @@ $account_status = 'active'; // Change this to 'active' to enable the form.
 					<?php if (isset($_SESSION['messagef']) && $_SESSION['messagef']): ?>
 						<h4>
 							<?php
-								printf('<b>%s</b>', $_SESSION['messagef']);
+								printf('<b>%s</b>', htmlspecialchars($_SESSION['messagef'], ENT_QUOTES, 'UTF-8'));
 								unset($_SESSION['messagef']);
 							?>
 						</h4>

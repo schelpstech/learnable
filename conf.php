@@ -1,12 +1,14 @@
 <?php
-session_start();
-$host = "localhost"; /* Host name */
-$user = "root"; /* User */
-$password = ""; /* Password */
-$dbname = "lhp"; /* Database name */
 
-$con = mysqli_connect($host, $user, $password,$dbname);
-// Check connection
-if (!$con) {
- die("Connection failed: " . mysqli_connect_error());
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
 }
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'database.php';
+
+$database = database_config();
+$host = $database['host'];
+$user = $database['user'];
+$password = $database['password'];
+$dbname = $database['name'];
+$con = database_mysqli();

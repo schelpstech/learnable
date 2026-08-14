@@ -37,25 +37,25 @@
                                 <div class="media_card_list">
                                     <div class="single_media_card">
                                         <span>Outlined Topics</span>
-                                            <a href="../../app/router.php?pageid=scheme&ref=<?php echo $subject_list['sbjid'] ?>">
+                                            <a href="../../app/router.php?pageid=scheme&amp;ref=<?php echo rawurlencode($subject_list['sbjid']) ?>">
                                                 <h3><?php echo $subject_list['topic'] ?> </h3>
                                             </a>
                                     </div>
                                     <div class="single_media_card">
                                         <span>Notes Uploaded</span>
-                                            <a href="../../app/router.php?pageid=note&subjectid=<?php echo $subject_list['sbjid'] ?>">
+                                            <a href="../../app/router.php?pageid=note&amp;subjectid=<?php echo rawurlencode($subject_list['sbjid']) ?>">
                                                 <h3><?php echo $subject_list['note'] ?> </h3>
                                             </a>
                                     </div>
                                     <div class="single_media_card">
                                         <span>Assessments</span>
-                                            <a href="../../app/router.php?pageid=task&subjectid=<?php echo $subject_list['sbjid'] ?>">
+                                            <a href="../../app/router.php?pageid=task&amp;subjectid=<?php echo rawurlencode($subject_list['sbjid']) ?>">
                                                 <h3><?php echo $subject_list['task'] ?> </h3>
                                             </a>
                                     </div>
                                     <div class="single_media_card">
                                         <span>Submitted Assignments</span>
-                                            <a href="../../app/router.php?pageid=work&subjectid=<?php echo $subject_list['sbjid'] ?>">
+                                            <a href="../../app/router.php?pageid=work&amp;subjectid=<?php echo rawurlencode($subject_list['sbjid']) ?>">
                                                 <h3><?php echo $subject_list['feedback'] ?> </h3>
                                             </a>
                                     </div>

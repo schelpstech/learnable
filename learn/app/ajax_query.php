@@ -496,7 +496,12 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
 }
 
 //CLASS MANAGER - Modify Data
-if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_of_birth']) && isset($_POST['phone']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'modify_learner') {
+if (isset($_POST['learner_ref'], $_POST['fullname'], $_POST['gender'], $_POST['date_of_birth'], $_POST['phone'])
+    && isset($_SESSION['active'], $_SESSION['user_type'], $active_term)
+    && $_SESSION['user_type'] === 'Instructor'
+    && $_POST['action'] === 'modify_learner'
+    && preg_match('/^[A-Za-z0-9_.\- ]{1,100}$/', $_POST['learner_ref'])) {
+    $learnerRef = $_POST['learner_ref'];
     $tblName = 'lhpuser';
     $profile_data = array(
         'fname' => $_POST['fullname'],
@@ -506,7 +511,7 @@ if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_o
         'email' => $_POST['email'],
     );
     $conditions = array(
-        'uname' => $_SESSION['instance'],
+        'uname' => $learnerRef,
     );
 
     if ($_POST['upload'] == 'yes') {
@@ -517,7 +522,7 @@ if (isset($_POST['fullname']) && isset($_POST['gender']) && isset($_POST['date_o
         $fileTmpPath = $_POST['imagebase64data'];
         $random = $utility->generateRandomString(7);
         // form the filename 
-        $filename_path = $_SESSION['instance'] . $random . ".jpg";
+        $filename_path = $learnerRef . $random . ".jpg";
         // remove special characters from file name
         $filename_path = $utility->RemoveSpecialChar($filename_path);
         // generate image from posted base64 data

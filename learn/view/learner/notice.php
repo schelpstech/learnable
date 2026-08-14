@@ -27,7 +27,7 @@ include '../include/navigator.php';
                                 foreach ($task_list as $task) {
                             ?>
                                     <div class="single_todo d-flex justify-content-between align-items-center">
-                                        <a href="../../app/router.php?pageid=task&ref=<?php echo $task['questid'] ?>">
+                                        <a href="../../app/router.php?pageid=task&amp;ref=<?php echo rawurlencode($task['questid']) ?>">
                                             <div class="lodo_left d-flex align-items-center">
                                                 <div class="bar_line mr_10"></div>
 
@@ -54,7 +54,7 @@ include '../include/navigator.php';
                                     <p class="f_s_12 f_w_400 mb-0 text_color_8"></p>
                                 </div>
                             </div>
-                            <div class="lodo_right"> <a href="#" class="badge_complete"> as at ' . date("d-m-Y") . '</a> </div>
+                            <div class="lodo_right"> <span class="badge_complete"> as at ' . date("d-m-Y") . '</span> </div>
                         </div>';
                             }
 

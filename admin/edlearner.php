@@ -5,13 +5,24 @@ include "conf.php";
 if (isset($_POST['edstdt']) && $_POST['edstdt'] == 'Modify Learner Details')
 {
 	$ln = mysqli_real_escape_string($con,$_POST['named']); 
-	$lnn = mysqli_real_escape_string($con,$_POST['npwd']);  
+	$passwordInput = isset($_POST['npwd']) ? (string) $_POST['npwd'] : '';
 	$lnnn = mysqli_real_escape_string($con,$_POST['nname']);  
 	$lnnnn = mysqli_real_escape_string($con,$_POST['nemail']);  
 	$lnnnnn = mysqli_real_escape_string($con,$_POST['nclass']);
 	$gender = mysqli_real_escape_string($con,$_POST['gender']);
   $dob = mysqli_real_escape_string($con,$_POST['dob']);
-	 $sql= "UPDATE lhpuser SET upwd = '$lnn', email = '$lnnnn', classid = '$lnnnnn', fname = '$lnnn', gender = '$gender', dob = '$dob' WHERE uname = '$ln'";
+	 $passwordSql = '';
+	 if ($passwordInput !== '') {
+		 if (strlen($passwordInput) < 8) {
+			 $lsmessaged = 'Status: Password must contain at least 8 characters.';
+			 $_SESSION['lsmessaged'] = $lsmessaged;
+			 header('Location: mglearners.php');
+			 exit;
+		 }
+		 $passwordHash = mysqli_real_escape_string($con, password_hash($passwordInput, PASSWORD_DEFAULT));
+		 $passwordSql = ", upwd = '$passwordHash'";
+	 }
+	 $sql= "UPDATE lhpuser SET email = '$lnnnn', classid = '$lnnnnn', fname = '$lnnn', gender = '$gender', dob = '$dob'$passwordSql WHERE uname = '$ln'";
 	 
 	 
 		if(mysqli_query($con, $sql)){	

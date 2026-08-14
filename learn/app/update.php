@@ -1,131 +1,82 @@
 <?php
+
 include '../app/query.php';
 
-//update profile
-
-if ($_POST['update'] === 'update_profile') {
-
-    if (isset($_SESSION['active'])) {
-        $userid = $_SESSION['active'];
-
-        if (isset($_POST["phone"]) && strlen($_POST["phone"]) == 11) {
-            $phone = htmlspecialchars($_POST["phone"]);
-        } else {
-            $valErr .= 'Phonumber field must be at least 11 digits!.<br/>';
-        }
-
-        if (isset($_POST["password"]) && strlen($_POST["password"]) == 8) {
-            $userpwd = htmlspecialchars($_POST["password"]);
-        } else {
-            $valErr .= 'Password field must not be empty and  8 characters!.<br/>';
-        }
-        if ($valErr == '') {
-            $tblName = 'lhpuser';
-            $profiledata = array(
-                'numb' => $phone,
-                'upwd' => $userpwd,
-            );
-            $conditons = array(
-                'uname' => $userid,
-            );
-            $update = $model->upDate($tblName, $profiledata, $conditons);
-
-            if ($update) {
-                $_SESSION['msg'] =
-                    '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
-                                    <div class="alert-text">Success! <b>Profile updated successfully</b>!</div>
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>';
-                $model->redirect('../view/learner/index.php');
-            } else {
-                $_SESSION['msg'] =
-                    '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                                    <div class="alert-text">Error! <br>' . $valErr . '</div>
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>';
-                $model->redirect('../view/learner/index.php');
-            }
-        } else {
-            $_SESSION['msg'] =
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                        <div class="alert-text">Error! <br>' . $valErr . '</div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>';
-            $model->redirect('../view/learner/index.php');
-        }
-    } else {
-        $valErr .= 'Access Denied! You must be logged in to continue.<br/>';
-        $_SESSION['msg'] =
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                        <div class="alert-text">Error! <br>' . $valErr . '</div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>';
-        $model->redirect('../view/index.php');
-    }
-} elseif ($_POST['update'] === 'update_staff_profile') {
-
-    if (isset($_SESSION['active'])) {
-        $userid = $_SESSION['active'];
-
-        if (isset($_POST["phone"]) && strlen($_POST["phone"]) == 11) {
-            $phone = htmlspecialchars($_POST["phone"]);
-        } else {
-            $valErr .= 'Phonumber field must be at least 11 digits!.<br/>';
-        }
-
-        if (isset($_POST["password"]) && strlen($_POST["password"]) >= 8) {
-            $userpwd = htmlspecialchars($_POST["password"]);
-        } else {
-            $valErr .= 'Password field must not be empty and  less than 8 characters!.<br/>';
-        }
-        if ($valErr == '') {
-            $tblName = 'lhpstaff';
-            $profiledata = array(
-                'sfone' => $phone,
-                'spwd' => $userpwd,
-            );
-            $conditons = array(
-                'sname' => $userid,
-            );
-            $update = $model->upDate($tblName, $profiledata, $conditons);
-
-            if ($update) {
-                $_SESSION['msg'] =
-                    '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
-                                    <div class="alert-text">Success! <b>Profile updated successfully</b>!</div>
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>';
-                $model->redirect('../view/instructor/index.php');
-            } else {
-                $_SESSION['msg'] =
-                    '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                                    <div class="alert-text">Error! <br>' . $valErr . '</div>
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>';
-                $model->redirect('../view/instructor/index.php');
-            }
-        } else {
-            $_SESSION['msg'] =
-                '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                        <div class="alert-text">Error! <br>' . $valErr . '</div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>';
-            $model->redirect('../view/instructor/index.php');
-        }
-    } else {
-        $valErr .= 'Access Denied! You must be logged in to continue.<br/>';
-        $_SESSION['msg'] =
-            '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                        <div class="alert-text">Error! <br>' . $valErr . '</div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>';
-        $model->redirect('../view/index.php');
-    }
-} else {
-    $_SESSION['msg'] =
-        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                <div class="alert-text">Error! <br>Invalid request. You request was sent from an unsecured page!</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>';
-    $model->redirect('../view/index.php');
+function portal_update_message($class, $message)
+{
+    return '<div class="alert text-white bg-' . $class . ' d-flex align-items-center justify-content-between" role="alert">'
+        . '<div class="alert-text">' . $message . '</div>'
+        . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+        . '</div>';
 }
+
+function portal_update_redirect($model, $location)
+{
+    $model->redirect($location);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['active'], $_SESSION['user_type'])) {
+    $_SESSION['msg'] = portal_update_message('danger', 'Access denied. Please sign in again.');
+    portal_update_redirect($model, '../view/index.php');
+}
+
+$submittedToken = isset($_POST['csrf_token']) ? (string) $_POST['csrf_token'] : '';
+$sessionToken = isset($_SESSION['portal_csrf']) ? (string) $_SESSION['portal_csrf'] : '';
+if ($sessionToken === '' || !hash_equals($sessionToken, $submittedToken)) {
+    $_SESSION['msg'] = portal_update_message('danger', 'The update request expired. Please try again.');
+    $section = $_SESSION['user_type'] === 'Learner' ? 'learner' : 'instructor';
+    portal_update_redirect($model, '../view/' . $section . '/index.php');
+}
+
+$action = isset($_POST['update']) ? (string) $_POST['update'] : '';
+$phone = isset($_POST['phone']) ? trim((string) $_POST['phone']) : '';
+$password = isset($_POST['password']) ? (string) $_POST['password'] : '';
+$username = (string) $_SESSION['active'];
+$userType = (string) $_SESSION['user_type'];
+
+if (!preg_match('/^[0-9]{11}$/', $phone)) {
+    $_SESSION['msg'] = portal_update_message('danger', 'Enter a valid 11-digit phone number.');
+    $section = $userType === 'Learner' ? 'learner' : 'instructor';
+    portal_update_redirect($model, '../view/' . $section . '/index.php');
+}
+
+if ($password !== '' && (strlen($password) < 8 || strlen($password) > 64)) {
+    $_SESSION['msg'] = portal_update_message('danger', 'A new password must contain 8 to 64 characters.');
+    $section = $userType === 'Learner' ? 'learner' : 'instructor';
+    portal_update_redirect($model, '../view/' . $section . '/index.php');
+}
+
+if ($action === 'update_profile' && $userType === 'Learner') {
+    $sql = 'UPDATE lhpuser SET numb = :phone';
+    $parameters = array(':phone' => $phone, ':username' => $username);
+    if ($password !== '') {
+        $sql .= ', upwd = :password';
+        $parameters[':password'] = password_hash($password, PASSWORD_DEFAULT);
+    }
+    $sql .= ' WHERE uname = :username';
+    $statement = $db_conn->prepare($sql);
+    $statement->execute($parameters);
+    $_SESSION['portal_csrf'] = bin2hex(random_bytes(32));
+    $_SESSION['msg'] = portal_update_message('success', 'Profile updated successfully.');
+    portal_update_redirect($model, '../view/learner/index.php');
+}
+
+if ($action === 'update_staff_profile' && $userType === 'Instructor') {
+    $sql = 'UPDATE lhpstaff SET sfone = :phone';
+    $parameters = array(':phone' => $phone, ':username' => $username);
+    if ($password !== '') {
+        $sql .= ', spwd = :password';
+        $parameters[':password'] = password_hash($password, PASSWORD_DEFAULT);
+    }
+    $sql .= ' WHERE sname = :username';
+    $statement = $db_conn->prepare($sql);
+    $statement->execute($parameters);
+    $_SESSION['portal_csrf'] = bin2hex(random_bytes(32));
+    $_SESSION['msg'] = portal_update_message('success', 'Profile updated successfully.');
+    portal_update_redirect($model, '../view/instructor/index.php');
+}
+
+$_SESSION['msg'] = portal_update_message('danger', 'Invalid profile update request.');
+$section = $userType === 'Learner' ? 'learner' : 'instructor';
+portal_update_redirect($model, '../view/' . $section . '/index.php');

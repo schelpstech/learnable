@@ -5,12 +5,23 @@ include "conf.php";
 if (isset($_POST['edstf']) && $_POST['edstf'] == 'Modify Staff Details')
 {
 	$ln = mysqli_real_escape_string($con,$_POST['stnamed']); 
-	$lnn = mysqli_real_escape_string($con,$_POST['stpwd']);  
+	$passwordInput = isset($_POST['stpwd']) ? (string) $_POST['stpwd'] : '';
 	$lnnn = mysqli_real_escape_string($con,$_POST['stname']);  
 	$lnnnn = mysqli_real_escape_string($con,$_POST['stemail']);  
 	$lnnnnn = mysqli_real_escape_string($con,$_POST['stfone']);
 	
-	 $sql= "UPDATE lhpstaff SET spwd = '$lnn', semail = '$lnnnn', sfone = '$lnnnnn', staffname = '$lnnn' WHERE sname = '$ln'";
+	 $passwordSql = '';
+	 if ($passwordInput !== '') {
+		 if (strlen($passwordInput) < 8) {
+			 $ssmessaged = 'Status: Password must contain at least 8 characters.';
+			 $_SESSION['ssmessaged'] = $ssmessaged;
+			 header('Location: mgstaff.php');
+			 exit;
+		 }
+		 $passwordHash = mysqli_real_escape_string($con, password_hash($passwordInput, PASSWORD_DEFAULT));
+		 $passwordSql = ", spwd = '$passwordHash'";
+	 }
+	 $sql= "UPDATE lhpstaff SET semail = '$lnnnn', sfone = '$lnnnnn', staffname = '$lnnn'$passwordSql WHERE sname = '$ln'";
 	 
 	 
 		if(mysqli_query($con, $sql)){	

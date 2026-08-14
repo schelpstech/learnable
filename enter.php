@@ -1,118 +1,75 @@
 <?php
 
-include "conf.php";
-$type = "Learner";
-function getUserIpAddr(){
-    if(!empty($_SERVER['HTTP_CLIENT_IP'])){
-        //ip from share internet
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
-    }elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
-        //ip pass from proxy
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    }else{
-        $ip = $_SERVER['REMOTE_ADDR'];
-    }
-    return $ip;
+include 'conf.php';
+
+function legacy_learner_redirect($message)
+{
+    $_SESSION['messagef'] = $message;
+    header('Location: student.php');
+    exit;
 }
-$uip = getUserIpAddr();
-if(isset($_POST['but_submit'])){
 
-    $uname = mysqli_real_escape_string($con,$_POST['uname']);
-    $password = mysqli_real_escape_string($con,$_POST['upass']);
-	
-    
-    if ($uname != "" && $password != ""){
-            //check username
-        $sql_query = "select count(*) as cntUser from lhpuser where uname='".$uname."' " ;
-        $result = mysqli_query($con,$sql_query);
-        $row = mysqli_fetch_array($result);
+function legacy_learner_log($connection, $username, $status)
+{
+    $type = 'Learner';
+    $ip = substr(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown', 0, 45);
+    $statement = mysqli_prepare($connection, 'INSERT INTO log (uname, utype, stat, uip) VALUES (?, ?, ?, ?)');
+    if ($statement) {
+        mysqli_stmt_bind_param($statement, 'ssis', $username, $type, $status, $ip);
+        mysqli_stmt_execute($statement);
+        mysqli_stmt_close($statement);
+    }
+}
 
-        $count = $row['cntUser'];
-        if($count == 1){
-            //check username, password 
-            $sql_query = "select count(*) as cntUser from lhpuser where uname='".$uname."' and upwd='".$password."'  " ;
-            $result = mysqli_query($con,$sql_query);
-            $row = mysqli_fetch_array($result);
-    
-            $count = $row['cntUser'];
-            if($count == 1){
-                //check username, password and status
-                $sql_query = "select count(*) as cntUser from lhpuser where uname='".$uname."' and upwd='".$password."' AND status= '1' " ;
-                $result = mysqli_query($con,$sql_query);
-                $row = mysqli_fetch_array($result);
-        
-                $count = $row['cntUser'];
-                if($count == 1){
-                        //if successfull insert into log
-                    $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',1, '$uip' )";
-                    if(mysqli_query($con, $sql)){
-                      //select classid and fullname
-                        $sql_query = "select classid from lhpuser where uname ='$uname' " ;
-                          $result = mysqli_query($con,$sql_query);
-                            $row = mysqli_fetch_array($result);
-                            $classid = $row["classid"];
-                            $fullname = $row["fname"];
-			                session_start();
-		                	$_SESSION['classd'] = $classid;
-		                	$_SESSION['studnamed'] = $uname;
-                            $messagef = "Welcome ".$fullname;
-                             $_SESSION['messagef'] = $messagef;
-                             header('Location:learner/profile.php');
-                           }
-                        else{
-                                                          
-                                $messagef = "Sorry! We can't Log you in at this time";
-                                $_SESSION['messagef'] = $messagef;
-                                header("Location: student.php");
-                              }
-                            }
-                  //if status is inactive
-                            else{
-                         $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',2, '$uip' )";
-                    if(mysqli_query($con, $sql)){
-                      //status error
-                      $messagef = "Sorry! Your account has been deactivated. Kindly contact school";
-                      $_SESSION['messagef'] = $messagef;
-                      header("Location: student.php");
-                           }
-                        }
-                    }
-                    else{
-                         //if password is wrong
-                        $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',3, '$uip' )";
-                   if(mysqli_query($con, $sql)){
-                     //password error
-                     $messagef = "Sorry! You have entered an incorrect password. Kindly contact school";
-                     $_SESSION['messagef'] = $messagef;
-                     header("Location: student.php");
-                          }
-                       }
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['but_submit'])) {
+    legacy_learner_redirect('Unauthorised access');
+}
 
-                    }
-                    else{
-                         //if username is incorrect
-                        $sql= "INSERT INTO log  (uname,utype,stat, uip) VALUES ('$uname','$type',4, '$uip' )";
-                   if(mysqli_query($con, $sql)){
-                     //password error
-                     $messagef = "Sorry! Your username is incorrect. Kindly, check again";
-                     $_SESSION['messagef'] = $messagef;
-                     header("Location: student.php");
-                          }
-                       }
-                    }
-                       else{
-                        //empty entry
-                      
-                    $messagef = "Username or Password cannot be blank";
-                    $_SESSION['messagef'] = $messagef;
-                    header("Location: student.php");
-                         }
-                        }
-                        else{
-                         //empty entry
-                       
-                     $messagef = "Unauthorised access";
-                     $_SESSION['messagef'] = $messagef;
-                     header("Location: student.php");
-                          }
-                          ?>
+$username = isset($_POST['uname']) ? trim((string) $_POST['uname']) : '';
+$password = isset($_POST['upass']) ? (string) $_POST['upass'] : '';
+if ($username === '' || $password === '' || strlen($username) > 64 || strlen($password) > 255) {
+    legacy_learner_redirect('Invalid login credentials');
+}
+
+$statement = mysqli_prepare($con, 'SELECT upwd, status, classid, fname FROM lhpuser WHERE uname = ? LIMIT 1');
+mysqli_stmt_bind_param($statement, 's', $username);
+mysqli_stmt_execute($statement);
+mysqli_stmt_bind_result($statement, $storedPassword, $status, $classId, $fullName);
+$found = mysqli_stmt_fetch($statement);
+mysqli_stmt_close($statement);
+
+if (!$found) {
+    legacy_learner_log($con, $username, 4);
+    legacy_learner_redirect('Invalid username or password');
+}
+
+$passwordInfo = password_get_info((string) $storedPassword);
+$usesHash = !empty($passwordInfo['algo']);
+$matches = $usesHash ? password_verify($password, $storedPassword) : hash_equals((string) $storedPassword, $password);
+if (!$matches) {
+    legacy_learner_log($con, $username, 3);
+    legacy_learner_redirect('Invalid username or password');
+}
+if ((int) $status !== 1) {
+    legacy_learner_log($con, $username, 2);
+    legacy_learner_redirect('Your account is inactive. Contact the school.');
+}
+
+if (!$usesHash || password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
+    $newHash = password_hash($password, PASSWORD_DEFAULT);
+    $upgrade = mysqli_prepare($con, 'UPDATE lhpuser SET upwd = ? WHERE uname = ?');
+    mysqli_stmt_bind_param($upgrade, 'ss', $newHash, $username);
+    mysqli_stmt_execute($upgrade);
+    mysqli_stmt_close($upgrade);
+}
+
+legacy_learner_log($con, $username, 1);
+session_regenerate_id(true);
+$_SESSION['classd'] = $classId;
+$_SESSION['studnamed'] = $username;
+$_SESSION['active'] = $username;
+$_SESSION['user_type'] = 'Learner';
+$_SESSION['portal_csrf'] = bin2hex(random_bytes(32));
+$_SESSION['messagef'] = 'Welcome ' . $fullName;
+header('Location: learn/view/learner/index.php');
+exit;

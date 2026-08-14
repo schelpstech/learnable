@@ -70,7 +70,7 @@ include '../include/navigator.php';
                                             </td>
                                             <td>
                                                 <div class="action_btns d-flex">
-                                                    <a href="../../app/router.php?pageid=selectnote&subjectid=<?php echo $data['sbjid'] ?>" class="action_btn mr_10"> <i class="ti-hand-point-up"></i> </a>
+                                                    <a href="../../app/router.php?pageid=note&amp;subjectid=<?php echo rawurlencode($data['sbjid']) ?>" class="action_btn mr_10"> <i class="ti-hand-point-up"></i> </a>
                                                 </div>
                                             </td>
                                         </tr>

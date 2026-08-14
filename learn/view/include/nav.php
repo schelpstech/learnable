@@ -1,7 +1,7 @@
 <nav class="sidebar">
     <div class="logo d-flex justify-content-between">
-        <a class="large_logo" href="index-2.html"><img src="../../asset/img/school/<?php echo $sch_details['logo'] ?>" alt=""></a>
-        <a class="small_logo" href="index-2.html"><img src="../../asset/img/school/<?php echo $sch_details['logo'] ?>" alt=""></a>
+        <a class="large_logo" href="../../app/router.php?pageid=index"><img src="../../asset/img/school/<?php echo htmlspecialchars($sch_details['logo'], ENT_QUOTES, 'UTF-8') ?>" alt="<?php echo htmlspecialchars($sch_details['schname'], ENT_QUOTES, 'UTF-8') ?>"></a>
+        <a class="small_logo" href="../../app/router.php?pageid=index"><img src="../../asset/img/school/<?php echo htmlspecialchars($sch_details['logo'], ENT_QUOTES, 'UTF-8') ?>" alt="<?php echo htmlspecialchars($sch_details['schname'], ENT_QUOTES, 'UTF-8') ?>"></a>
         <div class="sidebar_close_icon d-lg-none">
             <i class="ti-close"></i>
         </div>
@@ -76,6 +76,7 @@
                     </button>
                 </div>
                 <form action="../../app/useracces.php" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['portal_csrf'], ENT_QUOTES, 'UTF-8'); ?>">
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                         <button type="submit" value="logout" name="logout" class="btn btn-danger">Yes! Log out</button>
@@ -87,11 +88,11 @@
     <?php
     if ($_SESSION['user_type'] === "Instructor") {
         echo '
-        <div class="modal fade" id="resources" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal fade" id="resources" tabindex="-1" role="dialog" aria-labelledby="resourceActionsTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle"> </h5>
+                        <h5 class="modal-title" id="resourceActionsTitle">Learning resource actions</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>

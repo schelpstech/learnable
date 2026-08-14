@@ -39,13 +39,13 @@ if (!empty($list_task)) {
 
                     </div>
                     <div class="d-grid">
-                        <a href="../../app/router.php?pageid=task&ref=<?php echo $list_task['questid'] ?>" class="btn_3" style=" text-align:center;">View this Assignment</a>
+                        <a href="../../app/router.php?pageid=task&amp;ref=<?php echo rawurlencode($list_task['questid']) ?>" class="btn_3" style=" text-align:center;">View this Assignment</a>
                     </div>
                     <?php
                     if ((isset($_SESSION['user_type']) && $_SESSION['user_type'] === "Instructor")) {
                         echo '
                             <div class="d-grid">
-                                <a href="../../app/router.php?pageid=resources&item=modify_task&item_ref=' . $list_task['questid'] . '" class="btn_2" style=" text-align:center;">Modify this Assignment</a>
+                                <a href="../../app/router.php?pageid=resources&item=modify_task&item_ref=' . rawurlencode($list_task['questid']) . '" class="btn_2" style=" text-align:center;">Modify this Assignment</a>
                                 </a>
                              </div>';
                     }

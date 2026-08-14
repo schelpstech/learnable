@@ -39,7 +39,7 @@
 
                         </div>
                         <div class="d-grid">
-                            <a href="../../app/router.php?pageid=selectnote&ref=<?php echo $list_task['questid'] ?>" class="btn_2" style=" text-align:center;">View this Assignment</a>
+                            <a href="../../app/router.php?pageid=task&amp;ref=<?php echo rawurlencode($list_task['questid']) ?>" class="btn_2" style=" text-align:center;">View this Assignment</a>
                         </div>
                     </div>
                 </div>

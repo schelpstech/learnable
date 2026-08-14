@@ -47,7 +47,7 @@
                                             if ((isset($_SESSION['user_type']) && $_SESSION['user_type'] === "Instructor")) {
                                                 echo '
                                                    <div class="lodo_right">
-                                                        <a href="../../app/router.php?pageid=resources&item=modify_topic&item_ref=' . $list_scheme['schmid'] . '" class="mark_complete">
+                                                        <a href="../../app/router.php?pageid=resources&item=modify_topic&item_ref=' . rawurlencode($list_scheme['schmid']) . '" class="mark_complete">
                                                                 <p class="f_s_18 f_w_900 mb-0">Modify</p>
                                                         </a>
                                                     </div>';
@@ -66,7 +66,7 @@
                                                                             <p class="f_s_12 f_w_400 mb-0 text_color_8"></p>
                                                                 </div>
                                                             </div>
-                                                        <div class="lodo_right"> <a href="#" class="badge_complete"> as at ' . date("d-m-Y") . '</a> </div>
+                                                        <div class="lodo_right"> <span class="badge_complete"> as at ' . date("d-m-Y") . '</span> </div>
                                                     </div>';
                                 }
                                 ?>
