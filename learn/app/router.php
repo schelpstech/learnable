@@ -17,6 +17,42 @@ try {
     exit('Page not found.');
 }
 
+// Mutating timetable requests are handled before any view output so CSRF,
+// ownership checks and redirects remain reliable.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $portalRoute->page() === 'calendar') {
+    if ($_SESSION['user_type'] !== 'Instructor') {
+        http_response_code(405);
+        exit('This action is not available for your account.');
+    }
+    if (empty($_SESSION['portal_csrf'])) {
+        $_SESSION['portal_csrf'] = bin2hex(random_bytes(32));
+    }
+    $calendarService = new CalendarService(database_pdo());
+    $token = isset($_POST['csrf_token']) && is_string($_POST['csrf_token']) ? $_POST['csrf_token'] : '';
+    try {
+        if (!hash_equals($_SESSION['portal_csrf'], $token)) {
+            throw new RuntimeException('Your session token expired. Please try again.');
+        }
+        $term = $calendarService->activeTerm();
+        if (($_POST['schedule_action'] ?? '') === 'create') {
+            $calendarService->createClassSession($_POST, $_SESSION['active'], $term);
+            $_SESSION['portal_calendar_flash'] = array('type' => 'notice', 'message' => 'Class session added to the timetable.');
+        } elseif (($_POST['schedule_action'] ?? '') === 'delete') {
+            $calendarService->deleteEvent($_POST['event_id'] ?? null, $_SESSION['active'], false);
+            $_SESSION['portal_calendar_flash'] = array('type' => 'notice', 'message' => 'Your class session was removed.');
+        }
+    } catch (InvalidArgumentException $exception) {
+        $_SESSION['portal_calendar_flash'] = array('type' => 'error', 'message' => $exception->getMessage());
+    } catch (RuntimeException $exception) {
+        $_SESSION['portal_calendar_flash'] = array('type' => 'error', 'message' => $exception->getMessage());
+    }
+    $redirect = 'router.php?pageid=calendar';
+    if ($portalRoute->param('month')) $redirect .= '&month=' . rawurlencode($portalRoute->param('month'));
+    if ($portalRoute->param('class_id')) $redirect .= '&class_id=' . rawurlencode($portalRoute->param('class_id'));
+    header('Location: ' . $redirect);
+    exit;
+}
+
 if ($portalRoute->view() === 'redirect') {
     $section = $_SESSION['user_type'] === 'Learner' ? 'learner' : 'instructor';
     $target = $portalRoute->page() === 'overview' ? 'notice.php' : 'index.php';

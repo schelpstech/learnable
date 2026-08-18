@@ -99,13 +99,20 @@
 
 
     <li>
-        <a href="../learner/calendar.php" aria-expanded="false">
+        <a href="../../app/router.php?pageid=calendar" aria-expanded="false">
             <div class="nav_icon_small">
                 <img src="../../asset/img/menu-icon/dashboard.svg" alt="">
             </div>
             <div class="nav_title">
                 <span>School Calendar</span>
             </div>
+        </a>
+    </li>
+
+    <li>
+        <a href="../../app/router.php?pageid=cbt" aria-expanded="false">
+            <div class="nav_icon_small"><i class="fas fa-laptop" aria-hidden="true"></i></div>
+            <div class="nav_title"><span>My Assessments</span></div>
         </a>
     </li>
 

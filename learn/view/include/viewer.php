@@ -34,6 +34,18 @@
         include 'classmanager/dashboard.php';
     }elseif ($pageid == 'scoresheet') {
         include 'scoresheet/dashboard.php';
+    }elseif ($pageid == 'calendar') {
+        include 'pages/calendar.php';
+    }elseif ($pageid == 'cbt') {
+        include 'cbt/dashboard.php';
+    }elseif ($pageid == 'cbt_builder') {
+        include 'cbt/builder.php';
+    }elseif ($pageid == 'cbt_bank') {
+        include 'cbt/bank.php';
+    }elseif ($pageid == 'cbt_marking') {
+        include 'cbt/marking.php';
+    }elseif ($pageid == 'cbt_review') {
+        include 'cbt/review.php';
     }elseif ($pageid == 'manage_learner' && $instance !== null) {
         include 'form/manage_learner.php';
     }elseif ($pageid == 'resources' && $item == 'modify_topic' && $itemRef !== null) {

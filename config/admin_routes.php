@@ -6,11 +6,16 @@ return array(
     'staff' => 'mgstaff.php',
     'learners' => 'mglearners.php',
     'terms' => 'mgterm.php',
+    'calendar' => 'calendar.php',
     'result-config' => 'mgconfig.php',
     'records' => 'mgresult.php',
     'affective' => 'mgaffective.php',
     'midterm' => 'mgmid.php',
     'reports' => 'mgreport.php',
+    'report-view' => 'viewresult.php',
+    'report-cumulative' => 'viewcumresult.php',
+    'reports-class' => 'viewmultiresult.php',
+    'reports-class-cumulative' => 'viewmulticum.php',
     'promotions' => 'promote.php',
     'fees' => 'mgfee.php',
     'fee-assignments' => 'assignfee.php',
@@ -23,5 +28,5 @@ return array(
     'allocations' => 'allocate.php',
     'resources' => 'mglesson.php',
     'resource-dashboard' => 'filedash.php',
+    'cbt' => 'cbt.php',
 );
-

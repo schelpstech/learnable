@@ -53,6 +53,9 @@ if (empty($_SESSION['portal_csrf'])) {
 
     <link rel="stylesheet" href="../../asset/css/style1.css" />
     <link rel="stylesheet" href="../../asset/css/colors/default.css" id="colorSkinCSS">
+    <?php if (isset($portalRoute) && strpos($portalRoute->page(), 'cbt') === 0): ?>
+        <link rel="stylesheet" href="../../../assets/css/cbt.css?v=1">
+    <?php endif; ?>
     <?php
     if ($_SESSION['user_type'] === "Instructor") {
         echo '<script src="../../asset/js/auxilliary.js"></script>';

@@ -1,4 +1,5 @@
 .env
 *.local.env
 db_backup_*.zip
-
+database
+.vscode

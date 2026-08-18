@@ -1,28 +1,8 @@
 <?php
-include '../include/header.php';
-include '../include/nav.php';
-include '../include/navigator.php';
-?>
-<div class="main_content_iner overly_inner ">
-    <div class="container-fluid p-0 ">
-
-
-        <div class="row ">
-            <div class="col-xl-12">
-                <div class="white_card card_height_100 mb_30">
-                    <div class="date_picker_wrapper">
-                        <div class="default-datepicker">
-                            <div class="datepicker-here" data-language='en'></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-</section>
-<?php
-include '../include/footer.php';
-?>
+require_once dirname(__DIR__, 2) . '/controller/start.inc.php';
+if (empty($_SESSION['active']) || ($_SESSION['user_type'] ?? '') !== 'Learner') {
+    header('Location: ../index.php');
+    exit;
+}
+header('Location: ../../app/router.php?pageid=calendar');
+exit;

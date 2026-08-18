@@ -39,6 +39,12 @@ final class PortalRoute
             'class_manager' => array('Instructor'),
             'scoresheet' => array('Instructor'),
             'manage_learner' => array('Instructor'),
+            'calendar' => array('Learner', 'Instructor'),
+            'cbt' => array('Learner', 'Instructor'),
+            'cbt_builder' => array('Instructor'),
+            'cbt_bank' => array('Instructor'),
+            'cbt_marking' => array('Instructor'),
+            'cbt_review' => array('Learner'),
         );
 
         if (!isset($roles[$page])) {
@@ -53,7 +59,7 @@ final class PortalRoute
         }
 
         $params = array();
-        foreach (array('subjectid', 'ref', 'instance', 'item', 'item_ref') as $name) {
+        foreach (array('subjectid', 'ref', 'instance', 'item', 'item_ref', 'month', 'class_id', 'subject_id', 'scheme_id', 'assessment_id', 'attempt_id', 'question_id') as $name) {
             if (isset($query[$name]) && $query[$name] !== '') {
                 $params[$name] = self::value($query[$name], $name);
             }
@@ -90,6 +96,15 @@ final class PortalRoute
         }
         if ($page === 'manage_learner' && !isset($params['instance'])) {
             throw new InvalidArgumentException('A learner reference is required.');
+        }
+        if ($page === 'calendar' && isset($params['month']) && !preg_match('/^\d{4}-\d{2}$/', $params['month'])) {
+            throw new InvalidArgumentException('Invalid calendar month.');
+        }
+        if ($page === 'cbt_review' && !isset($params['attempt_id'])) {
+            throw new InvalidArgumentException('A completed attempt is required.');
+        }
+        if ($page === 'cbt_marking' && isset($params['attempt_id']) && !isset($params['assessment_id'])) {
+            throw new InvalidArgumentException('An assessment is required for script marking.');
         }
         if ($page === 'resources') {
             $items = array('add_topic', 'add_note', 'add_task', 'add_cbt', 'modify_topic', 'modify_note', 'modify_task');

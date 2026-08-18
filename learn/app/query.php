@@ -346,6 +346,35 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
     );
     $recent = $model->getRows($tblName, $conditions);
 
+    // Merge learner-specific CBT events without changing the legacy class
+    // notice table, whose refid field already means a class identifier.
+    $cbtRecentStatement = $db_conn->prepare(
+        'SELECT COALESCE(nt.sent_at, nt.created_at) AS rectime,
+                CONCAT(\'CBT · \', a.title) AS subject,
+                CONCAT(
+                    CASE nt.event_type
+                        WHEN \'opening_reminder\' THEN \'Opening soon: \'
+                        WHEN \'closing_reminder\' THEN \'Closing soon: \'
+                        WHEN \'paused\' THEN \'Paused: \'
+                        WHEN \'cancelled\' THEN \'Cancelled: \'
+                        ELSE \'Published: \'
+                    END,
+                    a.title, \' (\', s.sbjname, \'). Open My Assessments for details.\'
+                ) AS message
+         FROM cbt_notification_targets nt
+         INNER JOIN cbt_assessments a ON a.id = nt.assessment_id
+         INNER JOIN lhpsubject s ON s.sbjid = a.subject_id
+         WHERE nt.learner_id = :learner AND a.term = :term AND nt.status = \'sent\'
+         ORDER BY COALESCE(nt.sent_at, nt.created_at) DESC LIMIT 5'
+    );
+    $cbtRecentStatement->execute(array(':learner' => $learner_profile['uname'], ':term' => $active_term['term']));
+    $cbtRecent = $cbtRecentStatement->fetchAll(PDO::FETCH_ASSOC);
+    $recent = array_merge(is_array($recent) ? $recent : array(), $cbtRecent);
+    usort($recent, function ($left, $right) {
+        return strcmp((string) $right['rectime'], (string) $left['rectime']);
+    });
+    $recent = array_slice($recent, 0, 5);
+
 //Subject List
 
 

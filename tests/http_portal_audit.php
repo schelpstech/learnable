@@ -11,8 +11,9 @@ function audit_login($url, array $fields)
     $handle = curl_init($url);
     curl_setopt_array($handle, array(
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_MAXREDIRS => 5,
+        // The login response already rotates and writes the authenticated
+        // session cookie; loading the full dashboard here only slows the audit.
+        CURLOPT_FOLLOWLOCATION => false,
         CURLOPT_CONNECTTIMEOUT => 4,
         CURLOPT_TIMEOUT => 20,
         CURLOPT_POST => true,
@@ -71,8 +72,8 @@ function audit_request($url, $cookieFile)
 
 $demoPassword = (string) app_env('E2E_DEMO_PASSWORD', '');
 $admin = $pdo->query("SELECT dname FROM `123admin` WHERE dname = 'codex_demo_admin' LIMIT 1")->fetch();
-$learner = $pdo->query("SELECT uname, classid FROM lhpuser WHERE status = 1 AND uname = 'codex_demo_student' LIMIT 1")->fetch();
-$instructor = $pdo->query("SELECT sname FROM lhpstaff WHERE status = 1 AND role = 't' AND sname = 'codex_demo_instructor' LIMIT 1")->fetch();
+$learner = $pdo->query("SELECT uname, classid FROM lhpuser WHERE status = 1 AND uname = 'codex_demo_std' LIMIT 1")->fetch();
+$instructor = $pdo->query("SELECT sname FROM lhpstaff WHERE status = 1 AND role = 't' AND sname = 'codex_demo_teacher' LIMIT 1")->fetch();
 $activeTerm = $pdo->query('SELECT term FROM lpterm WHERE status = 1 LIMIT 1')->fetchColumn();
 
 if (!$admin || !$learner || !$instructor || !$activeTerm || strlen($demoPassword) < 12) {
@@ -94,6 +95,17 @@ $noteId = $noteStatement->fetchColumn();
 $taskStatement = $pdo->prepare('SELECT questid FROM lhpquestion WHERE term = ? AND status = 1 LIMIT 1');
 $taskStatement->execute(array($activeTerm));
 $taskId = $taskStatement->fetchColumn();
+
+$cbtAssessment = $pdo->query(
+    "SELECT id FROM cbt_assessments
+     WHERE teacher_id = 'codex_demo_teacher' AND title = 'Codex Demo · Mixed Question Practice'
+     ORDER BY id DESC LIMIT 1"
+)->fetchColumn();
+$cbtAttempt = $pdo->query(
+    "SELECT id FROM cbt_attempts
+     WHERE learner_id = 'codex_demo_std' AND published_at IS NOT NULL
+     ORDER BY id DESC LIMIT 1"
+)->fetchColumn();
 
 $sessions = array(
     'admin' => audit_login($baseUrl . '/entadmin.php', array(
@@ -136,8 +148,14 @@ $learnerRoutes = array(
     '/learn/app/router.php?pageid=payment&instance=transaction',
     '/learn/app/router.php?pageid=payment&instance=payment',
     '/learn/app/router.php?pageid=result&instance=select',
+    '/learn/app/router.php?pageid=result&ref=' . rawurlencode($activeTerm),
     '/learn/app/router.php?pageid=midterm_result&ref=' . rawurlencode($activeTerm),
+    '/learn/app/router.php?pageid=calendar&month=' . date('Y-m'),
+    '/learn/app/router.php?pageid=cbt',
 );
+if ($cbtAttempt) {
+    $learnerRoutes[] = '/learn/app/router.php?pageid=cbt_review&attempt_id=' . rawurlencode($cbtAttempt);
+}
 if ($subjectId) {
     $learnerRoutes[] = '/learn/app/router.php?pageid=note&subjectid=' . rawurlencode($subjectId);
     $learnerRoutes[] = '/learn/app/router.php?pageid=task&subjectid=' . rawurlencode($subjectId);
@@ -162,17 +180,34 @@ $instructorRoutes = array(
     '/learn/app/router.php?pageid=subject',
     '/learn/app/router.php?pageid=class_manager',
     '/learn/app/router.php?pageid=scoresheet',
+    '/learn/app/router.php?pageid=calendar&month=' . date('Y-m'),
     '/learn/app/router.php?pageid=resources&item=add_topic',
     '/learn/app/router.php?pageid=resources&item=add_note',
     '/learn/app/router.php?pageid=resources&item=add_task',
     '/learn/app/router.php?pageid=resources&item=add_cbt',
     '/learn/app/router.php?pageid=manage_learner&instance=' . rawurlencode($learner['uname']),
+    '/learn/app/router.php?pageid=cbt',
+    '/learn/app/router.php?pageid=cbt_builder',
+    '/learn/app/router.php?pageid=cbt_bank',
+    '/learn/app/router.php?pageid=cbt_marking',
 );
+if ($cbtAssessment) {
+    $instructorRoutes[] = '/learn/app/router.php?pageid=cbt_builder&assessment_id=' . rawurlencode($cbtAssessment);
+    $instructorRoutes[] = '/learn/app/router.php?pageid=cbt_marking&assessment_id=' . rawurlencode($cbtAssessment);
+    $instructorRoutes[] = '/learn/app/cbt_export.php?assessment_id=' . rawurlencode($cbtAssessment);
+    $instructorRoutes[] = '/learn/app/cbt_template.php';
+}
 foreach ($instructorRoutes as $route) {
     $requests[] = array('instructor', $route);
 }
 $requests[] = array('legacy-learner', '/learn/app/router.php?pageid=index');
 $requests[] = array('legacy-instructor', '/learn/app/router.php?pageid=index');
+$requests[] = array('admin', '/admin/index.php?route=report-cumulative&term=' . rawurlencode($activeTerm) . '&lid=' . rawurlencode($learner['uname']));
+$requests[] = array('admin', '/admin/index.php?route=reports-class&term=' . rawurlencode($activeTerm) . '&class_id=' . rawurlencode($learner['classid']));
+$requests[] = array('admin', '/admin/index.php?route=reports-class-cumulative&term=' . rawurlencode($activeTerm) . '&class_id=' . rawurlencode($learner['classid']));
+if ($cbtAssessment) {
+    $requests[] = array('admin', '/learn/app/cbt_export.php?assessment_id=' . rawurlencode($cbtAssessment));
+}
 
 $failures = array();
 try {

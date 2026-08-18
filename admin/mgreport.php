@@ -173,10 +173,10 @@ $query ="SELECT DISTINCT(term) FROM lhpresultrecord";
         
       if(termid.substring(0,3) == '3rd'){
         $("#term").val("");
-        window.location.href = "viewcumresult.php?term=" + termid + "&lid=" + lid;
+        window.location.href = "index.php?route=report-cumulative&term=" + encodeURIComponent(termid) + "&lid=" + encodeURIComponent(lid);
       }else if(termid.substring(0,3) != '3rd'){
         $("#term").val("");
-        window.location.href = "viewresult.php?term=" + termid + "&lid=" + lid;
+        window.location.href = "index.php?route=report-view&term=" + encodeURIComponent(termid) + "&lid=" + encodeURIComponent(lid);
       }
     }
        else {
@@ -198,10 +198,10 @@ $query ="SELECT DISTINCT(term) FROM lhpresultrecord";
       if (bulk_termid !== "" & bulk_classid !== "") {
         if(bulk_termid.substring(0,3) == '3rd'){
         $("#term").val("");
-        window.location.href = "viewmulticum.php?term=" + bulk_termid + "&class_id=" + bulk_classid;
+        window.location.href = "index.php?route=reports-class-cumulative&term=" + encodeURIComponent(bulk_termid) + "&class_id=" + encodeURIComponent(bulk_classid);
       }else if(bulk_termid.substring(0,3) != '3rd'){
         $("#term").val("");
-        window.location.href = "viewmultiresult.php?term=" + bulk_termid + "&class_id=" + bulk_classid;
+        window.location.href = "index.php?route=reports-class&term=" + encodeURIComponent(bulk_termid) + "&class_id=" + encodeURIComponent(bulk_classid);
       }
       } else {
 
