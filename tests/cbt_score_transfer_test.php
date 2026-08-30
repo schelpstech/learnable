@@ -16,6 +16,20 @@ $results = new CbtResultService($pdo);
 $teacher = 'codex_demo_teacher';
 $learner = 'codex_demo_std';
 $context = $cbt->activeContext();
+// Supply a connection-local test configuration when the school has not configured the new term.
+// Do not silently open or change live score-entry settings just to run this test.
+$checkConfig = $pdo->prepare('SELECT 1 FROM lhpresultconfig WHERE term=? LIMIT 1');
+$checkConfig->execute(array($context['term']));
+if (!$checkConfig->fetchColumn()) {
+    $template = $pdo->query('SELECT * FROM lhpresultconfig ORDER BY id DESC LIMIT 1')->fetch();
+    if (!$template) throw new RuntimeException('A result-config template is required for this test.');
+    $pdo->exec('CREATE TEMPORARY TABLE qa_result_config LIKE lhpresultconfig');
+    $pdo->exec('CREATE TEMPORARY TABLE lhpresultconfig LIKE qa_result_config');
+    $pdo->exec('DROP TEMPORARY TABLE qa_result_config');
+    $template['term'] = $context['term'];
+    $insertConfig = $pdo->prepare('INSERT INTO lhpresultconfig (`'.implode('`,`',array_keys($template)).'`) VALUES ('.implode(',',array_fill(0,count($template),'?')).')');
+    $insertConfig->execute(array_values($template));
+}
 $source = $pdo->query(
     "SELECT q.id AS question_id, q.class_id, q.subject_id, q.scheme_id
      FROM cbt_questions q WHERE q.owner_teacher_id = 'codex_demo_teacher'

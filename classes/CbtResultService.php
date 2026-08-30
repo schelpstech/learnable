@@ -161,6 +161,14 @@ class CbtResultService
 
     private function writeLegacyScore(array $data, $component, $score)
     {
+        $guard = new ScorebookService($this->pdo);
+        return $guard->locked('scores:'.$data['term'].':'.$data['subject_id'], function () use ($data,$component,$score) {
+            return $this->writeLockedLegacyScore($data,$component,$score);
+        });
+    }
+
+    private function writeLockedLegacyScore(array $data, $component, $score)
+    {
         $score = (int) round($score);
         if ($component === 'weekly') {
             $existing = $this->one(

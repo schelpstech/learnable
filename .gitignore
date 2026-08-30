@@ -1,5 +1,13 @@
 .env
 *.local.env
 db_backup_*.zip
-database
+database/*
+!database/migrate.php
+!database/migrations/
 .vscode
+database
+docs
+.dccache
+.gitignore
+.env.example
+.hintrc

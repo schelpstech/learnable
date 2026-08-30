@@ -14,6 +14,13 @@ $sharedClasses = array(
     'CbtAttemptService.php',
     'CbtResultService.php',
     'CbtNotificationService.php',
+    'SchoolService.php',
+    'DiscountService.php',
+    'ExpenseService.php',
+    'InventoryService.php',
+    'TeachingService.php',
+    'ScorebookService.php',
+    'NoteService.php',
 );
 
 foreach ($sharedClasses as $classFile) {

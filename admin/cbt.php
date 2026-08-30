@@ -87,14 +87,14 @@ $activeCount = count(array_filter($assessments, function ($item) use ($service) 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="css/admin-modern.css?v=1">
-    <link rel="stylesheet" href="../assets/css/cbt.css?v=1">
+    <link rel="stylesheet" href="../assets/css/cbt.css?v=2">
 </head>
 <body class="cbt-admin">
 <?php include __DIR__ . '/nav.html'; ?>
 <main class="cbt-admin-main">
     <?php if ($flash): ?><div class="cbt-alert cbt-alert--<?php echo $flash['type'] === 'error' ? 'error' : 'success'; ?>"><i class="fa fa-info-circle"></i><span><?php echo admin_cbt_h($flash['message']); ?></span></div><?php endif; ?>
     <header class="cbt-page-heading">
-        <div><p class="cbt-kicker">Academic quality control</p><h1>CBT & assessments</h1><p>Approve scheme-based papers, monitor live attempts, review exceptions, publish checked scripts, and control every academic-record transfer.</p></div>
+        <div><p class="cbt-kicker">School assessments</p><h1>CBT & assessments</h1><p>Review teachers’ assessments, follow learner progress and publish results when they are ready.</p></div>
         <?php if ($assessment): ?><div class="cbt-heading-actions"><a class="cbt-btn cbt-btn--paper" href="index.php?route=cbt">All assessments</a></div><?php endif; ?>
     </header>
 

@@ -151,9 +151,11 @@
   });
   $(".sidebar_icon").on("click", function () {
     $(".sidebar").toggleClass("active_sidebar");
+    $(this).attr("aria-expanded", String($(".sidebar").hasClass("active_sidebar")));
   });
-  $(".sidebar_close_icon i").on("click", function () {
+  $(".sidebar_close_icon").on("click", function () {
     $(".sidebar").removeClass("active_sidebar");
+    $(".sidebar_icon").attr("aria-expanded", "false").trigger("focus");
   });
   $(".troggle_icon").on("click", function () {
     $(".setting_navbar_bar").toggleClass("active_menu");
@@ -174,6 +176,13 @@
   $(document).click(function (event) {
     if (!$(event.target).closest(".sidebar_icon, .sidebar").length) {
       $("body").find(".sidebar").removeClass("active_sidebar");
+      $(".sidebar_icon").attr("aria-expanded", "false");
+    }
+  });
+  $(document).on("keydown", function (event) {
+    if (event.key === "Escape" && $(".sidebar").hasClass("active_sidebar")) {
+      $(".sidebar").removeClass("active_sidebar");
+      $(".sidebar_icon").attr("aria-expanded", "false").trigger("focus");
     }
   });
   $("#checkAll").click(function () {

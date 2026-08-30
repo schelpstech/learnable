@@ -1,4 +1,10 @@
 <?php
+require_once __DIR__ . '/../controller/start.inc.php';
+// Old bookmarked editors must not bypass the current authorization, locks and validation.
+if (in_array($_POST['action'] ?? '', array('record_ca_scores_for_all','record_exam_scores_for_all','record_weekly_scores_for_all','add_enote','modify_enote','remove_enote'), true)) {
+    http_response_code(409);
+    exit('This editor has been upgraded. Reopen the Class scorebook or lesson note editor from the menu. No record was changed.');
+}
 // Include necessary file for database queries
 include './query.php';
 ?>

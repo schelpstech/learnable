@@ -33,7 +33,7 @@
     elseif ($pageid == 'class_manager') {
         include 'classmanager/dashboard.php';
     }elseif ($pageid == 'scoresheet') {
-        include 'scoresheet/dashboard.php';
+        include 'scoresheet/scorebook.php';
     }elseif ($pageid == 'calendar') {
         include 'pages/calendar.php';
     }elseif ($pageid == 'cbt') {
@@ -53,9 +53,9 @@
     }elseif ($pageid == 'resources' && $item == 'add_topic' ) {
         include 'form/addscheme.php';
     }elseif ($pageid == 'resources' && $item == 'modify_note' && $itemRef !== null) {
-        include 'form/modifynote.php';
+        include 'form/note_editor.php';
     }elseif ($pageid == 'resources' && $item == 'add_note' ) {
-        include 'form/addnote.php';
+        include 'form/note_editor.php';
     }elseif ($pageid == 'resources' && $item == 'modify_task' && $itemRef !== null) {
         include 'form/modifytask.php';
     }elseif ($pageid == 'resources' && $item == 'add_task' ) {

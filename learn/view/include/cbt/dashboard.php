@@ -31,8 +31,8 @@ foreach ($assessments as $assessment) {
                 <p class="cbt-kicker"><?php echo cbt_h($cbtContext['session']); ?> · <?php echo cbt_h($cbtContext['term']); ?></p>
                 <h1><?php echo $cbtIsInstructor ? 'Assessment workspace' : 'My assessments'; ?></h1>
                 <p><?php echo $cbtIsInstructor
-                    ? 'Set purposeful tests from your approved scheme of work, then follow every script through marking and publication.'
-                    : 'Your scheduled tests, practice work, submitted scripts and released feedback are kept together here.'; ?></p>
+                    ? 'Prepare your next test, review your class’s work and share feedback when it is ready.'
+                    : 'See what is coming up, continue a test or read your teacher’s feedback.'; ?></p>
             </div>
             <?php if ($cbtIsInstructor): ?>
                 <div class="cbt-heading-actions">

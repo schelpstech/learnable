@@ -64,6 +64,7 @@ $active_session = $model->getRows($tblName, $conditions);
 if ($routeSubjectId !== null && $routePage === 'note') {
     $tblName = 'lhpnote';
     $conditions = array(
+        'select' => 'lhpnote.*, lhpscheme.topic, lhpscheme.week, lhpsubject.sbjname',
         'where' => array(
             'lhpnote.sbjid' => $routeSubjectId,
             'lhpnote.term' => $active_term['term'],
@@ -381,11 +382,11 @@ if (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['us
 $tblName = 'lhpalloc';
 $conditions = array(
     'select' => 'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, lhpalloc.sbjid as sbjref, lhpsubject.sbjid, lhpsubject.sbjname, 
-                    lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classid, lhpclass.classname, 
-                    COUNT(DISTINCT lhpnote.sbjid) AS note,
-                    COUNT(DISTINCT lhpquestion.sbjid) AS task,
-                    COUNT(DISTINCT lhpfeedback.sbjid) AS feedback,
-                    COUNT(DISTINCT lhpscheme.subject) AS topic',
+                    lhpalloc.classid, lhpalloc.term, lhpclass.classid, lhpclass.classname,
+                    COUNT(DISTINCT lhpnote.noteid) AS note,
+                    COUNT(DISTINCT lhpquestion.questid) AS task,
+                    COUNT(DISTINCT lhpfeedback.fid) AS feedback,
+                    COUNT(DISTINCT lhpscheme.schmid) AS topic',
     'where' => array(
         'lhpalloc.classid' => $learner_profile['classid'],
         'lhpalloc.term' => $active_term['term'],
@@ -402,7 +403,7 @@ $conditions = array(
         'lhpfeedback' => ' ON lhpalloc.sbjid = lhpfeedback.sbjid AND lhpfeedback.stdid = "' . $_SESSION['active'] . '" AND lhpfeedback.term = "' . $active_term["term"] . '"',
         'lhpscheme' => ' ON lhpalloc.sbjid = lhpscheme.subject AND lhpscheme.status = 1 AND lhpscheme.term = "' . $active_term["term"] . '"',
     ),
-    'group_by' => 'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, lhpalloc.sbjid, lhpsubject.sbjid, lhpsubject.sbjname, lhpalloc.classid, lhpalloc.term, lhpfeedback.fid, lhpclass.classid, lhpclass.classname',
+    'group_by' => 'lhpalloc.staffid, lhpstaff.sname, lhpstaff.staffname, lhpalloc.sbjid, lhpsubject.sbjid, lhpsubject.sbjname, lhpalloc.classid, lhpalloc.term, lhpclass.classid, lhpclass.classname',
 );
 
 $subject_list = $model->getRows($tblName, $conditions);
@@ -509,6 +510,8 @@ $subject_list = $model->getRows($tblName, $conditions);
 
            //Available Results 
 
+           $available_result = array();
+           if ($routePage === 'result' && $routeRef === null) {
            $tblName = 'lhpresultrecord';
            $conditions = array(
                'select' => 'Distinct lhpresultrecord.term, lhpresultconfig.status',
@@ -521,6 +524,7 @@ $subject_list = $model->getRows($tblName, $conditions);
                'order_by' => 'lhpresultrecord.term',
            );
            $available_result = $model->getRows($tblName, $conditions);
+           }
            
    //Results
     $tblName = 'lhpresultconfig';
@@ -530,7 +534,6 @@ $subject_list = $model->getRows($tblName, $conditions);
             'term' => $active_term['term'],
         )
     );
-    $view_result = $model->getRows($tblName);
     $search_result = $model->getRows($tblName, $conditions);
 
     if ($routeRef !== null && $routePage === 'midterm_result') {
@@ -549,51 +552,8 @@ $subject_list = $model->getRows($tblName, $conditions);
         $show_report = $model->getRows($tblName, $conditions);
     }
 
-    if ($routeRef !== null && $routePage === 'result') {
-
-
-
-        //1st and 2nd term result 
-        $tblName = 'lhpresultrecord';
-        $conditions = array(
-            'where' => array(
-                'lhpresultrecord.lid' => $learner_profile['uname'],
-                'lhpresultrecord.term' => $routeRef,
-            ),
-            'joinl' => array(
-                'lhpsubject' => ' on lhpresultrecord.subjid = lhpsubject.sbjid',
-            ),
-            'order_by' => 'lhpsubject.sbjname',
-        );
-        $show_result = $model->getRows($tblName, $conditions);
-
-        //1st and 2nd term Affective Domain 
-        $tblName = 'lhpaffective';
-        $conditions = array(
-            'return_type' => 'single',
-            'where' => array(
-                'lhpaffective.uname' => $learner_profile['uname'],
-                'lhpaffective.term' => $routeRef,
-            ),
-            'joinl' => array(
-                'lhpclass' => ' on lhpaffective.classid = lhpclass.classid',
-                'lhpresultconfig' => ' on lhpaffective.term = lhpresultconfig.term',
-            ),
-        );
-        $show_affective = $model->getRows($tblName, $conditions);
-
-        //Aggregate Score 1st and 2nd term
-        $tblName = 'lhpresultrecord';
-        $conditions = array(
-            'return_type' => 'single',
-            'select' => ' 
-                    (SELECT SUM(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $routeRef . '") as sumscore,
-                    (SELECT COUNT(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $routeRef . '") as countscore,
-                    (SELECT AVG(totalscore) FROM lhpresultrecord where lid = "' . $learner_profile["uname"] . '" and term ="' . $routeRef . '") as avgscore
-                ',
-        );
-        $aggregate = $model->getRows($tblName, $conditions);
-    }
+    // ReportService now owns result detail queries; do not also run the retired
+    // per-page score/affective/aggregate queries against the legacy score table.
 } elseif (isset($_SESSION['active']) && isset($_SESSION['user_type']) && $_SESSION['user_type'] === "Instructor") {
 
     //User Details - Staff
@@ -653,7 +613,7 @@ $conditions = array(
         lhpsubject.sbjid, lhpsubject.sbjname, 
         lhpalloc.aid, lhpalloc.term, lhpalloc.staffid, lhpalloc.sbjid,
         COUNT(DISTINCT lhpscheme.schmid) AS topic,
-        COUNT(DISTINCT lhpnote.sbjid) AS note,
+        COUNT(DISTINCT lhpnote.noteid) AS note,
         COUNT(DISTINCT lhpquestion.questid) AS task,
         COUNT(DISTINCT lhpfeedback.fid) AS feedback
     ',

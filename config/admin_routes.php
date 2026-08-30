@@ -20,6 +20,8 @@ return array(
     'fees' => 'mgfee.php',
     'fee-assignments' => 'assignfee.php',
     'discounts' => 'mgdiscount.php',
+    'expenses' => 'expenses.php',
+    'inventory' => 'inventory.php',
     'payments' => 'payrecord.php',
     'payment-reports' => 'payreport.php',
     'payment-view' => 'payview.php',

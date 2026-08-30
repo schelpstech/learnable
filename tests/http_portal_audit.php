@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 
 require __DIR__ . '/../config/database.php';
 
@@ -55,14 +56,14 @@ function audit_request($url, $cookieFile)
     if ($body === false || $error !== '') {
         return 'transport error: ' . $error;
     }
-    if ($status >= 500 || $status === 0) {
+    if ($status >= 400 || $status === 0) {
         return 'HTTP ' . $status;
     }
     if (preg_match('#/(?:admin\.php|learn/view/index\.php)(?:\?|$)#', $effectiveUrl)) {
         return 'authentication redirected to ' . $effectiveUrl;
     }
-    if (preg_match('/(?:Fatal error|Uncaught (?:Error|Exception)|Parse error|Warning:|Notice:|Deprecated:)/i', $body)) {
-        $plainBody = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($body), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+    $plainBody = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($body), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+    if (preg_match('/(?:Fatal error|Uncaught (?:Error|Exception)|Parse error|Warning:|Notice:|Deprecated:)/i', $plainBody)) {
         preg_match('/(?:Fatal error|Uncaught (?:Error|Exception)|Parse error|Warning:|Notice:|Deprecated:)/i', $plainBody, $match, PREG_OFFSET_CAPTURE);
         $position = isset($match[0][1]) ? (int) $match[0][1] : 0;
         return substr($plainBody, $position, 700);
@@ -88,8 +89,8 @@ $schemeStatement = $pdo->prepare('SELECT schmid FROM lhpscheme WHERE classname =
 $schemeStatement->execute(array($learner['classid'], $activeTerm));
 $schemeId = $schemeStatement->fetchColumn();
 
-$noteStatement = $pdo->prepare('SELECT noteid FROM lhpnote WHERE term = ? AND status = 1 LIMIT 1');
-$noteStatement->execute(array($activeTerm));
+$noteStatement = $pdo->prepare("SELECT n.noteid FROM lhpnote n JOIN lhpscheme s ON s.schmid=n.topicid WHERE n.term=? AND n.status=1 AND s.classname=? AND n.staffid='codex_demo_teacher' LIMIT 1");
+$noteStatement->execute(array($activeTerm,$learner['classid']));
 $noteId = $noteStatement->fetchColumn();
 
 $taskStatement = $pdo->prepare('SELECT questid FROM lhpquestion WHERE term = ? AND status = 1 LIMIT 1');
@@ -137,6 +138,7 @@ $sessions = array(
 
 $requests = array();
 foreach (array_keys(require __DIR__ . '/../config/admin_routes.php') as $route) {
+    if (in_array($route,array('report-view','report-cumulative','reports-class','reports-class-cumulative'),true)) continue;
     $requests[] = array('admin', '/admin/index.php?route=' . rawurlencode($route));
 }
 
@@ -191,6 +193,8 @@ $instructorRoutes = array(
     '/learn/app/router.php?pageid=cbt_bank',
     '/learn/app/router.php?pageid=cbt_marking',
 );
+if ($subjectId) $instructorRoutes[] = '/learn/app/router.php?pageid=scoresheet&class_id=' . rawurlencode($learner['classid']) . '&subject_id=' . rawurlencode($subjectId);
+if ($noteId) $instructorRoutes[] = '/learn/app/router.php?pageid=resources&item=modify_note&item_ref=' . rawurlencode($noteId);
 if ($cbtAssessment) {
     $instructorRoutes[] = '/learn/app/router.php?pageid=cbt_builder&assessment_id=' . rawurlencode($cbtAssessment);
     $instructorRoutes[] = '/learn/app/router.php?pageid=cbt_marking&assessment_id=' . rawurlencode($cbtAssessment);
@@ -202,17 +206,21 @@ foreach ($instructorRoutes as $route) {
 }
 $requests[] = array('legacy-learner', '/learn/app/router.php?pageid=index');
 $requests[] = array('legacy-instructor', '/learn/app/router.php?pageid=index');
-$requests[] = array('admin', '/admin/index.php?route=report-cumulative&term=' . rawurlencode($activeTerm) . '&lid=' . rawurlencode($learner['uname']));
-$requests[] = array('admin', '/admin/index.php?route=reports-class&term=' . rawurlencode($activeTerm) . '&class_id=' . rawurlencode($learner['classid']));
-$requests[] = array('admin', '/admin/index.php?route=reports-class-cumulative&term=' . rawurlencode($activeTerm) . '&class_id=' . rawurlencode($learner['classid']));
+$reportSample=$pdo->query("SELECT r.lid,r.term,r.classid FROM lhpresultrecord r JOIN lhpresultconfig c ON c.term=r.term JOIN lhpuser u ON u.uname=r.lid JOIN lhpclass cl ON cl.classid=r.classid WHERE c.status=1 AND r.lid<>'' ORDER BY c.id DESC,r.id LIMIT 1")->fetch();
+if ($reportSample) {
+    foreach(array('report-view','report-cumulative') as $reportRoute) $requests[] = array('admin', '/admin/index.php?route='.$reportRoute.'&term='.rawurlencode($reportSample['term']).'&lid='.rawurlencode($reportSample['lid']));
+    foreach(array('reports-class','reports-class-cumulative') as $reportRoute) $requests[] = array('admin', '/admin/index.php?route='.$reportRoute.'&term='.rawurlencode($reportSample['term']).'&class_id='.rawurlencode($reportSample['classid']));
+}
 if ($cbtAssessment) {
     $requests[] = array('admin', '/learn/app/cbt_export.php?assessment_id=' . rawurlencode($cbtAssessment));
 }
 
 $failures = array();
+if (!empty($argv[1])) $requests=array_values(array_filter($requests,function($r)use($argv){return strpos($r[1],$argv[1])!==false;}));
 try {
     foreach ($requests as $request) {
         $problem = audit_request($baseUrl . $request[1], $sessions[$request[0]]);
+        echo ($problem === null ? 'PASS: ' : 'FAIL: ') . $request[0] . ' ' . $request[1] . ($problem ? ' -> ' . $problem : '') . "\n";
         if ($problem !== null) {
             $failures[] = $request[0] . ' ' . $request[1] . ' -> ' . $problem;
         }

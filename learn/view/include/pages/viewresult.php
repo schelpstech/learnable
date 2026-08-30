@@ -5,6 +5,12 @@ if (empty($learner_profile['uname']) || empty($routeRef)) {
 }
 
 try {
+    $publication = database_pdo()->prepare('SELECT status FROM lhpresultconfig WHERE term=? LIMIT 1');
+    $publication->execute(array($routeRef));
+    if ((int)$publication->fetchColumn() !== 1) {
+        echo '<div class="main_content_iner"><div class="alert alert-info">This term\'s result has not been published yet. Please check back after the school releases it.</div></div>';
+        return;
+    }
     $reportService = new ReportService(database_pdo(), dirname(__DIR__, 4));
     $isCumulative = stripos($routeRef, '3rd') === 0;
     $report = $reportService->build($learner_profile['uname'], $routeRef, $isCumulative);

@@ -362,7 +362,8 @@ foreach ($termresult as $termd) {
 			include_once './conn.php';
 				
             $count=1;
-            $query=$conn->prepare("select * from lhpresultconfig ORDER BY id DESC ");
+            // Count weekly records in one pass rather than scanning the entire legacy table once per term.
+            $query=$conn->prepare("SELECT c.*, COALESCE(w.numrec,0) AS numrec FROM lhpresultconfig c LEFT JOIN (SELECT term,COUNT(*) AS numrec FROM lhpweekrecord GROUP BY term) w ON w.term=c.term ORDER BY c.id DESC");
            $query->setFetchMode(PDO::FETCH_OBJ);
            $query->execute();
             while($row=$query->fetch())
@@ -378,11 +379,7 @@ foreach ($termresult as $termd) {
                 $midterm = $row->midterm;
 ?>
 <?php
-    $sql = "SELECT COUNT('id') as numrec FROM lhpweekrecord WHERE `term` = '$term'";
-    $result=mysqli_query($con,$sql);
-    $row=mysqli_fetch_array($result);
-     
-    $numca = $row["numrec"];
+    $numca = (int)$row->numrec;
 
 if ($status == 1){
     $butt = '<a href="resultstatus.php?term='.$term.'&type=Termly Result&val=1" type="button"  class="btn btn-success" >Termly Results Activated</button>';

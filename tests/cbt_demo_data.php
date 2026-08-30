@@ -19,10 +19,10 @@ if (!$learner) {
 $allocationStatement = $pdo->prepare(
     'SELECT a.classid, a.sbjid, s.sbjname, MIN(a.aid) AS first_allocation_id
      FROM lhpalloc a INNER JOIN lhpsubject s ON s.sbjid = a.sbjid
-     WHERE a.staffid = ? AND a.term = ?
+     WHERE a.staffid = ? AND a.term = ? AND a.classid = ?
      GROUP BY a.classid, a.sbjid, s.sbjname ORDER BY first_allocation_id LIMIT 1'
 );
-$allocationStatement->execute(array($teacher, $context['term']));
+$allocationStatement->execute(array($teacher, $context['term'], $learner['classid']));
 $allocation = $allocationStatement->fetch();
 if (!$allocation) {
     throw new RuntimeException('The demo teacher needs an active allocation for the demo learner class.');

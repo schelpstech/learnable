@@ -331,7 +331,7 @@ $query ="SELECT DISTINCT(term) FROM lhpresultrecord";
                 <select type="text" required="yes" class="form-control" name="lclass" id="classtn" onChange="getstd();">
                   <option> Select Class</option>
                   <?php
-                  foreach ($classresult as $classed) {
+                  foreach (($classresult ?? array()) as $classed) {
                   ?>
                     <option value="<?php echo $classed["classid"]; ?>"><?php echo $classed["classname"]; ?></option>
                   <?php
@@ -435,7 +435,7 @@ $query ="SELECT DISTINCT(term) FROM lhpresultrecord";
                 <select type="text" required="yes" class="form-control" name="lclass" id="bulk_classtn">
                   <option> Select Class</option>
                   <?php
-                  foreach ($classresult as $classed) {
+                  foreach (($classresult ?? array()) as $classed) {
                   ?>
                     <option value="<?php echo $classed["classid"]; ?>"><?php echo $classed["classname"]; ?></option>
                   <?php

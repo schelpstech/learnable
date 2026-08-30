@@ -39,7 +39,7 @@ if ($state) {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="robots" content="noindex,nofollow">
     <title><?php echo $state ? htmlspecialchars($state['attempt']['title'], ENT_QUOTES, 'UTF-8') : 'Secure assessment'; ?> · LearnAble</title>
-    <link rel="stylesheet" href="../assets/css/cbt.css?v=1">
+    <link rel="stylesheet" href="../assets/css/cbt.css?v=2">
 </head>
 <body class="cbt-exam">
 <?php if (!$state): ?>

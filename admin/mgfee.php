@@ -400,7 +400,7 @@ $termresult = $db_handle->runQuery($query);
                   ?>
                     <tr>
                       <td><?php echo $count++ ?></td>
-                      <td><?php echo htmlspecialchars($term, ENT_QUOTES, 'UTF-8') ?></td>
+                      <td><?php echo htmlspecialchars((string)($term ?? '—'), ENT_QUOTES, 'UTF-8') ?></td>
                       <td><?php echo $feeclass ?></td>
                       <td><?php echo $feename ?></td>
                       <td><?php echo $amount ?></td>

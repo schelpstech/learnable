@@ -17,6 +17,28 @@ try {
     exit('Page not found.');
 }
 
+// Authorize lesson references before rendering the shared header or any content.
+try {
+    $noteService = new NoteService(database_pdo());
+    if ($portalRoute->page() === 'note' && $portalRoute->param('ref')) {
+        $noteService->get($portalRoute->param('ref'), $_SESSION['active'], $_SESSION['user_type']);
+    }
+    if ($portalRoute->page() === 'resources' && $portalRoute->param('item') === 'modify_note') {
+        $noteService->get($portalRoute->param('item_ref'), $_SESSION['active'], 'Instructor', true);
+    }
+    if ($portalRoute->page() === 'note' && $portalRoute->param('subjectid')) {
+        $q = database_pdo()->prepare('SELECT classid FROM lhpsubject WHERE sbjid=?');
+        $q->execute(array($portalRoute->param('subjectid'))); $class = $q->fetchColumn();
+        if (!$class) throw new RuntimeException('Unknown subject.');
+        if ($_SESSION['user_type'] === 'Instructor') $noteService->allocation($_SESSION['active'], $class, $portalRoute->param('subjectid'));
+        else {
+            $q = database_pdo()->prepare('SELECT classid FROM lhpuser WHERE uname=? AND status=1'); $q->execute(array($_SESSION['active']));
+            if ((string)$q->fetchColumn() !== (string)$class) throw new RuntimeException('Class access denied.');
+        }
+    }
+} catch (RuntimeException $e) { http_response_code(403); exit('This lesson is not available for your account.'); }
+catch (InvalidArgumentException $e) { http_response_code(404); exit('Lesson not found.'); }
+
 // Mutating timetable requests are handled before any view output so CSRF,
 // ownership checks and redirects remain reliable.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $portalRoute->page() === 'calendar') {

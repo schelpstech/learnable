@@ -282,7 +282,7 @@ if (mysqli_num_rows($result) > 0) {
                                         <select type="text" required="yes" class="form-control" name="lclass" id="classtn" onChange="getstd();" >
 										<option> Select Class</option>
 										<?php
-foreach ($classresult as $classed) {
+foreach (($classresult ?? array()) as $classed) {
     ?>
 <option value="<?php echo $classed["classid"]; ?>"><?php echo $classed["classname"]; ?></option>
 <?php

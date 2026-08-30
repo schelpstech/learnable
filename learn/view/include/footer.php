@@ -56,8 +56,10 @@
 
 <script src="../../asset/vendors/tagsinput/tagsinput.js"></script>
 <script src="../../asset/vendors/text_editor/summernote-bs4.js"></script>
-<script src="../../asset/js/custom.js"></script>
+<script src="../../asset/js/custom.js?v=2"></script>
 <script src="../../asset/js/performance_chart.js"></script>
+<script src="../../../assets/js/school-workflows.js?v=2"></script>
+<script src="../../../assets/js/lesson-notes.js?v=2"></script>
 </body>
 
 </html>
