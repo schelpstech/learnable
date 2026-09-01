@@ -35,7 +35,7 @@ function audit_login($url, array $fields)
     return $cookieFile;
 }
 
-function audit_request($url, $cookieFile)
+function audit_request($url, $cookieFile, $requiredMarker = '')
 {
     $handle = curl_init($url);
     curl_setopt_array($handle, array(
@@ -61,6 +61,9 @@ function audit_request($url, $cookieFile)
     }
     if (preg_match('#/(?:admin\.php|learn/view/index\.php)(?:\?|$)#', $effectiveUrl)) {
         return 'authentication redirected to ' . $effectiveUrl;
+    }
+    if ($requiredMarker !== '' && strpos($body, $requiredMarker) === false) {
+        return 'required page control is missing: ' . $requiredMarker;
     }
     $plainBody = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($body), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
     if (preg_match('/(?:Fatal error|Uncaught (?:Error|Exception)|Parse error|Warning:|Notice:|Deprecated:)/i', $plainBody)) {
@@ -219,7 +222,8 @@ $failures = array();
 if (!empty($argv[1])) $requests=array_values(array_filter($requests,function($r)use($argv){return strpos($r[1],$argv[1])!==false;}));
 try {
     foreach ($requests as $request) {
-        $problem = audit_request($baseUrl . $request[1], $sessions[$request[0]]);
+        $requiredMarker = strpos($request[1], 'route=fee-assignments') !== false ? 'data-fee-assignment' : '';
+        $problem = audit_request($baseUrl . $request[1], $sessions[$request[0]], $requiredMarker);
         echo ($problem === null ? 'PASS: ' : 'FAIL: ') . $request[0] . ' ' . $request[1] . ($problem ? ' -> ' . $problem : '') . "\n";
         if ($problem !== null) {
             $failures[] = $request[0] . ' ' . $request[1] . ' -> ' . $problem;

@@ -1,508 +1,190 @@
 <?php
+require __DIR__ . '/workflow_bootstrap.php';
 
-// Check user login or not
-include "conf.php";
-if (!isset($_SESSION['unamed'])) {
-  header('Location: ../index.php');
+$service = new FeeService($workflowDb);
+$status = is_string($_GET['status'] ?? null) ? $_GET['status'] : 'active';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        CbtSecurity::requireCsrf($_POST['csrf_token'] ?? '', 'admin');
+        $action = $_POST['action'] ?? 'save';
+        if (!in_array($action, array('save', 'archive'), true)) {
+            throw new InvalidArgumentException('Unknown fee action.');
+        }
+        if ($action === 'archive') {
+            $affected = $service->archive(
+                $_POST['id'] ?? 0,
+                $_POST['version'] ?? '',
+                $_SESSION['unamed'],
+                ($_POST['confirm'] ?? '') === 'yes'
+            );
+            workflow_redirect(
+                'fees',
+                'Fee archived. ' . number_format($affected) . ' active assigned charge' . ($affected === 1 ? ' was' : 's were') . ' deactivated; payment records were not deleted.'
+            );
+        }
+        $id = $service->save($_POST, $_SESSION['unamed']);
+        workflow_redirect('fees', !empty($_POST['id']) ? 'Fee details saved.' : 'Fee created in the active-session catalogue and ready to assign.', $id);
+    } catch (Throwable $e) {
+        $workflowError = workflow_error($e);
+    }
 }
-?>
-<?php
-require_once("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpclass";
-$classresult = $db_handle->runQuery($query);
-?>
 
-<?php
-require_once("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lpterm WHERE status = 1";
-$termresult = $db_handle->runQuery($query);
-?>
-
-
-<!doctype html>
-<html class="no-js" lang="">
-
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Create Fees - LearnAble</title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- favicon
-		============================================ -->
-  <link rel="shortcut icon" type="image/x-icon" href="img/logo/favicon.png">
-  <!-- Google Fonts
-		============================================ -->
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
-  <!-- Bootstrap CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <!-- font awesome CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/font-awesome.min.css">
-  <!-- owl.carousel CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/owl.carousel.css">
-  <link rel="stylesheet" href="css/owl.theme.css">
-  <link rel="stylesheet" href="css/owl.transitions.css">
-  <!-- meanmenu CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/meanmenu/meanmenu.min.css">
-  <!-- animate CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/animate.css">
-  <!-- normalize CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/normalize.css">
-  <!-- wave CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/wave/waves.min.css">
-  <link rel="stylesheet" href="css/wave/button.css">
-  <!-- mCustomScrollbar CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/scrollbar/jquery.mCustomScrollbar.min.css">
-  <!-- Notika icon CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/notika-custom-icon.css">
-  <!-- Data Table JS
-		============================================ -->
-  <link rel="stylesheet" href="css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
-  <!-- main CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/main.css">
-  <!-- style CSS
-		============================================ -->
-  <link rel="stylesheet" href="style.css">
-  <!-- responsive CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/responsive.css">
-  <!-- modernizr JS
-		============================================ -->
-  <script src="js/html2pdf.bundle.min.js"></script>
-
-
-  <script>
-    function generatePDF() {
-      // Choose the element that our invoice is rendered in.
-      const element = document.getElementById("doc");
-      // Choose the element and save the PDF for our user.
-      html2pdf()
-        .set({
-          html2canvas: {
-            scale: 4
-          }
-        })
-        .from(element)
-        .save();
-
-
+$edit = null;
+$definitions = array();
+$classes = array();
+$session = array('sessionid' => 0, 'session' => 'Not configured');
+try {
+    $session = $service->activeSession();
+    $classes = $service->classes();
+    if (!empty($_GET['id'])) {
+        $edit = $service->definition($_GET['id']);
+        if ((int)$edit['session'] !== (int)$session['sessionid']) {
+            throw new InvalidArgumentException('Only fees from the active academic session can be managed here.');
+        }
     }
-  </script>
+    $definitions = $service->definitions($session['sessionid'], $status);
+} catch (Throwable $e) {
+    $workflowError = workflow_error($e);
+}
 
+$form = $workflowError && $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : ($edit ?: array());
+$activeDefinitions = array_filter($definitions, function ($row) { return (int)$row['status'] === 1; });
+$activeAssignments = array_sum(array_map(function ($row) { return (int)$row['active_assignments']; }, $activeDefinitions));
+$catalogueValue = array_sum(array_map(function ($row) { return (int)$row['amount']; }, $activeDefinitions));
+$mode = $edit ? (ctype_digit((string)$edit['classid']) ? 'class' : 'school') : ($form['association_mode'] ?? 'class');
 
+$workflowTitle = 'Fee setup';
+$workflowIntro = 'Maintain one reusable fee catalogue for the active academic session, then assign charges term by term.';
+$workflowScripts = array('../assets/js/fees.js?v=2');
+require __DIR__ . '/workflow_header.php';
+?>
+<nav class="workspace-subnav no-print" aria-label="Fee management">
+    <a class="active" href="index.php?route=fees">Fee setup</a>
+    <a href="index.php?route=fee-assignments">Assign fees</a>
+    <a href="index.php?route=discounts">Discounts</a>
+    <a href="index.php?route=payments">Payments</a>
+</nav>
 
+<div class="workspace-stats">
+    <div><span>Active fees · <?php echo wh($session['session']); ?></span><strong><?php echo count($activeDefinitions); ?></strong></div>
+    <div><span>Active learner assignments</span><strong><?php echo number_format($activeAssignments); ?></strong></div>
+    <div><span>Catalogue value · not revenue</span><strong>₦<?php echo number_format($catalogueValue); ?></strong></div>
+</div>
 
+<div class="workspace-grid fee-workspace">
+    <div>
+        <section class="workspace-card">
+            <p class="workspace-eyebrow"><?php echo $edit ? 'Editing fee #' . (int)$edit['feeid'] : 'Active-session catalogue'; ?></p>
+            <h2><?php echo $edit ? wh($edit['feename']) : 'Create a reusable fee'; ?></h2>
+            <p class="workspace-muted">
+                <?php echo $edit
+                    ? 'Session and fee group stay fixed so existing term assignments keep a reliable reference.'
+                    : 'Create this fee once for ' . wh($session['session']) . '. It can then be assigned in each term of the session.'; ?>
+            </p>
 
-
-
-  <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
-
-
-  <script type="text/javascript">
-    function changeFunc() {
-      var feetype = document.getElementById("feetype");
-      var selectedValue = feetype.options[feetype.selectedIndex].value;
-      if (selectedValue == "sbase") {
-        $('#school').show();
-        $('#classb').hide();
-        $('#school').attr('required', '');
-        $('#school').attr('data-error', 'School Fee Type  is required.');
-      } else if (selectedValue == "cbase") {
-        $('#school').hide();
-        $('#classb').show();
-        $('#classb').attr('required', '');
-        $('#classb').attr('data-error', 'Class  is required.');
-      } else {
-        alert("Select A Fee Association Type");
-        $('#school').hide();
-        $('#classb').hide();
-
-      }
-    }
-  </script>
-</head>
-
-<body>
-  <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-  <!-- Start Header Top Area -->
-  <div class="header-top-area">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <div class="logo-area">
-            <a href="#"><img src="img/logo/logo.png" alt="" /></a>
-          </div>
-        </div>
-        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- End Header Top Area -->
-  <!-- Mobile Menu start -->
-  <?php include "nav.html"; ?>
-  <!-- Main Menu area End-->
-  <!-- Breadcomb area Start-->
-  <div class="breadcomb-area">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="breadcomb-list">
-            <div class="row">
-              <div class="col-lg-8 col-md-6 col-sm-6 col-xs-12">
-                <div class="breadcomb-wp">
-                  <div class="breadcomb-icon">
-                    <i class="notika-icon notika-support"></i>
-                  </div>
-                  <div class="breadcomb-ctn">
-                    <h2>Welcome Admin</h2>
-                    <h2> <?php
-
-                          if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
-                            printf('<b>%s</b>', $_SESSION['feemessage']);
-                            unset($_SESSION['feemessage']);
-                          }
-                          ?></h2>
-                    <p>.<span class="bread-ntd"></span></p>
-                  </div>
+            <?php if (!$edit || (int)$edit['status'] === 1): ?>
+            <form method="post" data-fee-create>
+                <input type="hidden" name="action" value="save">
+                <input type="hidden" name="csrf_token" value="<?php echo wh($workflowCsrf); ?>">
+                <input type="hidden" name="id" value="<?php echo (int)($edit['feeid'] ?? 0); ?>">
+                <input type="hidden" name="version" value="<?php echo wh($edit['version'] ?? ''); ?>">
+                <div class="workspace-fields">
+                    <label>Academic session<input value="<?php echo wh($session['session']); ?>" disabled></label>
+                    <?php if ($edit): ?>
+                        <label>Available for<input value="<?php echo wh($edit['classname'] ?: $edit['classid']); ?>" disabled></label>
+                    <?php else: ?>
+                        <label>Fee availability
+                            <select name="association_mode" data-fee-mode required>
+                                <option value="class" <?php echo $mode === 'class' ? 'selected' : ''; ?>>One class</option>
+                                <option value="school" <?php echo $mode === 'school' ? 'selected' : ''; ?>>School-wide / reusable group</option>
+                            </select>
+                        </label>
+                        <label data-fee-class>Class
+                            <select name="class_id">
+                                <option value="">Choose class</option>
+                                <?php foreach ($classes as $row): ?>
+                                    <option value="<?php echo (int)$row['classid']; ?>" <?php echo (string)($form['class_id'] ?? '') === (string)$row['classid'] ? 'selected' : ''; ?>><?php echo wh($row['classname']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <small>Class-specific fees can only be assigned to this class.</small>
+                        </label>
+                        <label data-fee-group>Fee group
+                            <input name="fee_group" maxlength="64" value="<?php echo wh($form['fee_group'] ?? 'SCHOOL-WIDE'); ?>" placeholder="e.g. SCHOOL-WIDE or TRANSPORTATION">
+                            <small>A descriptive group keeps reusable fees easy to find.</small>
+                        </label>
+                    <?php endif; ?>
+                    <label class="workspace-wide">Fee name<input name="feename" maxlength="254" required value="<?php echo wh($form['feename'] ?? ''); ?>" placeholder="e.g. Tuition fee"></label>
+                    <label>Amount (₦)<input type="number" name="amount" min="1" max="1000000000" step="1" required value="<?php echo wh($form['amount'] ?? ''); ?>"></label>
+                    <?php if ($edit): ?>
+                        <label class="workspace-check workspace-wide">
+                            <input type="checkbox" name="propagate" value="yes" <?php echo ($form['propagate'] ?? '') === 'yes' ? 'checked' : ''; ?>>
+                            Update active term assignments that still use this fee
+                            <small>Leave this unticked to change future assignments only.</small>
+                        </label>
+                    <?php endif; ?>
                 </div>
-              </div>
-              <div class="col-lg-4 col-md-6 col-sm-6 col-xs-3">
-                <div class="breadcomb-report">
-                  <button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i class="notika-icon notika-sent"></i></button>
+                <div class="workspace-actions">
+                    <button class="workspace-button"><?php echo $edit ? 'Save fee changes' : 'Create reusable fee'; ?></button>
+                    <?php if ($edit): ?><a class="workspace-button secondary" href="index.php?route=fees">Create another</a><?php endif; ?>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </form>
+            <?php else: ?>
+                <div class="workspace-notice">This fee is archived and cannot be edited. Its historical term assignments remain available in the assigned-fee register.</div>
+            <?php endif; ?>
+        </section>
+
+        <?php if ($edit && (int)$edit['status'] === 1): ?>
+        <section class="workspace-card fee-danger-zone">
+            <h2>Archive fee</h2>
+            <p class="workspace-muted">This also deactivates <?php echo number_format((int)$edit['active_assignments']); ?> active assigned charge<?php echo (int)$edit['active_assignments'] === 1 ? '' : 's'; ?> across the session. It does not delete payments or history.</p>
+            <form method="post" data-confirm="Archive this fee and deactivate its active assigned charges across the session?">
+                <input type="hidden" name="action" value="archive">
+                <input type="hidden" name="csrf_token" value="<?php echo wh($workflowCsrf); ?>">
+                <input type="hidden" name="id" value="<?php echo (int)$edit['feeid']; ?>">
+                <input type="hidden" name="version" value="<?php echo wh($edit['version']); ?>">
+                <label class="workspace-check"><input type="checkbox" name="confirm" value="yes" required> I have reviewed the affected term assignments.</label>
+                <button class="workspace-button danger">Archive fee</button>
+            </form>
+        </section>
+        <?php endif; ?>
     </div>
-  </div>
 
-  <div class="form-element-area">
-    <div class="container">
-      <div class="row">
-
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="form-element-list">
-            <div class="basic-tb-hd">
-              <h2>Manage Fees and Transactions</h2>
-              <p> Create and Assign Applicable Fees, View and Authorize transactions for each learners </p><br><br>
-              <h2>Create Fee</h2>
-
-            </div>
-          </div>
+    <section class="workspace-card">
+        <div class="fee-section-heading">
+            <div><h2>Session fee catalogue</h2><p class="workspace-muted"><?php echo wh($session['session']); ?> · reused across its terms</p></div>
+            <a class="workspace-button" href="index.php?route=fee-assignments">Assign for a term</a>
         </div>
-      </div>
-      <br>
-      <br>
-      <br>
-      <div class="row">
-        <form method="POST" action="createfee.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
-
-
-
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Select Term</label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" required="yes" class="form-control" name="term">
-                  <?php
-                  foreach ($termresult as $termd) {
-                  ?>
-                    <option value="<?php echo htmlspecialchars($termd["term"], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($termd["term"], ENT_QUOTES, 'UTF-8'); ?></option>
-                  <?php
-                  }
-                  ?>
+        <form method="get" class="workspace-toolbar">
+            <input type="hidden" name="route" value="fees">
+            <label>Status
+                <select name="status">
+                    <option value="active" <?php echo $status === 'active' ? 'selected' : ''; ?>>Active</option>
+                    <option value="archived" <?php echo $status === 'archived' ? 'selected' : ''; ?>>Archived</option>
+                    <option value="all" <?php echo $status === 'all' ? 'selected' : ''; ?>>All</option>
                 </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Select Fee Association Type</label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" required="yes" class="form-control" id="feetype" name="feetype" onchange="changeFunc();">
-                  <option value=""> Select Fee Type</option>
-                  <option value="cbase"> Class Based Fee</option>
-                  <option value="sbase"> School-wide Fee</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" id="classb" hidden>
-            <label>Select Class</label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" class="form-control" name="feeclass1">
-                  <option value=""> Select Class</option>
-                  <?php
-                  foreach ($classresult as $classed) {
-                  ?>
-                    <option value="<?php echo $classed["classid"]; ?>"><?php echo $classed["classname"]; ?></option>
-                  <?php
-                  }
-                  ?>
-                </select>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" id="school" hidden>
-            <label>Enter Fee Type </label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-wifi"></i>
-              </div>
-              <div class="nk-int-st">
-                <input type="text" class="form-control" name="feeclass2">
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Enter Fee Name </label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-wifi"></i>
-              </div>
-              <div class="nk-int-st">
-                <input type="text" required="yes" class="form-control" name="feename">
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Enter Fee Amount </label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-wifi"></i>
-              </div>
-              <div class="nk-int-st">
-                <input type="number" required="yes" class="form-control" name="feeamount">
-              </div>
-            </div>
-          </div>
-
-
-
-          <br>
-          <br>
-          <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
-
-            <div class="form-group ic-cmp-int">
-
-              <div class="nk-int-st">
-                <input type="submit" class="form-control" name="cfee" value="Create Fee For Selected Class" />
-              </div>
-            </div>
-          </div>
-
-
+            </label>
+            <button class="workspace-button secondary">Apply</button>
         </form>
-
-      </div>
-    </div>
-  </div>
-
-  </div>
-  </div>
-
-  <!-- Breadcomb area End-->
-  <!-- Data Table area Start-->
-  <div id="doc" class="data-table-area">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="data-table-list">
-            <div class="basic-tb-hd">
-              <h2>Fee List
-
-              </h2>
-              <p>A reference list for all the fees created and chargeable</p>
-            </div>
-            <div class="table-responsive">
-              <table id="data-table-basic" class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>S/N</th>
-                    <th>Session</th>
-                    <th>Class</th>
-                    <th>Fee Name</th>
-                    <th>Amount</th>
-                    <th>Modify</th>
-                  </tr>
-                </thead>
-
-
+        <label class="no-print">Find a fee<input type="search" data-table-search="#fee-table" placeholder="Name, class or group"></label>
+        <div class="workspace-table-wrap">
+            <table class="workspace-table" id="fee-table">
+                <thead><tr><th>Fee</th><th>Available for</th><th>Amount</th><th>Term assignments</th><th>Status</th><th></th></tr></thead>
                 <tbody>
-
-
-
-                  <?php
-
-
-                  include_once './conn.php';
-
-                  $count = 1;
-                  $query = $conn->prepare("select * from lhpfeelist where status = 1 ORDER BY term DESC ");
-                  $query->setFetchMode(PDO::FETCH_OBJ);
-                  $query->execute();
-                  while ($row = $query->fetch()) {
-                    $ref = $row->feeid;
-                    $term = $row->term;
-                    $cname = $row->classid;
-                    $feename = $row->feename;
-                    $amount = $row->amount;
-                    if (is_numeric($cname) == true) {
-                      $sql = "SELECT classname FROM lhpclass WHERE classid  = '$cname'";
-                      $result = mysqli_query($con, $sql);
-                      $row = mysqli_fetch_assoc($result);
-                      $feeclass = $row['classname'];
-                    } else {
-                      $feeclass = $cname;
-                    }
-                  ?>
+                <?php foreach ($definitions as $row): ?>
                     <tr>
-                      <td><?php echo $count++ ?></td>
-                      <td><?php echo htmlspecialchars((string)($term ?? '—'), ENT_QUOTES, 'UTF-8') ?></td>
-                      <td><?php echo $feeclass ?></td>
-                      <td><?php echo $feename ?></td>
-                      <td><?php echo $amount ?></td>
-                      <td><a href="feedit.php?ref=<?php echo $ref ?>" type="button" class="btn btn-warning">Modify</a></td>
-
+                        <td><strong><?php echo wh($row['feename']); ?></strong><small><?php echo wh($row['session_name'] ?: $session['session']); ?></small></td>
+                        <td><?php echo wh($row['classname'] ?: $row['classid']); ?></td>
+                        <td class="money">₦<?php echo number_format((int)$row['amount']); ?></td>
+                        <td><?php echo number_format((int)$row['active_assignments']); ?> active</td>
+                        <td><span class="workspace-badge <?php echo (int)$row['status'] === 1 ? '' : 'muted'; ?>"><?php echo (int)$row['status'] === 1 ? 'Active' : 'Archived'; ?></span></td>
+                        <td><a href="index.php?route=fees&amp;id=<?php echo (int)$row['feeid']; ?>">View / edit</a></td>
                     </tr>
-                  <?php } ?>
+                <?php endforeach; ?>
                 </tbody>
-
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th>S/N</th>
-                    <th>Term</th>
-                    <th>Class</th>
-                    <th>Fee Name</th>
-                    <th>Amount</th>
-                    <th>Modify</th>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
+            </table>
         </div>
-      </div>
-    </div>
-  </div>
-
-
-
-  <!-- Data Table area End-->
-  <!-- Start Footer area-->
-  <?php include "foot.html"; ?>
-  <!-- End Footer area-->
-
-
-  <!-- jquery
-		============================================ -->
-  <script src="js/vendor/jquery-1.12.4.min.js"></script>
-  <!-- bootstrap JS
-		============================================ -->
-  <script src="js/bootstrap.min.js"></script>
-  <!-- wow JS
-		============================================ -->
-  <script src="js/wow.min.js"></script>
-  <!-- price-slider JS
-		============================================ -->
-  <script src="js/jquery-price-slider.js"></script>
-  <!-- owl.carousel JS
-		============================================ -->
-  <script src="js/owl.carousel.min.js"></script>
-  <!-- scrollUp JS
-		============================================ -->
-  <script src="js/jquery.scrollUp.min.js"></script>
-  <!-- meanmenu JS
-		============================================ -->
-  <script src="js/meanmenu/jquery.meanmenu.js"></script>
-  <!-- counterup JS
-		============================================ -->
-  <script src="js/counterup/jquery.counterup.min.js"></script>
-  <script src="js/counterup/waypoints.min.js"></script>
-  <script src="js/counterup/counterup-active.js"></script>
-  <!-- mCustomScrollbar JS
-		============================================ -->
-  <script src="js/scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
-  <!-- sparkline JS
-		============================================ -->
-  <script src="js/sparkline/jquery.sparkline.min.js"></script>
-  <script src="js/sparkline/sparkline-active.js"></script>
-  <!-- flot JS
-		============================================ -->
-  <script src="js/flot/jquery.flot.js"></script>
-  <script src="js/flot/jquery.flot.resize.js"></script>
-  <script src="js/flot/flot-active.js"></script>
-  <!-- knob JS
-		============================================ -->
-  <script src="js/knob/jquery.knob.js"></script>
-  <script src="js/knob/jquery.appear.js"></script>
-  <script src="js/knob/knob-active.js"></script>
-  <!--  Chat JS
-		============================================ -->
-  <script src="js/chat/jquery.chat.js"></script>
-  <!--  todo JS
-		============================================ -->
-  <script src="js/todo/jquery.todo.js"></script>
-  <!--  wave JS
-		============================================ -->
-  <script src="js/wave/waves.min.js"></script>
-  <script src="js/wave/wave-active.js"></script>
-  <!-- plugins JS
-		============================================ -->
-  <script src="js/plugins.js"></script>
-  <!-- Data Table JS
-		============================================ -->
-  <script src="js/data-table/jquery.dataTables.min.js"></script>
-  <script src="js/data-table/data-table-act.js"></script>
-  <!-- main JS
-		============================================ -->
-  <script src="js/main.js"></script>
-  <!-- tawk chat JS
-		============================================ -->
-  <script src="js/tawk-chat.js"></script>
-</body>
-
-</html>
+        <?php if (!$definitions): ?><div class="workspace-empty"><h3>No fees found</h3><p>Create the first reusable fee for this session, or change the register filter.</p></div><?php endif; ?>
+    </section>
+</div>
+<?php require __DIR__ . '/workflow_footer.php'; ?>

@@ -16,6 +16,7 @@ $sharedClasses = array(
     'CbtNotificationService.php',
     'SchoolService.php',
     'DiscountService.php',
+    'FeeService.php',
     'ExpenseService.php',
     'InventoryService.php',
     'TeachingService.php',
