@@ -14,10 +14,10 @@ $classresult = $db_handle->runQuery($query);
 ?>
 
 <?php
-$sql = "SELECT term FROM lpterm WHERE `status` = 1 ";
+$sql = "SELECT sessionid FROM lhpsession WHERE `status`  = 1 ";
 $result = mysqli_query($con, $sql);
 $row = mysqli_fetch_array($result);
-$sess = $row['term'];
+$sess = $row['sessionid'];
 
 require_once ("DBController.php");
 $db_handle = new DBController();
@@ -395,6 +395,7 @@ $feeresult = $db_handle->runQuery($query);
                 <i class="notika-icon notika-support"></i>
               </div>
 
+
               <div class="nk-int-st">
                 <select type="text" class="form-control" name="feeclass" id="class-list" onChange="getfeelist();">
                   <option value="">Select Fee Type</option>
@@ -403,7 +404,7 @@ $feeresult = $db_handle->runQuery($query);
                   require_once ("DBController.php");
                   $db_handle = new DBController();
 
-                  $query = "SELECT DISTINCT classid FROM lhpfeelist WHERE term = '$sess' AND status = 1";
+                  $query = "SELECT DISTINCT classid FROM lhpfeelist WHERE `session` = '$sess' AND status = 1;";
                   $results = $db_handle->runQuery($query);
                   ?>
 
