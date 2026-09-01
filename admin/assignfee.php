@@ -36,7 +36,7 @@ $feeresult = $db_handle->runQuery($query);
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- favicon
     ============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="img/logo/favicon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="images/icon.jpg">
   <!-- Google Fonts
     ============================================ -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -395,7 +395,6 @@ $feeresult = $db_handle->runQuery($query);
                 <i class="notika-icon notika-support"></i>
               </div>
 
-
               <div class="nk-int-st">
                 <select type="text" class="form-control" name="feeclass" id="class-list" onChange="getfeelist();">
                   <option value="">Select Fee Type</option>
@@ -563,8 +562,26 @@ $feeresult = $db_handle->runQuery($query);
                   include_once './conn.php';
 
                   $count = 1;
-                  $query = $conn->prepare("SELECT * FROM lhpassignedfee WHERE term = :term ORDER BY status ASC, rectime DESC");
-                  $query->bindValue(':term', $sess, PDO::PARAM_STR);
+                  $query = $conn->prepare(" SELECT lhpassignedfee.assid, 
+       lhpassignedfee.term, 
+       lhpassignedfee.stdid,
+       lhpassignedfee.feeid, 
+       lhpassignedfee.classid, 
+       lhpassignedfee.discount, 
+       lhpassignedfee.type, 
+       lhpassignedfee.status, 
+       lhpassignedfee.amount,
+       lhpfeelist.feeid AS lhpfeelist_feeid, 
+       lhpfeelist.session AS lhpfeelist_session,
+       lhpsession.sessionid AS lhpsession_sessionid, 
+       lhpsession.status AS lhpsession_status
+FROM lhpassignedfee
+LEFT JOIN lhpfeelist ON lhpassignedfee.feeid = lhpfeelist.feeid
+LEFT JOIN lhpsession ON lhpsession.sessionid = lhpfeelist.session
+WHERE lhpsession.status = 1
+ORDER BY lhpassignedfee.status DESC, lhpassignedfee.term DESC;
+;
+                        ");
                   $query->setFetchMode(PDO::FETCH_OBJ);
                   $query->execute();
                   while ($row = $query->fetch()) {
