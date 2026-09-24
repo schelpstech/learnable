@@ -28,6 +28,8 @@ No existing table or column is dropped, renamed, or altered.
 - `learn/app/cbt_export.php?assessment_id={id}` — authorization-checked CSV score export.
 - `learn/app/cbt_template.php` — approved question-import template.
 
+The old `resources&item=add_task` and `resources&item=add_cbt` URLs redirect to the CBT builder. Existing legacy assessment records remain readable, but teachers no longer see duplicate assessment-creation buttons in the Learning Resources menu.
+
 ### Administrator
 
 - `admin/index.php?route=cbt` — school register, moderation, monitoring, marking, publication, exceptional cases and transfer.
@@ -37,7 +39,7 @@ All state-changing portal and administrator forms use their existing role-specif
 ## Permissions
 
 - Instructors can create papers and questions only for the active-term class/subject allocations in `lhpalloc`.
-- Instructors can select only active topics in `lhpscheme`; future weeks are refused from the normal instructor flow.
+- Instructors can select only active topics in `lhpscheme`. They may prepare draft papers and question-bank items ahead of the teaching week; the assessment schedule and approval state, rather than today's calendar week, control learner access.
 - Private questions remain visible only to their owner. School questions may be reused, but copying creates a new private draft.
 - Learners are authorized through `cbt_assessment_assignments` and can never select another learner's attempt.
 - Administrators can approve, pause, reschedule, cancel, archive, reopen, grant extra time, publish and transfer.
@@ -103,6 +105,7 @@ Run:
 ```text
 php tests/demo_accounts.php
 php tests/cbt_demo_data.php
+php tests/cbt_authoring_test.php
 php tests/cbt_module_test.php
 php tests/cbt_score_transfer_test.php
 php tests/cbt_security_test.php

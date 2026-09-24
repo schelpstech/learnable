@@ -17,6 +17,14 @@ try {
     exit('Page not found.');
 }
 
+// Retire the two legacy assessment composers without breaking saved links.
+// All new assessments and questions now belong to the unified CBT workflow.
+if ($portalRoute->page() === 'resources'
+    && in_array($portalRoute->param('item'), array('add_task', 'add_cbt'), true)) {
+    header('Location: router.php?pageid=cbt_builder');
+    exit;
+}
+
 // Authorize lesson references before rendering the shared header or any content.
 try {
     $noteService = new NoteService(database_pdo());

@@ -44,7 +44,8 @@
                                             </div>
 
                                             <?php
-                                            if ((isset($_SESSION['user_type']) && $_SESSION['user_type'] === "Instructor")) {
+                                            if ((isset($_SESSION['user_type']) && $_SESSION['user_type'] === "Instructor")
+                                                && (string)($list_scheme['staffid'] ?? '') === (string)($_SESSION['active'] ?? '')) {
                                                 echo '
                                                    <div class="lodo_right">
                                                         <a href="../../app/router.php?pageid=resources&item=modify_topic&item_ref=' . rawurlencode($list_scheme['schmid']) . '" class="mark_complete">

@@ -92,6 +92,10 @@ $schemeStatement = $pdo->prepare('SELECT schmid FROM lhpscheme WHERE classname =
 $schemeStatement->execute(array($learner['classid'], $activeTerm));
 $schemeId = $schemeStatement->fetchColumn();
 
+$teacherSchemeStatement = $pdo->prepare("SELECT schmid FROM lhpscheme WHERE term=? AND status=1 AND staffid='codex_demo_teacher' LIMIT 1");
+$teacherSchemeStatement->execute(array($activeTerm));
+$teacherSchemeId = $teacherSchemeStatement->fetchColumn();
+
 $noteStatement = $pdo->prepare("SELECT n.noteid FROM lhpnote n JOIN lhpscheme s ON s.schmid=n.topicid WHERE n.term=? AND n.status=1 AND s.classname=? AND n.staffid='codex_demo_teacher' LIMIT 1");
 $noteStatement->execute(array($activeTerm,$learner['classid']));
 $noteId = $noteStatement->fetchColumn();
@@ -197,6 +201,7 @@ $instructorRoutes = array(
     '/learn/app/router.php?pageid=cbt_marking',
 );
 if ($subjectId) $instructorRoutes[] = '/learn/app/router.php?pageid=scoresheet&class_id=' . rawurlencode($learner['classid']) . '&subject_id=' . rawurlencode($subjectId);
+if ($teacherSchemeId) $instructorRoutes[] = '/learn/app/router.php?pageid=resources&item=modify_topic&item_ref=' . rawurlencode($teacherSchemeId);
 if ($noteId) $instructorRoutes[] = '/learn/app/router.php?pageid=resources&item=modify_note&item_ref=' . rawurlencode($noteId);
 if ($cbtAssessment) {
     $instructorRoutes[] = '/learn/app/router.php?pageid=cbt_builder&assessment_id=' . rawurlencode($cbtAssessment);
@@ -223,6 +228,13 @@ if (!empty($argv[1])) $requests=array_values(array_filter($requests,function($r)
 try {
     foreach ($requests as $request) {
         $requiredMarker = strpos($request[1], 'route=fee-assignments') !== false ? 'data-fee-assignment' : '';
+        if (strpos($request[1], 'pageid=resources&item=add_task') !== false
+            || strpos($request[1], 'pageid=resources&item=add_cbt') !== false) {
+            $requiredMarker = 'data-cbt-assessment-form';
+        }
+        if (strpos($request[1], 'pageid=resources&item=add_topic') !== false) {
+            $requiredMarker = 'data-scheme-workspace';
+        }
         $problem = audit_request($baseUrl . $request[1], $sessions[$request[0]], $requiredMarker);
         echo ($problem === null ? 'PASS: ' : 'FAIL: ') . $request[0] . ' ' . $request[1] . ($problem ? ' -> ' . $problem : '') . "\n";
         if ($problem !== null) {

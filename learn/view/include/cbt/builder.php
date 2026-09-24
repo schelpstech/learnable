@@ -46,7 +46,7 @@ $defaultClose = date('Y-m-d\TH:i', strtotime('+1 day'));
                     <input type="hidden" name="csrf_token" value="<?php echo cbt_h($cbtCsrf); ?>">
                     <input type="hidden" name="cbt_action" value="create_assessment">
                     <section class="cbt-form-section">
-                        <div class="cbt-form-section__heading"><span>1</span><div><h2>Academic context</h2><p>Only your current allocations and approved scheme topics are available.</p></div></div>
+                        <div class="cbt-form-section__heading"><span>1</span><div><h2>Academic context</h2><p>Use any active scheme topic in your current allocation. You may prepare a paper ahead of the teaching week; its opening time and approval still control learner access.</p></div></div>
                         <div class="cbt-form-grid cbt-form-grid--3">
                             <label><span>Class & subject</span><select name="allocation" required data-cbt-allocation-select><option value="">Choose an allocation</option><?php foreach ($allocations as $allocation): ?><option value="<?php echo (int) $allocation['class_id']; ?>:<?php echo (int) $allocation['subject_id']; ?>"><?php echo cbt_h($allocation['classname'] . ' · ' . $allocation['sbjname']); ?></option><?php endforeach; ?></select></label>
                             <input type="hidden" name="class_id" data-cbt-class-id>
@@ -140,4 +140,4 @@ $defaultClose = date('Y-m-d\TH:i', strtotime('+1 day'));
     </div>
 </div>
 <script type="application/json" id="cbt-topic-data"><?php echo json_encode($topicMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
-<script src="../../../assets/js/cbt-portal.js?v=1" defer></script>
+<script src="../../../assets/js/cbt-portal.js?v=2" defer></script>

@@ -114,8 +114,7 @@ class CbtService
         if (!$isAdmin) {
             $this->assertTeacherAllocation($teacherId, $classId, $subjectId, $context['term']);
         }
-        $topic = $this->assertSchemeTopic($schemeId, $classId, $subjectId, $context['term']);
-        $this->assertTopicIsCovered($topic, $isAdmin);
+        $this->assertSchemeTopic($schemeId, $classId, $subjectId, $context['term']);
 
         $type = isset($input['assessment_type']) ? (string) $input['assessment_type'] : '';
         $treatment = isset($input['result_treatment']) ? (string) $input['result_treatment'] : '';
@@ -196,8 +195,7 @@ class CbtService
         if (!$isAdmin) {
             $this->assertTeacherAllocation($actorId, $classId, $subjectId, $context['term']);
         }
-        $topic = $this->assertSchemeTopic($schemeId, $classId, $subjectId, $context['term']);
-        $this->assertTopicIsCovered($topic, $isAdmin);
+        $this->assertSchemeTopic($schemeId, $classId, $subjectId, $context['term']);
 
         $type = isset($input['question_type']) ? (string) $input['question_type'] : '';
         if (!in_array($type, self::$questionTypes, true)) {
@@ -784,26 +782,6 @@ class CbtService
             throw new RuntimeException('Select an approved scheme-of-work topic for this class and subject.');
         }
         return $topic;
-    }
-
-    private function assertTopicIsCovered(array $topic, $isAdmin)
-    {
-        if ($isAdmin) {
-            return;
-        }
-        if (!preg_match('/(\d+)/', (string) $topic['week'], $match)) {
-            return;
-        }
-        $config = $this->one('SELECT resumption FROM lhpresultconfig WHERE term = ? LIMIT 1', array($topic['term']));
-        if (!$config || empty($config['resumption'])) {
-            return;
-        }
-        $resumption = new DateTimeImmutable($config['resumption']);
-        $today = new DateTimeImmutable('today');
-        $currentWeek = $today < $resumption ? 0 : ((int) floor(($today->getTimestamp() - $resumption->getTimestamp()) / 604800) + 1);
-        if ((int) $match[1] > $currentWeek) {
-            throw new RuntimeException('That topic is scheduled for a future week. Ask an administrator to approve it first.');
-        }
     }
 
     private function queuePortalNotices($assessmentId, $eventType)

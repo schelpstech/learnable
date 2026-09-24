@@ -121,6 +121,29 @@ if (!$assessmentId) {
     }
     $service->setAssessmentStatus($assessmentId, 'approved', 'codex_demo_admin', true, 'Demo assessment reviewed for automated testing.');
     $service->setAssessmentStatus($assessmentId, 'published', 'codex_demo_admin', true, 'Demo assessment published for role-based testing.');
+} else {
+    // Keep only the named demonstration paper inside a current test window so
+    // repeated regression runs do not fail merely because an old fixture closed.
+    $refresh = $pdo->prepare(
+        "UPDATE cbt_assessments
+         SET session_name=?,term=?,class_id=?,subject_id=?,start_at=?,close_at=?,
+             duration_minutes=45,max_attempts=2,status='published'
+         WHERE id=? AND teacher_id=? AND title='Codex Demo · Mixed Question Practice'"
+    );
+    $refresh->execute(array(
+        $context['session'], $context['term'], $allocation['classid'], $allocation['sbjid'],
+        date('Y-m-d H:i:s', strtotime('-10 minutes')),
+        date('Y-m-d H:i:s', strtotime('+2 days')),
+        $assessmentId, $teacher,
+    ));
+    $pdo->prepare('UPDATE cbt_assessment_topics SET scheme_id=? WHERE assessment_id=? AND is_primary=1')
+        ->execute(array($schemeId, $assessmentId));
+    $pdo->prepare(
+        "INSERT INTO cbt_assessment_assignments
+         (assessment_id,assignment_type,class_id,learner_id,status)
+         VALUES (?,'student',?,?,'eligible')
+         ON DUPLICATE KEY UPDATE class_id=VALUES(class_id),status='eligible'"
+    )->execute(array($assessmentId, $allocation['classid'], $learner['uname']));
 }
 
 echo "CBT demo data ready:\n";

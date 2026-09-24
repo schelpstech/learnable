@@ -64,4 +64,4 @@ if ($assessmentId !== null) {
         <?php endif; ?>
     </div>
 </div>
-<script src="../../../assets/js/cbt-portal.js?v=1" defer></script>
+<script src="../../../assets/js/cbt-portal.js?v=2" defer></script>

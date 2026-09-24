@@ -49,7 +49,7 @@
     }elseif ($pageid == 'manage_learner' && $instance !== null) {
         include 'form/manage_learner.php';
     }elseif ($pageid == 'resources' && $item == 'modify_topic' && $itemRef !== null) {
-        include 'form/modifyscheme.php';
+        include 'form/addscheme.php';
     }elseif ($pageid == 'resources' && $item == 'add_topic' ) {
         include 'form/addscheme.php';
     }elseif ($pageid == 'resources' && $item == 'modify_note' && $itemRef !== null) {
@@ -58,16 +58,12 @@
         include 'form/note_editor.php';
     }elseif ($pageid == 'resources' && $item == 'modify_task' && $itemRef !== null) {
         include 'form/modifytask.php';
-    }elseif ($pageid == 'resources' && $item == 'add_task' ) {
-        include 'form/addtask.php';
     }elseif ($pageid == 'payment' && $instance == 'bill') {
         include 'payment/bill.php';
     } elseif ($pageid == 'payment' && $instance == 'transaction') {
         include 'payment/transaction.php';
     } elseif ($pageid == 'payment' && $instance == 'payment') {
         include 'payment/paynow.php';
-    } elseif ($pageid == 'resources' && $item == 'add_cbt') {
-        include 'form/createcbt.php';
     }
 ?>
 </section>

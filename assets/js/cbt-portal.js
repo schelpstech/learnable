@@ -19,7 +19,7 @@
         topicSelect.innerHTML = '';
         var placeholder = document.createElement('option');
         placeholder.value = '';
-        placeholder.textContent = topics.length ? 'Choose an approved topic' : 'No approved topic for this allocation';
+        placeholder.textContent = topics.length ? 'Choose an active topic' : 'No active topic for this allocation';
         topicSelect.appendChild(placeholder);
         topics.forEach(function (topic) {
             var option = document.createElement('option');

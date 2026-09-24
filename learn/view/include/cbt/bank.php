@@ -63,7 +63,7 @@ $questions = $selectedAllocation ? $cbtService->questionBank($cbtActor, false, a
             <aside id="write-question">
                 <section class="cbt-board cbt-sticky-panel">
                     <div class="cbt-board__title"><div><span class="cbt-section-number">B</span><h2>Write a bank question</h2></div></div>
-                    <?php if (!$selectedAllocation || !$questionSchemeOptions): ?><p class="cbt-panel-note">Choose an allocation with at least one approved scheme topic before writing a question.</p><?php else: ?>
+                    <?php if (!$selectedAllocation || !$questionSchemeOptions): ?><p class="cbt-panel-note">Choose an allocation with at least one active scheme topic before writing a question.</p><?php else: ?>
                         <?php $questionClassId = $selectedClass; $questionSubjectId = $selectedSubject; $assessment = null; include __DIR__ . '/question-form.php'; ?>
                     <?php endif; ?>
                 </section>
@@ -71,4 +71,4 @@ $questions = $selectedAllocation ? $cbtService->questionBank($cbtActor, false, a
         </div>
     </div>
 </div>
-<script src="../../../assets/js/cbt-portal.js?v=1" defer></script>
+<script src="../../../assets/js/cbt-portal.js?v=2" defer></script>

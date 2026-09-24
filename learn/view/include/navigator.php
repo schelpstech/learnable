@@ -13,20 +13,15 @@
                         </ol>
                     </div>
                     <div class="page_title_right">
-                            <?php
-                            if ($_SESSION['user_type'] === "Instructor") {
-                                echo '
-                                    <div class="page_date_button" data-bs-toggle="modal" data-bs-target="#resources">
-                                        Add Learning resources :'.$active_term['term'];
-                            } elseif ($_SESSION['user_type'] === "Learner") {
-
-                                echo '
-                                <div class="page_date_button">
-                                    Active Term :'.$active_term['term']. ' :: '. $learner_class['classname'];
-                            }
-                            ?>
-
-                        </div>
+                        <?php if ($_SESSION['user_type'] === 'Instructor'): ?>
+                            <button type="button" class="page_date_button border-0" data-bs-toggle="modal" data-bs-target="#resources" aria-label="Add teaching materials for <?php echo htmlspecialchars($active_term['term'], ENT_QUOTES, 'UTF-8'); ?>">
+                                Add teaching materials · <?php echo htmlspecialchars($active_term['term'], ENT_QUOTES, 'UTF-8'); ?>
+                            </button>
+                        <?php elseif ($_SESSION['user_type'] === 'Learner'): ?>
+                            <div class="page_date_button">
+                                Active Term: <?php echo htmlspecialchars($active_term['term'], ENT_QUOTES, 'UTF-8'); ?> · <?php echo htmlspecialchars($learner_class['classname'], ENT_QUOTES, 'UTF-8'); ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

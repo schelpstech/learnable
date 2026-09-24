@@ -125,4 +125,4 @@ foreach ($assessments as $assessment) {
         </section>
     </div>
 </div>
-<script src="../../../assets/js/cbt-portal.js?v=1" defer></script>
+<script src="../../../assets/js/cbt-portal.js?v=2" defer></script>

@@ -53,7 +53,7 @@ if (empty($_SESSION['portal_csrf'])) {
 
     <link rel="stylesheet" href="../../asset/css/style1.css" />
     <link rel="stylesheet" href="../../asset/css/colors/default.css" id="colorSkinCSS">
-    <link rel="stylesheet" href="../../../assets/css/school-workflows.css?v=2">
+    <link rel="stylesheet" href="../../../assets/css/school-workflows.css?v=3">
     <?php if (isset($portalRoute) && strpos($portalRoute->page(), 'cbt') === 0): ?>
         <link rel="stylesheet" href="../../../assets/css/cbt.css?v=2">
     <?php endif; ?>

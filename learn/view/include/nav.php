@@ -96,17 +96,12 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                        <div class="modal-footer" >
-                            <a href="../../app/router.php?pageid=resources&item=add_topic" type="button" class="btn btn-primary" >Add Scheme of work</a>
+                        <div class="modal-body">
+                            <p class="mb-0">Add curriculum topics and lesson notes here. Assessments and questions are managed from the dedicated CBT Workspace.</p>
                         </div>
                         <div class="modal-footer">
-                            <a href="../../app/router.php?pageid=resources&item=add_note" type="button" class="btn btn-warning" >Add e-Notes</a> <br>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="../../app/router.php?pageid=resources&item=add_task" type="button" class="btn btn-info">Add e-Assessment</a><br>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="../../app/router.php?pageid=resources&item=add_cbt" type="button" class="btn btn-success">Create CBT Test</a><br>
+                            <a href="../../app/router.php?pageid=resources&item=add_topic" class="btn btn-primary" >Add scheme topic</a>
+                            <a href="../../app/router.php?pageid=resources&item=add_note" class="btn btn-warning" >Write e-note</a>
                         </div>
                 </div>
             </div>

@@ -20,6 +20,8 @@ $sharedClasses = array(
     'ExpenseService.php',
     'InventoryService.php',
     'TeachingService.php',
+    'SchemeService.php',
+    'AcademicStructureService.php',
     'ScorebookService.php',
     'NoteService.php',
 );
