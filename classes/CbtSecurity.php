@@ -2,6 +2,44 @@
 
 final class CbtSecurity
 {
+    public static function isHttpsRequest(array $server = null)
+    {
+        $server = $server === null ? $_SERVER : $server;
+        if (isset($server['HTTPS']) && strtolower((string)$server['HTTPS']) !== 'off' && (string)$server['HTTPS'] !== '') {
+            return true;
+        }
+        if (isset($server['REQUEST_SCHEME']) && strtolower((string)$server['REQUEST_SCHEME']) === 'https') {
+            return true;
+        }
+        if (isset($server['HTTP_X_FORWARDED_PROTO'])) {
+            $forwarded = strtolower(trim(explode(',', (string)$server['HTTP_X_FORWARDED_PROTO'])[0]));
+            if ($forwarded === 'https') return true;
+        }
+        if (isset($server['HTTP_X_FORWARDED_SSL']) && strtolower((string)$server['HTTP_X_FORWARDED_SSL']) === 'on') {
+            return true;
+        }
+        return isset($server['SERVER_PORT']) && (int)$server['SERVER_PORT'] === 443;
+    }
+
+    public static function attemptCookiePath(array $server = null, $configuredUrl = null)
+    {
+        $server = $server === null ? $_SERVER : $server;
+        $script = isset($server['SCRIPT_NAME']) ? str_replace('\\', '/', (string)$server['SCRIPT_NAME']) : '';
+        $marker = '/learn/';
+        $position = strpos($script, $marker);
+        if ($position !== false) {
+            $path = substr($script, 0, $position) . '/learn';
+            return $path === '' ? '/learn' : $path;
+        }
+
+        if ($configuredUrl === null && function_exists('app_env')) {
+            $configuredUrl = (string)app_env('APP_URL', '');
+        }
+        $configuredPath = $configuredUrl ? parse_url((string)$configuredUrl, PHP_URL_PATH) : '';
+        $configuredPath = is_string($configuredPath) ? '/' . trim($configuredPath, '/') : '';
+        return ($configuredPath === '' ? '' : rtrim($configuredPath, '/')) . '/learn';
+    }
+
     public static function csrfToken($scope)
     {
         $key = $scope === 'admin' ? 'admin_csrf' : 'portal_csrf';

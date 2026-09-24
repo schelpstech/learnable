@@ -751,16 +751,16 @@ class CbtAttemptService
         if (PHP_SAPI === 'cli') {
             return;
         }
-        $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-        $appPath = function_exists('app_env') ? parse_url((string) app_env('APP_URL', '/learnable'), PHP_URL_PATH) : '/learnable';
-        $appPath = is_string($appPath) && $appPath !== '' ? rtrim($appPath, '/') : '';
-        setcookie('learnable_cbt_attempt', $attemptId . '.' . $plainToken, array(
+        $written = setcookie('learnable_cbt_attempt', $attemptId . '.' . $plainToken, array(
             'expires' => strtotime($expiresAt) + 86400,
-            'path' => $appPath . '/learn',
-            'secure' => $secure,
+            'path' => CbtSecurity::attemptCookiePath(),
+            'secure' => CbtSecurity::isHttpsRequest(),
             'httponly' => true,
             'samesite' => 'Strict',
         ));
+        if (!$written) {
+            throw new RuntimeException('The secure examination session could not be opened. Please retry from your assessment list.');
+        }
     }
 
     private function decode($value, $default)

@@ -36,6 +36,10 @@ The old `resources&item=add_task` and `resources&item=add_cbt` URLs redirect to 
 
 All state-changing portal and administrator forms use their existing role-specific CSRF session token. The exam API uses the separate high-entropy attempt cookie plus a same-origin custom request header.
 
+### Production exam-session troubleshooting
+
+The `learnable_cbt_attempt` cookie is scoped from the actual request path so installations at either `/learn` or a subdirectory such as `/learnable/learn` reach `exam.php` and `cbt_api.php`. HTTPS is also detected when TLS terminates at a reverse proxy through `X-Forwarded-Proto` or `X-Forwarded-SSL`. Keep `APP_URL` accurate as the fallback configuration, do not cache CBT action or exam responses, and preserve `Set-Cookie` headers at the web server/CDN. After deploying a cookie fix, a learner should return to the assessment list and select **Start / resume** again; the existing in-progress attempt is resumed with a newly rotated token.
+
 ## Permissions
 
 - Instructors can create papers and questions only for the active-term class/subject allocations in `lhpalloc`.
