@@ -4,9 +4,12 @@ db_backup_*.zip
 database/*
 !database/migrate.php
 !database/migrations/
+database/migrations/*
+!database/migrations/20260926_school_website.sql
+!database/migrations/20260927_school_whatsapp.sql
 .vscode
-database
-docs
+docs/*
+!docs/school-website.md
 .dccache
 .gitignore
 .env.example

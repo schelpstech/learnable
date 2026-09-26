@@ -1,0 +1,1 @@
+ALTER TABLE lhpschool ADD COLUMN whatsapp_number VARCHAR(16) NOT NULL DEFAULT '';
