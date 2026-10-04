@@ -3,7 +3,7 @@
 require_once '../controller/start.inc.php';
 
 $assessmentId = isset($_GET['assessment_id']) && ctype_digit((string) $_GET['assessment_id']) ? (int) $_GET['assessment_id'] : 0;
-$isAdmin = isset($_SESSION['unamed']) && !empty($_SESSION['unamed']);
+$isAdmin = $portalAccess->academic();
 $isInstructor = isset($_SESSION['active'], $_SESSION['user_type']) && $_SESSION['user_type'] === 'Instructor';
 if (!$assessmentId || (!$isAdmin && !$isInstructor)) {
     http_response_code(403);

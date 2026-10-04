@@ -1,6 +1,7 @@
 <?php
 
 include 'conf.php';
+require_once __DIR__ . '/classes/StaffAccess.php';
 
 function legacy_learner_redirect($message)
 {
@@ -65,6 +66,9 @@ if (!$usesHash || password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
 
 legacy_learner_log($con, $username, 1);
 session_regenerate_id(true);
+StaffAccess::clearAuthentication();
+$_SESSION['auth_account_type'] = 'learner';
+$_SESSION['auth_username'] = $username;
 $_SESSION['classd'] = $classId;
 $_SESSION['studnamed'] = $username;
 $_SESSION['active'] = $username;

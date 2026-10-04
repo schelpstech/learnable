@@ -9,6 +9,7 @@ return array(
     'calendar' => 'calendar.php',
     'result-config' => 'mgconfig.php',
     'records' => 'mgresult.php',
+    'scores' => 'scorebook.php',
     'affective' => 'mgaffective.php',
     'midterm' => 'mgmid.php',
     'reports' => 'mgreport.php',

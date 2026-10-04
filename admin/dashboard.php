@@ -2,6 +2,7 @@
 
 // Check user login or not
 include "conf.php";
+if ($staffAccess->role() === 'registry') { require __DIR__ . '/registry_dashboard.php'; return; }
 if(!isset($_SESSION['unamed'])){
    header('Location: ../index.php');
 }

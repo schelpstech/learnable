@@ -1,6 +1,7 @@
 <?php
 
 include 'conf.php';
+require_once __DIR__ . '/classes/StaffAccess.php';
 
 function legacy_staff_redirect($message)
 {
@@ -63,8 +64,19 @@ if (!$usesHash || password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
     mysqli_stmt_close($upgrade);
 }
 
+if (!isset(StaffAccess::STAFF_ROLES[$role])) { legacy_staff_redirect('This staff role does not have portal access.'); }
 legacy_staff_log($con, $username, 1);
 session_regenerate_id(true);
+StaffAccess::clearAuthentication();
+$_SESSION['auth_account_type'] = 'staff';
+$_SESSION['auth_username'] = $username;
+
+if ($role === 'r') {
+    $_SESSION['unamed'] = $username;
+    $_SESSION['admin_csrf'] = bin2hex(random_bytes(32));
+    header('Location: admin/index.php?route=dashboard');
+    exit;
+}
 
 if ($role === 'b') {
     $_SESSION['unamed'] = $username;

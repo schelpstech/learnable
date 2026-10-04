@@ -7,9 +7,11 @@ database/*
 database/migrations/*
 !database/migrations/20260926_school_website.sql
 !database/migrations/20260927_school_whatsapp.sql
+!database/migrations/20261004_teacher_cbt_publishing.sql
 .vscode
 docs/*
 !docs/school-website.md
+!docs/registry-admin.md
 .dccache
 .gitignore
 .env.example

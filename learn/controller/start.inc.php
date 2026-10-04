@@ -17,6 +17,13 @@ try {
     array_push($errors, 'Database connection failed.');
 }
 
+// Resolve current permissions even for sessions created before a role/status change.
+$portalAccess = new StaffAccess($db_conn, $_SESSION);
+if (!empty($_SESSION['active']) && !in_array($portalAccess->role(), ['teacher','learner'], true)) {
+    StaffAccess::clearAuthentication();
+    http_response_code(403); exit('Your account access has changed. Please sign in again.');
+}
+
 // make use of database with users
 $user = new User($db_conn);
 $model = new Model($db_conn);

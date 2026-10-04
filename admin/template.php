@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/conf.php';
 $seriala = rand(11111111, 88888888);
 $serialb = rand(11111111, 88888888);
 $serial = $seriala . $serialb;

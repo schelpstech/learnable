@@ -13,16 +13,24 @@ final class ScorebookService extends TeachingService
         foreach (array('id','score','examscore','totalscore') as $field) $values[$field] = (string)($record[$field] ?? '');
         return hash('sha256',json_encode($values));
     }
-    public function sheet($actor,$class,$subject,$week=0) {
-        $this->allocation($actor,$class,$subject); $week=self::integer($week,'Week',0,13);
+    private function scoreScope($actor,$class,$subject,$administrative) {
+        if (!$administrative) return $this->allocation($actor,$class,$subject);
+        $access=new StaffAccess($this->db,$_SESSION);
+        if (!$access->academic() || $access->username() !== $actor) throw new RuntimeException('Academic administration access is required.');
+        $row=$this->one('SELECT a.aid FROM lhpalloc a JOIN lhpclass c ON c.classid=a.classid JOIN lhpsubject s ON s.sbjid=a.sbjid WHERE a.term=? AND a.classid=? AND a.sbjid=? LIMIT 1',[$this->activeTerm(),$class,$subject]);
+        if (!$row) throw new RuntimeException('Select an allocated subject for this class and term.');
+        return $row;
+    }
+    public function sheet($actor,$class,$subject,$week=0,$administrative=false) {
+        $this->scoreScope($actor,$class,$subject,$administrative); $week=self::integer($week,'Week',0,13);
         $learners=$this->rows('SELECT uname,fname FROM lhpuser WHERE classid=? AND status=1 ORDER BY fname,uname',array($class));
         $records=$week ? $this->rows('SELECT * FROM lhpweekrecord WHERE classid=? AND subjid=? AND term=? AND week=? ORDER BY id',array($class,$subject,$this->activeTerm(),'Week '.$week)) : $this->rows('SELECT * FROM lhpresultrecord WHERE classid=? AND subjid=? AND term=? ORDER BY id',array($class,$subject,$this->activeTerm()));
         $map=array();foreach($records as $row) { if(isset($map[$row['lid']])) throw new RuntimeException('Duplicate legacy score rows need administrator review before this sheet can be edited.'); $map[$row['lid']]=$row; }
         foreach($learners as &$learner) { $learner['record']=$map[$learner['uname']] ?? null;$learner['version']=self::version($learner['record']); }unset($learner);
         return $learners;
     }
-    public function save($actor,$class,$subject,$week,array $changes) {
-        $week=self::integer($week,'Week',0,13);$this->allocation($actor,$class,$subject);
+    public function save($actor,$class,$subject,$week,array $changes,$administrative=false) {
+        $week=self::integer($week,'Week',0,13);$this->scoreScope($actor,$class,$subject,$administrative);
         if(count($changes)>500) throw new InvalidArgumentException('Save no more than 500 learner records at a time.');
         return $this->locked('scores:'.$this->activeTerm().':'.$subject,function() use($actor,$class,$subject,$week,$changes) {
             $term=$this->activeTerm();

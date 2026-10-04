@@ -6,14 +6,10 @@ if(!isset($_SESSION['unamed'])){
 }
 ?>
 <?php
-if(!empty($_GET['un'])) {         
-        $edt = $_GET["un"];
- 
-}
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpstaff WHERE sname = '".$edt."'";
-$editresult = $db_handle->runQuery($query);
+$edt = isset($_GET['un']) && is_string($_GET['un']) ? trim($_GET['un']) : '';
+$q=database_pdo()->prepare('SELECT * FROM lhpstaff WHERE sname=?');
+$q->execute([$edt]);$editresult=$q->fetchAll(PDO::FETCH_ASSOC);
+if (!$editresult) { http_response_code(404); exit('Staff account not found.'); }
 ?>
 
 
@@ -140,6 +136,12 @@ $editresult = $db_handle->runQuery($query);
                         <br>
 						<div class="row">
 						<form method="POST" action="edstaff.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+<?php $roleQuery = database_pdo()->prepare('SELECT role FROM lhpstaff WHERE sname=?'); $roleQuery->execute([$edt]); $editingRole = $roleQuery->fetchColumn(); ?>
+<div class="form-group"><label for="staff-role">Staff role</label><select id="staff-role" name="role" class="form-control" required>
+<?php foreach (StaffAccess::STAFF_ROLES as $key=>$label): ?><option value="<?php echo $key; ?>" <?php echo $editingRole === $key ? 'selected' : ''; ?>><?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?></option><?php endforeach; ?>
+</select><p class="help-block">Registry Admin manages student records and academics. Financial access is restricted to Bursary Staff and the main administrator.</p></div>
+
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['admin_csrf'], ENT_QUOTES, 'UTF-8'); ?>">
                          
 							 	<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" hidden>
                                 <label> Staff's UserName</label>
@@ -149,7 +151,7 @@ $editresult = $db_handle->runQuery($query);
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="stnamed"  value="<?php echo $edt; ?>">
+                                        <input type="text" required="yes" class="form-control" name="stnamed"  readonly value="<?php echo htmlspecialchars($edt, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
                             </div>

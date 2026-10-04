@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/conf.php';
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
@@ -19,4 +21,8 @@ if (!isset($routes[$route])) {
 }
 
 $adminRoute = $route;
-require __DIR__ . DIRECTORY_SEPARATOR . $routes[$route];
+if ($route === 'dashboard' && $staffAccess->role() === 'registry') {
+    require __DIR__ . '/registry_dashboard.php';
+} else {
+    require __DIR__ . DIRECTORY_SEPARATOR . $routes[$route];
+}

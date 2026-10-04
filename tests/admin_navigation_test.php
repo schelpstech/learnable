@@ -1,6 +1,10 @@
 <?php
 
-$_SESSION = array('unamed' => 'Navigation QA');
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+require_once __DIR__ . '/../config/database.php';
+$admin = database_pdo()->query('SELECT dname FROM `123admin` ORDER BY dname LIMIT 1')->fetchColumn();
+if (!$admin) throw new RuntimeException('An existing administrator is required for navigation rendering.');
+$_SESSION = array('unamed' => $admin, 'auth_account_type' => 'admin', 'auth_username' => $admin);
 $_SERVER['REQUEST_URI'] = '/learnable/admin/index.php?route=dashboard';
 $adminRoute = 'dashboard';
 

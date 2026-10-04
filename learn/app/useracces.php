@@ -118,8 +118,20 @@ if (!$usesPasswordHash || password_needs_rehash($storedPassword, PASSWORD_DEFAUL
     $upgradeStatement->execute(array(':password' => $newHash, ':username' => $userid));
 }
 
-portal_record_login($model, $userid, $userType, 1);
+if ($tableName === 'lhpstaff' && !isset(StaffAccess::STAFF_ROLES[$loginDetails['role']])) {
+    $_SESSION['msg'] = portal_login_message('danger', 'This staff role does not have portal access.');
+    portal_login_redirect($model, '../view/index.php');
+}
+portal_record_login($model, $userid, $tableName === 'lhpstaff' ? StaffAccess::STAFF_ROLES[$loginDetails['role']] : $userType, 1);
 session_regenerate_id(true);
+StaffAccess::clearAuthentication();
+$_SESSION['auth_account_type'] = $tableName === 'lhpstaff' ? 'staff' : 'learner';
+$_SESSION['auth_username'] = $userid;
+if ($tableName === 'lhpstaff' && in_array($loginDetails['role'], ['r','b'], true)) {
+    $_SESSION['unamed'] = $userid;
+    $_SESSION['admin_csrf'] = bin2hex(random_bytes(32));
+    portal_login_redirect($model, $loginDetails['role'] === 'r' ? '../../admin/index.php?route=dashboard' : '../../bursar/profile.php');
+}
 $_SESSION['active'] = $userid;
 $_SESSION['user_type'] = $userType;
 $_SESSION['portal_csrf'] = bin2hex(random_bytes(32));

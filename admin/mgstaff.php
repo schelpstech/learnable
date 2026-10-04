@@ -188,7 +188,7 @@ $classresult = $db_handle->runQuery($query);
           <div class="form-element-list">
             <div class="basic-tb-hd">
               <h2>Create Staff Account</h2>
-              <p>Use the form below to create staff account </p>
+              <p>Create a staff account and choose its role. Registry Admin manages student records and academics without financial access. </p>
               <h2> <?php
 
                     if (isset($_SESSION['ssmessaged']) && $_SESSION['ssmessaged']) {
@@ -205,6 +205,7 @@ $classresult = $db_handle->runQuery($query);
       <br>
       <div class="row">
         <form method="POST" action="createstaff.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['admin_csrf'], ENT_QUOTES, 'UTF-8'); ?>">
 
 
           <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
@@ -283,6 +284,7 @@ $classresult = $db_handle->runQuery($query);
                 <select type="text" required="yes" class="form-control" name="role" placeholder="Select Staff Role">
                   <option value="t">Teaching Staff</option>
                   <option value="b">Bursary Staff</option>
+                  <option value="r">Registry Admin</option>
                 </select>
               </div>
             </div>
@@ -331,6 +333,7 @@ $classresult = $db_handle->runQuery($query);
                     <th>Username</th>
                     <th> Phonenumber</th>
                     <th>Email </th>
+                    <th>Role</th>
                     <th>Edit</th>
                     <th>Change Status</th>
                   </tr>
@@ -369,6 +372,7 @@ $classresult = $db_handle->runQuery($query);
                       <td><?php echo $sname ?></td>
                       <td><?php echo $sfone ?></td>
                       <td><?php echo $semail ?></td>
+                      <td><?php echo htmlspecialchars(StaffAccess::STAFF_ROLES[$row->role] ?? 'Unknown', ENT_QUOTES, 'UTF-8'); ?></td>
                       <td>
                         <a href="stedt.php?un=<?php echo $row->sname ?>" type="button" class="btn btn-info">Edit</a>
                       </td>
@@ -386,6 +390,7 @@ $classresult = $db_handle->runQuery($query);
                     <th>Username</th>
                     <th> Phonenumber</th>
                     <th>Email </th>
+                    <th>Role</th>
                     <th>Edit</th>
                     <th>Change Status</th>
                   </tr>

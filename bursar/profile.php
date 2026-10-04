@@ -1,7 +1,7 @@
 <?php
 
 // Check user login or not
-include "../conf.php";
+require __DIR__ . '/conf.php';
 if(!isset($_SESSION['unamed'])){
      header('Location: ../index.php');
 }

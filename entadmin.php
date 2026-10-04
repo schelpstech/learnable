@@ -1,6 +1,7 @@
 <?php
 
 include 'conf.php';
+require_once __DIR__ . '/classes/StaffAccess.php';
 
 function admin_client_ip()
 {
@@ -67,6 +68,9 @@ if (!$passwordMatches) {
 
 admin_record_login($con, $username, 1, $ip);
 session_regenerate_id(true);
+StaffAccess::clearAuthentication();
+$_SESSION['auth_account_type'] = 'admin';
+$_SESSION['auth_username'] = $username;
 $_SESSION['unamed'] = $username;
 $_SESSION['admin_csrf'] = bin2hex(random_bytes(32));
 header('Location: admin/index.php?route=dashboard');

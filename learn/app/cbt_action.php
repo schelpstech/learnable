@@ -43,7 +43,7 @@ try {
 
     if ($action === 'create_assessment') {
         $assessmentId = $service->createAssessment($_POST, $actorId, false);
-        $_SESSION[$flashKey] = array('type' => 'success', 'message' => 'Assessment draft created. Add questions, preview the paper, then submit it for approval.');
+        $_SESSION[$flashKey] = array('type' => 'success', 'message' => 'Assessment draft created. Add questions, preview the paper, then publish it for students.');
         $redirect = 'router.php?pageid=cbt_builder&assessment_id=' . rawurlencode((string) $assessmentId);
     } elseif ($action === 'duplicate_assessment') {
         $copyId = $service->duplicateAssessment((int) $_POST['assessment_id'], $actorId, false);
@@ -89,11 +89,9 @@ try {
         $service->removeQuestionFromAssessment((int) $_POST['assessment_id'], (int) $_POST['question_id'], $actorId, false);
         $_SESSION[$flashKey] = array('type' => 'success', 'message' => 'Question removed from this draft. It remains available in your question bank.');
         $redirect = 'router.php?pageid=cbt_builder&assessment_id=' . rawurlencode((string) $_POST['assessment_id']);
-    } elseif ($action === 'submit_approval') {
-        $status = $service->submitForApproval((int) $_POST['assessment_id'], $actorId);
-        $message = $status === 'pending_approval'
-            ? 'Assessment submitted for administrative approval.'
-            : 'Assessment scheduled and learner notices created.';
+    } elseif (in_array($action, ['publish_assessment','submit_approval'], true)) {
+        $service->publishAssessment((int) $_POST['assessment_id'], $actorId);
+        $message = 'Assessment published. Eligible students can see it and start at the scheduled opening time.';
         $_SESSION[$flashKey] = array('type' => 'success', 'message' => $message);
         $redirect = 'router.php?pageid=cbt';
     } elseif ($action === 'pause_assessment') {

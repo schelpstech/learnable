@@ -46,7 +46,7 @@ $defaultClose = date('Y-m-d\TH:i', strtotime('+1 day'));
                     <input type="hidden" name="csrf_token" value="<?php echo cbt_h($cbtCsrf); ?>">
                     <input type="hidden" name="cbt_action" value="create_assessment">
                     <section class="cbt-form-section">
-                        <div class="cbt-form-section__heading"><span>1</span><div><h2>Academic context</h2><p>Use any active scheme topic in your current allocation. You may prepare a paper ahead of the teaching week; its opening time and approval still control learner access.</p></div></div>
+                        <div class="cbt-form-section__heading"><span>1</span><div><h2>Academic context</h2><p>Use any active scheme topic in your current allocation. You may prepare a paper ahead of the teaching week; students can see it once you publish, and its opening time controls when they can start.</p></div></div>
                         <div class="cbt-form-grid cbt-form-grid--3">
                             <label><span>Class & subject</span><select name="allocation" required data-cbt-allocation-select><option value="">Choose an allocation</option><?php foreach ($allocations as $allocation): ?><option value="<?php echo (int) $allocation['class_id']; ?>:<?php echo (int) $allocation['subject_id']; ?>"><?php echo cbt_h($allocation['classname'] . ' · ' . $allocation['sbjname']); ?></option><?php endforeach; ?></select></label>
                             <input type="hidden" name="class_id" data-cbt-class-id>
@@ -82,7 +82,7 @@ $defaultClose = date('Y-m-d\TH:i', strtotime('+1 day'));
                             <label><input type="checkbox" name="show_score" value="1"><span>Show score after publication</span></label>
                             <label><input type="checkbox" name="allow_review" value="1"><span>Allow script review after publication</span></label>
                             <label><input type="checkbox" name="show_correct_answers" value="1"><span>Release answers after the assessment closes</span></label>
-                            <label><input type="checkbox" name="require_approval" value="1" checked><span>Require administrator approval</span></label>
+
                             <label><input type="checkbox" name="monitor_tab_switch" value="1" checked><span>Record tab switches for human review</span></label>
                             <label><input type="checkbox" name="fullscreen_mode" value="1"><span>Offer distraction-free fullscreen mode</span></label>
                         </div>
@@ -131,8 +131,8 @@ $defaultClose = date('Y-m-d\TH:i', strtotime('+1 day'));
                             <?php endforeach; ?>
                         </div>
                     </section>
-                    <?php if ($assessment['status'] === 'draft'): ?>
-                        <section class="cbt-submit-panel"><i class="fas fa-stamp"></i><h2>Ready for review?</h2><p>Once submitted, the paper is locked while an administrator checks the schedule and assessment settings.</p><form method="post" action="../../app/cbt_action.php"><input type="hidden" name="csrf_token" value="<?php echo cbt_h($cbtCsrf); ?>"><input type="hidden" name="cbt_action" value="submit_approval"><input type="hidden" name="assessment_id" value="<?php echo (int) $assessment['id']; ?>"><button class="cbt-btn cbt-btn--primary cbt-btn--block" type="submit" <?php echo count($paperQuestions) < 1 ? 'disabled' : ''; ?>>Submit for approval</button></form></section>
+                    <?php if (in_array($assessment['status'], ['draft','pending_approval'], true)): ?>
+                        <section class="cbt-submit-panel"><i class="fas fa-stamp"></i><h2>Ready to publish?</h2><p>Publishing locks the paper and makes it visible to eligible students. They can start at the scheduled time. Completed results are reviewed separately.</p><form method="post" action="../../app/cbt_action.php"><input type="hidden" name="csrf_token" value="<?php echo cbt_h($cbtCsrf); ?>"><input type="hidden" name="cbt_action" value="publish_assessment"><input type="hidden" name="assessment_id" value="<?php echo (int) $assessment['id']; ?>"><button class="cbt-btn cbt-btn--primary cbt-btn--block" type="submit" <?php echo count($paperQuestions) < 1 ? 'disabled' : ''; ?>>Publish assessment</button></form></section>
                     <?php endif; ?>
                 </aside>
             </div>

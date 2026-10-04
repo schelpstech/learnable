@@ -16,16 +16,21 @@ if (!$resultConfigTemplate) throw new RuntimeException('A result configuration t
 
 $tables = array(
     'lpterm', 'lhpsession', 'lhpclass', 'lhpsubject', 'lhpalloc', 'lhpscheme', 'lhpnote', 'lhpresultconfig',
-    'school_workflow_audit',
+    'school_workflow_audit', 'lhpuser', 'lhpstaff', 'lhpnotice',
     'cbt_assessments', 'cbt_assessment_topics', 'cbt_assessment_assignments',
     'cbt_questions', 'cbt_question_options', 'cbt_assessment_questions', 'cbt_audit_log',
+    'cbt_attempts', 'cbt_notification_targets', 'cbt_attempt_questions', 'cbt_attempt_answers',
 );
+// MySQL cannot reference a temporary table multiple times in assessment queries.
+// A uniquely named disposable schema exercises the real queries without live data.
+$sourceSchema=$db->query('SELECT DATABASE()')->fetchColumn();
+$testSchema='qa_cbt_authoring_'.bin2hex(random_bytes(8));
+$db->exec('CREATE DATABASE `'.$testSchema.'`');
+try {
 foreach ($tables as $table) {
-    $template = 'qa_authoring_' . $table;
-    $db->exec('CREATE TEMPORARY TABLE `' . $template . '` LIKE `' . $table . '`');
-    $db->exec('CREATE TEMPORARY TABLE `' . $table . '` LIKE `' . $template . '`');
-    $db->exec('DROP TEMPORARY TABLE `' . $template . '`');
+    $db->exec('CREATE TABLE `'.$testSchema.'`.`'.$table.'` LIKE `'.$sourceSchema.'`.`'.$table.'`');
 }
+$db->exec('USE `'.$testSchema.'`');
 $db->exec('ALTER TABLE cbt_assessments AUTO_INCREMENT=990000001');
 
 $term = '1st Term 2098/2099';
@@ -112,4 +117,47 @@ cbt_authoring_check(
     'authoring actions remain recorded in the CBT audit log'
 );
 
-echo "CBT authoring checks passed against connection-local temporary tables.\n";
+cbt_authoring_check((int)$service->assessment($assessmentId)['require_approval']===0, 'new drafts never require pre-approval, including old form submissions');
+try { $service->publishAssessment($assessmentId,$teacher); throw new LogicException('An empty paper was published.'); }
+catch (RuntimeException $e) { cbt_authoring_check(str_contains($e->getMessage(),'at least one question'), 'an incomplete paper cannot be published'); }
+$service->addQuestionToAssessment($assessmentId,$questionId,$teacher,false);
+$db->prepare('INSERT INTO lhpuser (uname,fname,classid,email,status) VALUES (?,?,?,?,1)')->execute(['qa-cbt-student','QA Student',$classId,'']);
+cbt_authoring_check(count($service->learnerAssessments('qa-cbt-student'))===0,'a draft is hidden from students');
+try { $service->publishAssessment($assessmentId,'qa-outsider'); throw new LogicException('An outsider published the paper.'); }
+catch (RuntimeException $e) { cbt_authoring_check(true,'another teacher cannot publish the paper'); }
+$db->prepare("UPDATE cbt_assessments SET status='pending_approval',require_approval=1 WHERE id=?")->execute([$assessmentId]);
+cbt_authoring_check($service->submitForApproval($assessmentId,$teacher)==='scheduled','a legacy pending paper publishes directly without an administrator');
+$paper=$service->assessment($assessmentId);
+cbt_authoring_check(!$paper['approved_by'] && !$paper['approved_at'],'teacher publishing does not stamp results as approved');
+cbt_authoring_check(count($service->learnerAssessments('qa-cbt-student'))===1,'the published paper is immediately visible to eligible students');
+cbt_authoring_check($service->effectiveStatus($paper)==='scheduled','the future opening time still controls attempts');
+try { (new CbtAttemptService($db))->publishResults($assessmentId,$teacher,false); throw new LogicException('Unapproved results were published.'); }
+catch (RuntimeException $e) { cbt_authoring_check(str_contains($e->getMessage(),'approved'),'completed-result publication still requires approval'); }
+cbt_authoring_check((int)$db->query('SELECT COUNT(*) FROM cbt_notification_targets')->fetchColumn()===1,'the eligible student receives a portal notice without duplicates');
+cbt_authoring_check((int)$db->query('SELECT COUNT(*) FROM lhpnotice')->fetchColumn()===1,'one class notice is created when the teacher publishes');
+$attemptService=new CbtAttemptService($db);
+try { $attemptService->startAttempt($assessmentId,'qa-cbt-student','qa-device'); throw new LogicException('Early start succeeded.'); }
+catch (RuntimeException $e) { cbt_authoring_check(str_contains($e->getMessage(),'not opened'),'students cannot start before the opening time'); }
+$db->prepare('UPDATE cbt_assessments SET start_at=?,close_at=? WHERE id=?')->execute([date('Y-m-d H:i:s',strtotime('-1 minute')),date('Y-m-d H:i:s',strtotime('+1 hour')),$assessmentId]);
+$attempt=$attemptService->startAttempt($assessmentId,'qa-cbt-student','qa-device');
+cbt_authoring_check($attempt['attempt_id']>0,'an eligible student starts the teacher-published paper without admin pre-approval');
+$_SESSION=['auth_account_type'=>'staff','auth_username'=>$teacher,'active'=>$teacher,'user_type'=>'Instructor'];
+try { $service->approveResults($assessmentId,$teacher,'Reviewed'); throw new LogicException('Teacher approved results.'); }
+catch (RuntimeException $e) { cbt_authoring_check(str_contains($e->getMessage(),'administration'),'teachers cannot approve their own completed results'); }
+$db->prepare('INSERT INTO lhpstaff (sname,staffname,spwd,semail,sfone,role,status) VALUES (?,?,?,?,?,?,1)')->execute(['qa-registry','QA Registry','','','','r']);
+$_SESSION=['unamed'=>'qa-registry','auth_account_type'=>'staff','auth_username'=>'qa-registry'];
+try { $service->approveResults($assessmentId,'qa-registry','Reviewed'); throw new LogicException('In-progress scripts were approved.'); }
+catch (RuntimeException $e) { cbt_authoring_check(str_contains($e->getMessage(),'mark all'),'in-progress scripts prevent result approval'); }
+$receipt=$attemptService->submitAttempt($attempt['attempt_id'],$attempt['token'],false);
+cbt_authoring_check($receipt['status']==='marked','an objective script reaches the completed marking state');
+$service->approveResults($assessmentId,'qa-registry','Completed scripts reviewed.');
+cbt_authoring_check($service->assessment($assessmentId)['approved_by']==='qa-registry','academic approval records the approving registry actor');
+cbt_authoring_check($attemptService->publishResults($assessmentId,$teacher,false)===1,'the teacher can publish completed results after academic approval');
+echo "CBT authoring checks passed against an isolated disposable schema.\n";
+
+} finally {
+    $db->exec('USE `'.$sourceSchema.'`');
+    if (!preg_match('/^qa_cbt_authoring_[a-f0-9]{16}$/D',$testSchema)) throw new RuntimeException('Invalid test schema.');
+    $db->exec('DROP DATABASE `'.$testSchema.'`');
+    echo "Disposable CBT test schema removed.\n";
+}

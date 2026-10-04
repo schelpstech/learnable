@@ -6,14 +6,10 @@ if(!isset($_SESSION['unamed'])){
 }
 ?>
 <?php
-if(!empty($_GET['unamd'])) {         
-        $edt = $_GET["unamd"];
- 
-}
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpstaff WHERE sname = '".$edt."'";
-$editresult = $db_handle->runQuery($query);
+$edt = isset($_GET['unamd']) && is_string($_GET['unamd']) ? trim($_GET['unamd']) : '';
+$q=database_pdo()->prepare('SELECT * FROM lhpstaff WHERE sname=?');
+$q->execute([$edt]);$editresult=$q->fetchAll(PDO::FETCH_ASSOC);
+if (!$editresult) { http_response_code(404); exit('Staff account not found.'); }
 ?>
 
 
@@ -155,6 +151,7 @@ $editresult = $db_handle->runQuery($query);
                         <br>
 						<div class="row">
 						<form method="POST" action="edstaff.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['admin_csrf'], ENT_QUOTES, 'UTF-8'); ?>">
                          
 							 	<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" hidden>
                                 <label> Staff's UserName</label>

@@ -145,7 +145,7 @@ class CbtService
             $this->flag($input, 'allow_backtrack'), $this->flag($input, 'randomize_questions'),
             $this->flag($input, 'shuffle_options'), $this->flag($input, 'auto_submit', true),
             $this->flag($input, 'show_score'), $this->flag($input, 'allow_review'),
-            $this->flag($input, 'show_correct_answers'), $this->flag($input, 'require_approval', true),
+            $this->flag($input, 'show_correct_answers'), 0,
             $this->flag($input, 'late_entry'), $this->flag($input, 'late_submission'),
             $this->flag($input, 'fullscreen_mode'), $this->flag($input, 'monitor_tab_switch', true),
             $this->flag($input, 'restrict_clipboard'), $actorId
@@ -447,15 +447,34 @@ class CbtService
 
     public function submitForApproval($assessmentId, $actorId)
     {
+        // Retain compatibility with open forms and integrations using the old action.
+        return $this->publishAssessment($assessmentId, $actorId);
+    }
+
+    public function publishAssessment($assessmentId, $actorId)
+    {
         $assessment = $this->assessment($assessmentId);
         $this->assertAssessmentManager($assessment, $actorId, false);
-        $this->assertAssessmentReady($assessmentId);
-        $status = (int) $assessment['require_approval'] === 1 ? 'pending_approval' : 'scheduled';
-        $this->setAssessmentStatus($assessmentId, $status, $actorId, false, 'Assessment submitted by its teacher.');
-        if ($status === 'scheduled') {
-            $this->queuePortalNotices($assessmentId, 'published');
+        if (!in_array($assessment['status'], ['draft','pending_approval'], true)) {
+            throw new RuntimeException('Only a draft or a paper awaiting approval can be published.');
         }
-        return $status;
+        $this->setAssessmentStatus($assessmentId, 'scheduled', $actorId, false, 'Assessment published by its assigned teacher.');
+        $this->pdo->prepare('UPDATE cbt_assessments SET require_approval=0 WHERE id=?')->execute([$assessmentId]);
+        return 'scheduled';
+    }
+
+    public function approveResults($assessmentId, $actorId, $reason)
+    {
+        $access=new StaffAccess($this->pdo,$_SESSION);
+        if (!$access->academic() || $access->username() !== $actorId) throw new RuntimeException('Academic administration access is required to approve results.');
+        $assessment=$this->assessment($assessmentId);
+        if (in_array($assessment['status'], ['draft','pending_approval','cancelled','archived'], true)) {
+            throw new RuntimeException('Only a published assessment with completed scripts can have its results approved.');
+        }
+        $unfinished=(int)$this->scalar("SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id=? AND status IN ('in_progress','marking','submitted')",[$assessmentId]);
+        $completed=(int)$this->scalar("SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id=? AND status IN ('marked','published')",[$assessmentId]);
+        if ($unfinished || !$completed) throw new RuntimeException('Complete and mark all student attempts before approving results.');
+        $this->setAssessmentStatus($assessmentId,'approved',$actorId,true,$reason);
     }
 
     public function setAssessmentStatus($assessmentId, $newStatus, $actorId, $isAdmin, $reason)
@@ -472,6 +491,12 @@ class CbtService
         }
         if (in_array($newStatus, array('scheduled', 'approved', 'published'), true)) {
             $this->assertAssessmentReady($assessmentId);
+        }
+        if ($newStatus === 'scheduled' && !$isAdmin) {
+            $context=$this->activeContext();
+            if ($assessment['term'] !== $context['term']) throw new RuntimeException('Only an assessment in the active term can be published.');
+            $this->assertTeacherAllocation($actorId,$assessment['class_id'],$assessment['subject_id'],$context['term']);
+            if (strtotime($assessment['close_at']) <= time()) throw new RuntimeException('This assessment has already closed. Create a new draft with a future schedule.');
         }
 
         $sql = 'UPDATE cbt_assessments SET status = ?, approved_by = approved_by, approved_at = approved_at, published_at = published_at, archived_at = archived_at WHERE id = ?';
