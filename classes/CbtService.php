@@ -186,6 +186,48 @@ class CbtService
         }
     }
 
+    public function updateAssessment($assessmentId, array $input, $actorId, $isAdmin)
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $paper = $this->one('SELECT * FROM cbt_assessments WHERE id = ? FOR UPDATE', array($assessmentId));
+            if (!$paper) throw new RuntimeException('Assessment not found.');
+            $this->assertAssessmentManager($paper, $actorId, $isAdmin);
+            if (!in_array($paper['status'], array('draft', 'pending_approval', 'paused'), true)
+                || $this->scalar('SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id = ?', array($assessmentId))) {
+                throw new RuntimeException('Settings can be edited only on a draft or paused paper before students start. Duplicate the paper to make a new assessment.');
+            }
+            $start = $this->dateTime($input['start_at'] ?? $paper['start_at'], 'Opening date');
+            $close = $this->dateTime($input['close_at'] ?? $paper['close_at'], 'Closing date');
+            if ($close <= $start || $close <= new DateTimeImmutable('now')) throw new InvalidArgumentException('Choose a future closing date after the opening date.');
+            $values = array();
+            foreach (array('title' => 190, 'instructions' => 5000) as $key => $max) {
+                $values[$key] = CbtSecurity::cleanText($input[$key] ?? $paper[$key], $max, $key !== 'title');
+            }
+            foreach (array('assessment_type' => self::assessmentTypes(), 'result_treatment' => self::resultTreatments(), 'navigation_mode' => array('free', 'linear')) as $key => $allowed) {
+                $value = $input[$key] ?? $paper[$key];
+                if (!in_array($value, $allowed, true)) throw new InvalidArgumentException('Invalid assessment setting: ' . $key);
+                $values[$key] = $value;
+            }
+            $values['pass_mark'] = CbtSecurity::decimal($input['pass_mark'] ?? $paper['pass_mark'], 'Pass mark', 0, max(0, (float) $paper['total_marks']));
+            $values['start_at'] = $start->format('Y-m-d H:i:s');
+            $values['close_at'] = $close->format('Y-m-d H:i:s');
+            $values['duration_minutes'] = CbtSecurity::positiveInt($input['duration_minutes'] ?? $paper['duration_minutes'], 'Time allowed', 1, 720);
+            $values['max_attempts'] = CbtSecurity::positiveInt($input['max_attempts'] ?? $paper['max_attempts'], 'Number of attempts', 1, 5);
+            foreach (array('allow_backtrack', 'randomize_questions', 'shuffle_options', 'auto_submit', 'show_score', 'allow_review', 'show_correct_answers', 'late_entry', 'late_submission', 'fullscreen_mode', 'monitor_tab_switch', 'restrict_clipboard') as $key) {
+                $values[$key] = array_key_exists($key, $input) ? $this->flag($input, $key) : (int) $paper[$key];
+            }
+            $columns = array_map(function ($key) { return '`' . $key . '` = ?'; }, array_keys($values));
+            $params = array_values($values); $params[] = $assessmentId;
+            $this->pdo->prepare('UPDATE cbt_assessments SET ' . implode(', ', $columns) . ' WHERE id = ?')->execute($params);
+            $this->audit($isAdmin ? 'admin' : 'instructor', $actorId, 'assessment.settings_updated', 'assessment', $assessmentId, $paper, $values);
+            $this->pdo->commit();
+        } catch (Throwable $exception) {
+            if ($this->pdo->inTransaction()) $this->pdo->rollBack();
+            throw $exception;
+        }
+    }
+
     public function createQuestion(array $input, $actorId, $isAdmin)
     {
         $context = $this->activeContext();
@@ -311,6 +353,10 @@ class CbtService
         $this->assertAssessmentManager($assessment, $actorId, $isAdmin);
         $start = new DateTimeImmutable($assessment['start_at']);
         $close = new DateTimeImmutable($assessment['close_at']);
+        $window = max(60, $close->getTimestamp() - $start->getTimestamp());
+        $start = $start->modify('+7 days');
+        if ($start <= new DateTimeImmutable('now')) $start = new DateTimeImmutable('+1 hour');
+        $close = $start->modify('+' . $window . ' seconds');
         $this->pdo->beginTransaction();
         try {
             $statement = $this->pdo->prepare(
@@ -333,8 +379,8 @@ class CbtService
                  FROM cbt_assessments WHERE id = ?'
             );
             $statement->execute(array(
-                $start->modify('+7 days')->format('Y-m-d H:i:s'),
-                $close->modify('+7 days')->format('Y-m-d H:i:s'),
+                $start->format('Y-m-d H:i:s'),
+                $close->format('Y-m-d H:i:s'),
                 $actorId, $assessmentId
             ));
             $copyId = (int) $this->pdo->lastInsertId();
@@ -467,14 +513,22 @@ class CbtService
     {
         $access=new StaffAccess($this->pdo,$_SESSION);
         if (!$access->academic() || $access->username() !== $actorId) throw new RuntimeException('Academic administration access is required to approve results.');
-        $assessment=$this->assessment($assessmentId);
-        if (in_array($assessment['status'], ['draft','pending_approval','cancelled','archived'], true)) {
-            throw new RuntimeException('Only a published assessment with completed scripts can have its results approved.');
+        (new CbtAttemptService($this->pdo))->finalizeExpiredAttempts($assessmentId, 5000);
+        $this->pdo->beginTransaction();
+        try {
+            $assessment=$this->one('SELECT * FROM cbt_assessments WHERE id = ? FOR UPDATE', array($assessmentId));
+            if (!$assessment || in_array($assessment['status'], ['draft','pending_approval','paused','cancelled','archived'], true)) {
+                throw new RuntimeException('Only a published assessment with completed scripts can have its results approved.');
+            }
+            $unfinished=(int)$this->scalar("SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id=? AND status IN ('in_progress','marking','submitted')",[$assessmentId]);
+            $completed=(int)$this->scalar("SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id=? AND status IN ('marked','published')",[$assessmentId]);
+            if ($unfinished || !$completed) throw new RuntimeException('Complete and mark all student attempts before approving results.');
+            $this->setAssessmentStatus($assessmentId,'approved',$actorId,true,$reason);
+            $this->pdo->commit();
+        } catch (Throwable $exception) {
+            if ($this->pdo->inTransaction()) $this->pdo->rollBack();
+            throw $exception;
         }
-        $unfinished=(int)$this->scalar("SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id=? AND status IN ('in_progress','marking','submitted')",[$assessmentId]);
-        $completed=(int)$this->scalar("SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id=? AND status IN ('marked','published')",[$assessmentId]);
-        if ($unfinished || !$completed) throw new RuntimeException('Complete and mark all student attempts before approving results.');
-        $this->setAssessmentStatus($assessmentId,'approved',$actorId,true,$reason);
     }
 
     public function setAssessmentStatus($assessmentId, $newStatus, $actorId, $isAdmin, $reason)
@@ -492,6 +546,7 @@ class CbtService
         if (in_array($newStatus, array('scheduled', 'approved', 'published'), true)) {
             $this->assertAssessmentReady($assessmentId);
         }
+        if ($newStatus === 'scheduled' && strtotime($assessment['close_at']) <= time()) throw new RuntimeException('Edit the schedule on a paused paper before students start, or duplicate it to create a future assessment.');
         if ($newStatus === 'scheduled' && !$isAdmin) {
             $context=$this->activeContext();
             if ($assessment['term'] !== $context['term']) throw new RuntimeException('Only an assessment in the active term can be published.');
@@ -544,6 +599,7 @@ class CbtService
                     (SELECT COUNT(*) FROM cbt_assessment_questions aq WHERE aq.assessment_id = a.id) AS actual_question_count,
                     (SELECT COUNT(*) FROM cbt_attempts atp WHERE atp.assessment_id = a.id AND atp.learner_id = ?) AS attempts_used,
                     (SELECT atp.status FROM cbt_attempts atp WHERE atp.assessment_id = a.id AND atp.learner_id = ? ORDER BY atp.attempt_no DESC LIMIT 1) AS attempt_status,
+                    (SELECT atp.expires_at FROM cbt_attempts atp WHERE atp.assessment_id = a.id AND atp.learner_id = ? ORDER BY atp.attempt_no DESC LIMIT 1) AS attempt_expires_at,
                     (SELECT atp.id FROM cbt_attempts atp WHERE atp.assessment_id = a.id AND atp.learner_id = ? ORDER BY atp.attempt_no DESC LIMIT 1) AS attempt_id
              FROM cbt_assessments a
              INNER JOIN lhpclass c ON c.classid = a.class_id
@@ -559,7 +615,7 @@ class CbtService
                        OR (aa.assignment_type = \'student\' AND aa.learner_id = ?))
                )
              ORDER BY a.start_at DESC',
-            array($learnerId, $learnerId, $learnerId, $context['term'], (int) $learner['classid'], $learnerId)
+            array($learnerId, $learnerId, $learnerId, $learnerId, $context['term'], (int) $learner['classid'], $learnerId)
         );
     }
 
@@ -767,6 +823,10 @@ class CbtService
             throw new RuntimeException('Add at least one question before scheduling this assessment.');
         }
         $this->recalculateAssessment($assessmentId);
+        $paper = $this->assessment($assessmentId);
+        if ((float) $paper['pass_mark'] > (float) $paper['total_marks']) {
+            throw new RuntimeException('The pass mark exceeds the paper total. Edit assessment settings before publishing.');
+        }
     }
 
     private function recalculateAssessment($assessmentId)

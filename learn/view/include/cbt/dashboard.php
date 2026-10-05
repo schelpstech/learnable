@@ -69,6 +69,9 @@ foreach ($assessments as $assessment) {
                         $effective = $cbtIsInstructor ? $cbtService->effectiveStatus($assessment) : $cbtService->effectiveStatus($assessment);
                         $isOpen = $now >= new DateTimeImmutable($assessment['start_at']) && $now <= new DateTimeImmutable($assessment['close_at']);
                         $isUpcoming = $now < new DateTimeImmutable($assessment['start_at']);
+                        $canResume = !$cbtIsInstructor && $assessment['attempt_status'] === 'in_progress'
+                            && !empty($assessment['attempt_expires_at']) && $now < new DateTimeImmutable($assessment['attempt_expires_at'])
+                            && !in_array($assessment['status'], array('paused', 'cancelled', 'archived'), true);
                     ?>
                         <article class="cbt-assessment-card">
                             <div class="cbt-assessment-card__date">
@@ -95,15 +98,15 @@ foreach ($assessments as $assessment) {
                             </div>
                             <div class="cbt-assessment-card__actions">
                                 <?php if ($cbtIsInstructor): ?>
-                                    <?php if (in_array($assessment['status'], array('draft', 'pending_approval'), true)): ?>
-                                        <a class="cbt-btn cbt-btn--small cbt-btn--primary" href="../../app/router.php?pageid=cbt_builder&amp;assessment_id=<?php echo (int) $assessment['id']; ?>">Build paper</a>
+                                    <?php if (in_array($assessment['status'], array('draft', 'pending_approval', 'paused'), true)): ?>
+                                        <a class="cbt-btn cbt-btn--small cbt-btn--primary" href="../../app/router.php?pageid=cbt_builder&amp;assessment_id=<?php echo (int) $assessment['id']; ?>"><?php echo $assessment['status'] === 'paused' ? 'Settings & resume' : 'Build paper'; ?></a>
                                     <?php endif; ?>
                                     <a class="cbt-text-link" href="../../app/router.php?pageid=cbt_marking&amp;assessment_id=<?php echo (int) $assessment['id']; ?>">Scripts & analysis <i class="fas fa-arrow-right"></i></a>
                                     <form method="post" action="../../app/cbt_action.php" class="cbt-copy-form"><input type="hidden" name="csrf_token" value="<?php echo cbt_h($cbtCsrf); ?>"><input type="hidden" name="cbt_action" value="duplicate_assessment"><input type="hidden" name="assessment_id" value="<?php echo (int) $assessment['id']; ?>"><button class="cbt-text-link" type="submit">Duplicate as draft</button></form>
                                 <?php else: ?>
                                     <?php if ($assessment['attempt_status'] === 'published' && !empty($assessment['attempt_id'])): ?>
                                         <a class="cbt-btn cbt-btn--small cbt-btn--paper" href="../../app/router.php?pageid=cbt_review&amp;attempt_id=<?php echo (int) $assessment['attempt_id']; ?>">View result</a>
-                                    <?php elseif ($isOpen && ((int) $assessment['attempts_used'] < (int) $assessment['max_attempts'] || $assessment['attempt_status'] === 'in_progress')): ?>
+                                    <?php elseif ($canResume || (($isOpen || (!$isUpcoming && (int) $assessment['late_entry'])) && (int) $assessment['attempts_used'] < (int) $assessment['max_attempts'])): ?>
                                         <form method="post" action="../../app/cbt_action.php" class="cbt-start-form">
                                             <input type="hidden" name="csrf_token" value="<?php echo cbt_h($cbtCsrf); ?>">
                                             <input type="hidden" name="cbt_action" value="start_attempt">

@@ -100,6 +100,10 @@ $defaultClose = date('Y-m-d\TH:i', strtotime('+1 day'));
                 <div><span>Questions</span><strong><?php echo count($paperQuestions); ?></strong></div><div><span>Total marks</span><strong><?php echo cbt_h(number_format((float) $assessment['total_marks'], 1)); ?></strong></div><div><span>Time</span><strong><?php echo (int) $assessment['duration_minutes']; ?> min</strong></div><div><span>Opens</span><strong><?php echo date('j M, g:i a', strtotime($assessment['start_at'])); ?></strong></div>
             </section>
 
+            <?php $settingsH = 'cbt_h'; $settingsCsrf = $cbtCsrf; $settingsAction = '../../app/cbt_action.php'; include __DIR__ . '/settings-form.php'; ?>
+            <?php if ($assessment['status'] === 'paused'): ?>
+                <form method="post" action="../../app/cbt_action.php" class="cbt-board"><input type="hidden" name="csrf_token" value="<?php echo cbt_h($cbtCsrf); ?>"><input type="hidden" name="cbt_action" value="resume_assessment"><input type="hidden" name="assessment_id" value="<?php echo (int) $assessment['id']; ?>"><button class="cbt-btn cbt-btn--primary">Resume assessment</button></form>
+            <?php endif; ?>
             <div class="cbt-builder-layout">
                 <main>
                     <section class="cbt-board">

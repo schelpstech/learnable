@@ -13,8 +13,10 @@
     var versions = {};
     var serverStartedAt = Date.parse(state.server_time);
     var clientStartedAt = Date.now();
-    var expiry = Date.parse(attempt.expires_at);
+    var expiry = Date.parse(attempt.expires_at_iso || attempt.expires_at);
     var submitting = false;
+    var inFlight = {};
+    var refreshing = null;
     var storageKey = 'learnable_cbt_' + attempt.id;
     var saveTimer = null;
 
@@ -86,6 +88,7 @@
     }
 
     function markChanged(questionId, answer) {
+        if (submitting || blocked() || attempt.status !== 'in_progress') return;
         answers[questionId] = answer;
         versions[questionId] = Number(versions[questionId] || 0) + 1;
         dirty[questionId] = true;
@@ -93,33 +96,70 @@
         setSaveStatus('saving', navigator.onLine ? 'Saving answer…' : 'Saved on this device');
         renderNavigation();
         clearTimeout(saveTimer);
-        saveTimer = setTimeout(function () { saveQuestion(questionId); }, 650);
+        saveTimer = setTimeout(function () { saveQuestion(questionId).catch(function () {}); }, 650);
     }
 
     function saveQuestion(questionId) {
-        if (!dirty[questionId] || submitting || attempt.status !== 'in_progress') return Promise.resolve();
+        if (inFlight[questionId]) return inFlight[questionId].then(function () { return saveQuestion(questionId); });
+        if (!dirty[questionId] || attempt.status !== 'in_progress') return Promise.resolve();
+        if (blocked()) return Promise.reject(new Error('The assessment is currently ' + attempt.assessment_status + '.'));
         if (!navigator.onLine) {
             setSaveStatus('offline', 'Waiting to reconnect');
-            return Promise.resolve();
+            return Promise.reject(new Error('Reconnect before submitting. Your unsent answers remain on this device.'));
         }
         var question = questions.filter(function (item) { return String(item.id) === String(questionId); })[0];
-        return api({
+        var sentVersion = versions[questionId];
+        inFlight[questionId] = api({
             action: 'save', question_id: Number(questionId), answer: answers[questionId],
-            flagged: !!question.is_flagged, save_version: versions[questionId]
+            flagged: !!question.is_flagged, save_version: sentVersion
         }).then(function (data) {
             if (data.submitted) {
                 showReceipt(data.receipt);
                 return;
             }
-            delete dirty[questionId];
+            syncClock(data);
+            if (versions[questionId] === sentVersion) delete dirty[questionId];
             setSaveStatus(Object.keys(dirty).length ? 'saving' : 'saved', Object.keys(dirty).length ? 'Saving answers…' : 'All answers saved');
-        }).catch(function () {
+        }).catch(function (error) {
             setSaveStatus('offline', 'Save pending — reconnecting');
-        });
+            throw error;
+        }).finally(function () { delete inFlight[questionId]; });
+        return inFlight[questionId];
     }
 
     function saveAll() {
-        return Promise.all(Object.keys(dirty).map(saveQuestion));
+        return Promise.all(Object.keys(dirty).map(saveQuestion)).then(function () {
+            if (attempt.status === 'in_progress' && Object.keys(dirty).length) return saveAll();
+        });
+    }
+
+    function blocked() {
+        return ['paused', 'cancelled', 'archived', 'draft', 'pending_approval'].indexOf(attempt.assessment_status) !== -1;
+    }
+
+    function syncClock(data) {
+        if (data.expires_at_iso) expiry = Date.parse(data.expires_at_iso);
+        if (data.server_time) { serverStartedAt = Date.parse(data.server_time); clientStartedAt = Date.now(); }
+    }
+
+    function updateControls() {
+        var disabled = submitting || blocked();
+        elements.answer.querySelectorAll('input, select, textarea').forEach(function (node) { node.disabled = disabled; });
+        elements.submit.disabled = disabled;
+        elements.flag.disabled = disabled;
+        if (blocked()) setSaveStatus('offline', 'Assessment ' + attempt.assessment_status + ' — waiting for the school');
+    }
+
+    function refreshState() {
+        if (refreshing) return refreshing;
+        refreshing = api({action: 'state'}).then(function (data) {
+            syncClock(data);
+            syncClock(data.attempt);
+            attempt.assessment_status = data.attempt.assessment_status;
+            if (data.attempt.status !== 'in_progress') showReceipt(data.attempt);
+            else updateControls();
+        }).finally(function () { refreshing = null; });
+        return refreshing;
     }
 
     function renderNavigation() {
@@ -228,6 +268,7 @@
         elements.previous.disabled = current === 0 || (attempt.navigation_mode === 'linear' && !Number(attempt.allow_backtrack));
         elements.next.textContent = current === questions.length - 1 ? 'Review answers →' : 'Next →';
         renderMedia(question); renderAnswer(question); renderNavigation();
+        updateControls();
     }
 
     function sendEvent(type, details) {
@@ -245,17 +286,19 @@
         var values = elements.receipt.querySelectorAll('dd');
         values[0].textContent = receipt.submission_ref || 'Recorded';
         values[1].textContent = receipt.submitted_at || new Date().toLocaleString();
-        try { localStorage.removeItem(storageKey); } catch (error) {}
+        if (Object.keys(dirty).length) {
+            elements.receipt.querySelector('p').textContent = 'The server recorded your script. Some changes on this device were not saved before time expired. Contact your teacher; the local copy has been retained.';
+        } else { try { localStorage.removeItem(storageKey); } catch (error) {} }
     }
 
     function submit() {
-        if (submitting || attempt.status !== 'in_progress') return;
+        if (submitting || blocked() || attempt.status !== 'in_progress') return;
         var unanswered = questions.filter(function (question) { return !isAnswered(answers[question.id]); }).length;
         var prompt = unanswered ? unanswered + ' question(s) are unanswered. Submit your script anyway?' : 'Submit your completed script now? You cannot change answers afterwards.';
         if (!window.confirm(prompt)) return;
-        submitting = true; setSaveStatus('saving', 'Finalising script…');
-        saveAll().then(function () { return api({action: 'submit'}); }).then(showReceipt).catch(function (error) {
-            submitting = false; setSaveStatus('offline', error.message || 'Submission pending'); window.alert(error.message || 'Unable to submit yet. Please stay on this page.');
+        submitting = true; updateControls(); setSaveStatus('saving', 'Finalising script…');
+        saveAll().then(function () { if (attempt.status === 'in_progress') return api({action: 'submit'}).then(showReceipt); }).catch(function (error) {
+            submitting = false; updateControls(); setSaveStatus('offline', error.message || 'Submission pending'); window.alert(error.message || 'Unable to submit yet. Please stay on this page.');
         });
     }
 
@@ -268,8 +311,12 @@
         elements.timer.parentNode.classList.toggle('is-warning', seconds <= 300);
         if (seconds === 300 || seconds === 60) elements.timer.parentNode.setAttribute('aria-label', seconds === 300 ? 'Five minutes remaining' : 'One minute remaining');
         if (seconds <= 0 && !submitting) {
-            submitting = true; saveAll().finally(function () { api({action: 'submit'}).then(showReceipt).catch(function () { setTimeout(tick, 1000); }); });
-            return;
+            submitting = true; updateControls();
+            // The server finalizes expired scripts and may have granted additional time.
+            saveAll().catch(function () {}).then(function () {
+                if (attempt.status === 'in_progress') return refreshState();
+            }).catch(function () { setSaveStatus('offline', 'Submission pending — reconnecting'); })
+                .finally(function () { submitting = false; updateControls(); });
         }
         setTimeout(tick, 1000);
     }
@@ -282,11 +329,12 @@
     document.addEventListener('visibilitychange', function () { sendEvent(document.hidden ? 'tab_hidden' : 'tab_visible', {client_time: new Date().toISOString()}); });
     document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement) sendEvent('fullscreen_exit', {client_time: new Date().toISOString()}); });
     window.addEventListener('offline', function () { elements.connectivity.hidden = false; setSaveStatus('offline', 'Saved on this device'); sendEvent('offline', {client_time: new Date().toISOString()}); });
-    window.addEventListener('online', function () { elements.connectivity.hidden = true; sendEvent('online', {client_time: new Date().toISOString()}); saveAll(); });
+    window.addEventListener('online', function () { elements.connectivity.hidden = true; sendEvent('online', {client_time: new Date().toISOString()}); refreshState().then(saveAll).catch(function () {}); });
     if (Number(attempt.restrict_clipboard)) document.addEventListener('copy', function (event) { event.preventDefault(); sendEvent('clipboard', {client_time: new Date().toISOString()}); });
     window.addEventListener('beforeunload', function (event) { if (attempt.status === 'in_progress' && Object.keys(dirty).length) { event.preventDefault(); event.returnValue = ''; } });
-    setInterval(saveAll, Number(initial.autosave_interval || 8000));
+    setInterval(function () { if (!submitting && !blocked()) saveAll().catch(function () {}); }, Number(initial.autosave_interval || 8000));
+    setInterval(function () { if (attempt.status === 'in_progress') refreshState().catch(function () {}); }, 10000);
 
     if (attempt.status !== 'in_progress') showReceipt({submission_ref: attempt.submission_ref, submitted_at: attempt.submitted_at, status: attempt.status});
-    else { render(); tick(); if (Object.keys(dirty).length) saveAll(); }
+    else { render(); tick(); if (Object.keys(dirty).length) saveAll().catch(function () {}); }
 }());

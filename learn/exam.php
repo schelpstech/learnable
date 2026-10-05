@@ -72,7 +72,7 @@ if ($state) {
         </section>
     </main>
     <script type="application/json" id="cbt-exam-state"><?php echo json_encode(array('state' => $state, 'autosave_interval' => $autosaveInterval), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
-    <script src="../assets/js/cbt-exam.js?v=1" defer></script>
+    <script src="../assets/js/cbt-exam.js?v=2" defer></script>
 <?php endif; ?>
 </body>
 </html>

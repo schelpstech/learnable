@@ -81,6 +81,14 @@ try {
         if ($outcome['errors']) $message .= ' ' . count($outcome['errors']) . ' row(s) need attention: ' . implode(' ', array_slice($outcome['errors'], 0, 3));
         $_SESSION[$flashKey] = array('type' => $outcome['created'] > 0 ? 'success' : 'error', 'message' => $message);
         $redirect = 'router.php?pageid=cbt_bank';
+    } elseif ($action === 'update_assessment') {
+        $service->updateAssessment((int) $_POST['assessment_id'], $_POST, $actorId, false);
+        $_SESSION[$flashKey] = array('type' => 'success', 'message' => 'Assessment settings saved.');
+        $redirect = 'router.php?pageid=cbt_builder&assessment_id=' . (int) $_POST['assessment_id'];
+    } elseif ($action === 'resume_assessment') {
+        $service->setAssessmentStatus((int) $_POST['assessment_id'], 'scheduled', $actorId, false, 'Resumed by the teacher.');
+        $_SESSION[$flashKey] = array('type' => 'success', 'message' => 'Assessment resumed.');
+        $redirect = 'router.php?pageid=cbt';
     } elseif ($action === 'add_question') {
         $service->addQuestionToAssessment((int) $_POST['assessment_id'], (int) $_POST['question_id'], $actorId, false);
         $_SESSION[$flashKey] = array('type' => 'success', 'message' => 'Question added to the assessment paper.');
@@ -123,8 +131,8 @@ try {
     }
 } catch (Throwable $exception) {
     $_SESSION[$flashKey] = array('type' => 'error', 'message' => $exception->getMessage());
-    if (!empty($_POST['assessment_id']) && ctype_digit((string) $_POST['assessment_id'])) {
-        $page = isset($_POST['cbt_action']) && $_POST['cbt_action'] === 'mark_answer' ? 'cbt_marking' : 'cbt_builder';
+    if ($role !== 'Learner' && !empty($_POST['assessment_id']) && ctype_digit((string) $_POST['assessment_id'])) {
+        $page = in_array($_POST['cbt_action'] ?? '', array('mark_answer', 'publish_results', 'transfer_scores'), true) ? 'cbt_marking' : 'cbt_builder';
         $redirect = 'router.php?pageid=' . $page . '&assessment_id=' . rawurlencode((string) $_POST['assessment_id']);
         if ($page === 'cbt_marking' && !empty($_POST['attempt_id']) && ctype_digit((string) $_POST['attempt_id'])) {
             $redirect .= '&attempt_id=' . rawurlencode((string) $_POST['attempt_id']);

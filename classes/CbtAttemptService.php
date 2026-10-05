@@ -23,7 +23,6 @@ class CbtAttemptService
         try {
             $assessment = $this->lockedAssessment($assessmentId);
             $this->assertEligible($assessmentId, $learnerId, (int) $learner['classid']);
-            $this->assertAttemptWindow($assessment);
 
             $active = $this->one(
                 'SELECT * FROM cbt_attempts
@@ -38,6 +37,7 @@ class CbtAttemptService
                 if (new DateTimeImmutable($active['expires_at']) <= new DateTimeImmutable('now')) {
                     $this->finalizeLocked($active, true);
                 } else {
+                    $this->assertRunning($assessment);
                     $statement = $this->pdo->prepare(
                         'UPDATE cbt_attempts SET token_hash = ?, last_seen_at = NOW(),
                          client_fingerprint_hash = COALESCE(client_fingerprint_hash, ?),
@@ -54,12 +54,15 @@ class CbtAttemptService
                 }
             }
 
+            $this->assertAttemptWindow($assessment);
+
             $attemptsUsed = (int) $this->scalar(
                 'SELECT COUNT(*) FROM cbt_attempts
                  WHERE assessment_id = ? AND learner_id = ? AND status <> \'cancelled\'',
                 array($assessmentId, $learnerId)
             );
             if ($attemptsUsed >= (int) $assessment['max_attempts']) {
+                if ($active) $this->pdo->commit(); // Preserve expiry finalization even when a new attempt is refused.
                 throw new RuntimeException('You have used all permitted attempts for this assessment.');
             }
 
@@ -94,6 +97,7 @@ class CbtAttemptService
             ));
             $attemptId = (int) $this->pdo->lastInsertId();
             $this->snapshotQuestions($attemptId, $assessment);
+            $this->invalidateResultApproval($assessmentId);
             $this->cbt->audit('learner', $learnerId, 'attempt.started', 'attempt', $attemptId, null, array('assessment_id' => $assessmentId));
             $this->pdo->commit();
 
@@ -162,6 +166,7 @@ class CbtAttemptService
             unset($question['options_snapshot'], $question['answer_json']);
         }
         unset($question);
+        $attempt['expires_at_iso'] = (new DateTimeImmutable($attempt['expires_at']))->format(DATE_ATOM);
         return array('attempt' => $attempt, 'questions' => $questions, 'server_time' => date(DATE_ATOM));
     }
 
@@ -176,6 +181,8 @@ class CbtAttemptService
 
         $this->pdo->beginTransaction();
         try {
+            $identity = $this->authenticate($attemptId, $plainToken);
+            $assessment = $this->lockedAssessment($identity['assessment_id']);
             $attempt = $this->lockedAttempt($attemptId, $plainToken);
             if ($attempt['status'] !== 'in_progress') {
                 throw new RuntimeException('This attempt has already been submitted.');
@@ -185,6 +192,7 @@ class CbtAttemptService
                 $this->pdo->commit();
                 return array('submitted' => true, 'receipt' => $receipt);
             }
+            $this->assertRunning($assessment);
             $belongs = $this->scalar(
                 'SELECT 1 FROM cbt_attempt_questions WHERE id = ? AND attempt_id = ? LIMIT 1',
                 array($attemptQuestionId, $attemptId)
@@ -206,7 +214,8 @@ class CbtAttemptService
             $statement->execute(array($attemptId, $attemptQuestionId, $encoded, $flagged ? 1 : 0, $saveVersion));
             $this->pdo->prepare('UPDATE cbt_attempts SET last_seen_at = NOW() WHERE id = ?')->execute(array($attemptId));
             $this->pdo->commit();
-            return array('submitted' => false, 'saved_at' => date(DATE_ATOM), 'save_version' => $saveVersion);
+            return array('submitted' => false, 'saved_at' => date(DATE_ATOM), 'save_version' => $saveVersion,
+                'expires_at_iso' => (new DateTimeImmutable($attempt['expires_at']))->format(DATE_ATOM), 'server_time' => date(DATE_ATOM));
         } catch (Throwable $exception) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
@@ -219,7 +228,12 @@ class CbtAttemptService
     {
         $this->pdo->beginTransaction();
         try {
+            $identity = $this->authenticate($attemptId, $plainToken);
+            $assessment = $this->lockedAssessment($identity['assessment_id']);
             $attempt = $this->lockedAttempt($attemptId, $plainToken);
+            if ($attempt['status'] === 'in_progress' && new DateTimeImmutable($attempt['expires_at']) > new DateTimeImmutable('now')) {
+                $this->assertRunning($assessment);
+            }
             $receipt = $this->finalizeLocked($attempt, $automatic);
             $this->pdo->commit();
             return $receipt;
@@ -257,6 +271,7 @@ class CbtAttemptService
     {
         $assessment = $this->cbt->assessment($assessmentId);
         $this->cbt->assertAssessmentManager($assessment, $actorId, $isAdmin);
+        $this->finalizeExpiredAttempts($assessmentId);
         return $this->all(
             'SELECT atp.*, u.fname, u.picture,
                     (SELECT COUNT(*) FROM cbt_attempt_answers aa
@@ -297,7 +312,7 @@ class CbtAttemptService
         foreach ($questions as &$question) {
             $question['options'] = $this->decode($question['options_snapshot'], array());
             $question['answer'] = $this->decode($question['answer_json'], null);
-            $question['correct_answer'] = $this->decode($question['correct_answer_snapshot'], null);
+            $question['correct_answer'] = $this->expectedAnswer($question);
         }
         unset($question);
         $events = $this->all('SELECT * FROM cbt_marking_events WHERE attempt_id = ? ORDER BY created_at DESC', array($attemptId));
@@ -325,16 +340,20 @@ class CbtAttemptService
         $marks = CbtSecurity::decimal($marks, 'Awarded mark', 0, (float) $answer['marks_available']);
         $comment = CbtSecurity::cleanText($comment, 5000, true);
         $reason = CbtSecurity::cleanText($reason, 5000, true);
-        $original = (float) $answer['final_marks'];
-        if ($answer['manual_marks'] !== null && abs($original - $marks) > 0.001 && $reason === '') {
-            throw new InvalidArgumentException('Give a reason for changing a previously awarded mark.');
-        }
-        if (CbtService::isObjectiveType($answer['question_type']) && abs($original - $marks) > 0.001 && $reason === '') {
-            throw new InvalidArgumentException('Give a reason for overriding an automatically marked answer.');
-        }
-
         $this->pdo->beginTransaction();
         try {
+            $this->lockedAssessment($answer['assessment_id']);
+            $current = $this->one('SELECT status FROM cbt_attempts WHERE id = ? FOR UPDATE', array($answer['attempt_id']));
+            if ($current['status'] === 'in_progress') throw new RuntimeException('A script cannot be marked before submission.');
+            $answer = array_merge($answer, $this->one('SELECT * FROM cbt_attempt_answers WHERE id = ? FOR UPDATE', array($answerId)));
+            $original = (float) $answer['final_marks'];
+            if ($answer['manual_marks'] !== null && abs($original - $marks) > 0.001 && $reason === '') {
+                throw new InvalidArgumentException('Give a reason for changing a previously awarded mark.');
+            }
+            if (CbtService::isObjectiveType($answer['question_type']) && abs($original - $marks) > 0.001 && $reason === '') {
+                throw new InvalidArgumentException('Give a reason for overriding an automatically marked answer.');
+            }
+
             $statement = $this->pdo->prepare(
                 'UPDATE cbt_attempt_answers
                  SET manual_marks = ?, final_marks = ?, marker_comment = ?, marked_by = ?, marked_at = NOW()
@@ -352,6 +371,7 @@ class CbtAttemptService
                 $original, $marks, $reason, $actorId
             ));
             $this->recalculateAttempt((int) $answer['attempt_id']);
+            $this->invalidateResultApproval($answer['assessment_id']);
             $this->cbt->audit($isAdmin ? 'admin' : 'instructor', $actorId, 'answer.marked', 'attempt', $answer['attempt_id'], array('marks' => $original), array('marks' => $marks), $reason);
             $this->pdo->commit();
         } catch (Throwable $exception) {
@@ -362,26 +382,27 @@ class CbtAttemptService
 
     public function publishResults($assessmentId, $actorId, $isAdmin)
     {
-        $assessment = $this->cbt->assessment($assessmentId);
-        $this->cbt->assertAssessmentManager($assessment, $actorId, $isAdmin);
-        if (!in_array($assessment['status'], array('approved', 'published'), true)) {
-            throw new RuntimeException('The assessment must be approved before results are published.');
+        $this->finalizeExpiredAttempts($assessmentId, 5000);
+        $this->pdo->beginTransaction();
+        try {
+            $assessment = $this->lockedAssessment($assessmentId);
+            $this->cbt->assertAssessmentManager($assessment, $actorId, $isAdmin);
+            if (!in_array($assessment['status'], array('approved', 'published'), true) || !$assessment['approved_at']) {
+                throw new RuntimeException('The assessment must be approved before results are published.');
+            }
+            $pending = (int) $this->scalar("SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id = ? AND status IN ('in_progress', 'marking', 'submitted')", array($assessmentId));
+            if ($pending) throw new RuntimeException('Complete all attempts and manual marking before publishing results.');
+            $statement = $this->pdo->prepare("UPDATE cbt_attempts SET status = 'published', published_at = COALESCE(published_at, NOW()) WHERE assessment_id = ? AND submitted_at IS NOT NULL AND status IN ('marked', 'submitted', 'auto_submitted')");
+            $statement->execute(array($assessmentId));
+            $count = $statement->rowCount();
+            $this->cbt->setAssessmentStatus($assessmentId, 'published', $actorId, $isAdmin, 'Completed results published.');
+            $this->cbt->audit($isAdmin ? 'admin' : 'instructor', $actorId, 'results.published', 'assessment', $assessmentId, null, array('scripts' => $count));
+            $this->pdo->commit();
+            return $count;
+        } catch (Throwable $exception) {
+            if ($this->pdo->inTransaction()) $this->pdo->rollBack();
+            throw $exception;
         }
-        $pending = (int) $this->scalar(
-            'SELECT COUNT(*) FROM cbt_attempts WHERE assessment_id = ? AND status = \'marking\'',
-            array($assessmentId)
-        );
-        if ($pending > 0) {
-            throw new RuntimeException('Complete manual marking before publishing results.');
-        }
-        $statement = $this->pdo->prepare(
-            'UPDATE cbt_attempts SET status = \'published\', published_at = COALESCE(published_at, NOW())
-             WHERE assessment_id = ? AND submitted_at IS NOT NULL AND status IN (\'marked\', \'submitted\', \'auto_submitted\')'
-        );
-        $statement->execute(array($assessmentId));
-        $this->cbt->setAssessmentStatus($assessmentId, 'published', $actorId, $isAdmin, 'Assessment results published.');
-        $this->cbt->audit($isAdmin ? 'admin' : 'instructor', $actorId, 'results.published', 'assessment', $assessmentId, null, array('scripts' => $statement->rowCount()));
-        return $statement->rowCount();
     }
 
     public function learnerReview($attemptId, $learnerId)
@@ -397,7 +418,7 @@ class CbtAttemptService
              WHERE atp.id = ? AND atp.learner_id = ? LIMIT 1',
             array($attemptId, $learnerId)
         );
-        if (!$attempt || empty($attempt['published_at'])) {
+        if (!$attempt || $attempt['status'] !== 'published' || empty($attempt['published_at'])) {
             throw new RuntimeException('This result has not been published.');
         }
         $questions = array();
@@ -416,7 +437,7 @@ class CbtAttemptService
             foreach ($questions as &$question) {
                 $question['answer'] = $this->decode($question['answer_json'], null);
                 $question['options'] = $this->decode($question['options_snapshot'], array());
-                $question['correct_answer'] = $showCorrect ? $this->decode($question['correct_answer_snapshot'], null) : null;
+                $question['correct_answer'] = $showCorrect ? $this->expectedAnswer($question) : null;
                 if (!$showCorrect) {
                     $question['explanation_snapshot'] = null;
                 }
@@ -443,41 +464,39 @@ class CbtAttemptService
         }
         $statement = $this->pdo->prepare(
             'UPDATE cbt_attempts SET expires_at = DATE_ADD(expires_at, INTERVAL ? MINUTE),
-             extra_time_minutes = extra_time_minutes + ? WHERE id = ?'
+             extra_time_minutes = extra_time_minutes + ? WHERE id = ? AND status = \'in_progress\''
         );
         $statement->execute(array($minutes, $minutes, $attemptId));
+        if (!$statement->rowCount()) throw new RuntimeException('This attempt has already been submitted. Reopen it before granting more time.');
         $this->cbt->audit($isAdmin ? 'admin' : 'instructor', $actorId, 'attempt.extra_time', 'attempt', $attemptId, null, array('minutes' => $minutes), $reason);
     }
 
     public function reopenAttempt($attemptId, $minutes, $actorId, $isAdmin, $reason)
     {
-        if (!$isAdmin) {
-            throw new RuntimeException('Only an administrator may reopen a submitted attempt.');
-        }
+        if (!$isAdmin) throw new RuntimeException('Only an administrator may reopen a submitted attempt.');
         $minutes = CbtSecurity::positiveInt($minutes, 'Reopened time', 1, 240);
         $reason = CbtSecurity::cleanText($reason, 1000, false);
-        $before = $this->one(
-            'SELECT id, status, submission_ref, submitted_at, expires_at
-             FROM cbt_attempts WHERE id = ? LIMIT 1',
-            array($attemptId)
-        );
-        if (!$before || $before['status'] === 'in_progress') {
-            throw new RuntimeException('This attempt could not be reopened.');
+        $identity = $this->one('SELECT assessment_id FROM cbt_attempts WHERE id = ?', array($attemptId));
+        if (!$identity) throw new RuntimeException('This attempt could not be reopened.');
+        $this->pdo->beginTransaction();
+        try {
+            $assessment = $this->lockedAssessment($identity['assessment_id']);
+            if (in_array($assessment['status'], array('cancelled', 'archived', 'draft', 'pending_approval'), true)) throw new RuntimeException('Activate the assessment before reopening a script.');
+            $before = $this->one('SELECT * FROM cbt_attempts WHERE id = ? FOR UPDATE', array($attemptId));
+            if ($before['status'] === 'in_progress') throw new RuntimeException('This attempt could not be reopened.');
+            $token = bin2hex(random_bytes(32));
+            $expires = (new DateTimeImmutable('now'))->modify('+' . $minutes . ' minutes')->format('Y-m-d H:i:s');
+            $this->pdo->prepare("UPDATE cbt_attempts SET status = 'in_progress', token_hash = ?, expires_at = ?, submitted_at = NULL, submission_ref = NULL, reopened_at = NOW(), reopened_by = ?, extra_time_minutes = extra_time_minutes + ?, published_at = NULL, objective_score = 0, manual_score = 0, total_score = 0, percentage = 0, grade = NULL WHERE id = ?")
+                ->execute(array(hash('sha256', $token), $expires, $actorId, $minutes, $attemptId));
+            $this->invalidateResultApproval($identity['assessment_id']);
+            $this->pdo->prepare('UPDATE cbt_attempt_answers SET manual_marks = NULL, final_marks = 0, auto_marks = 0 WHERE attempt_id = ?')->execute(array($attemptId));
+            $this->cbt->audit('admin', $actorId, 'attempt.reopened', 'attempt', $attemptId, $before, array('status' => 'in_progress', 'minutes' => $minutes), $reason);
+            $this->pdo->commit();
+            return $token;
+        } catch (Throwable $exception) {
+            if ($this->pdo->inTransaction()) $this->pdo->rollBack();
+            throw $exception;
         }
-        $token = bin2hex(random_bytes(32));
-        $statement = $this->pdo->prepare(
-            'UPDATE cbt_attempts
-             SET status = \'in_progress\', token_hash = ?, expires_at = DATE_ADD(NOW(), INTERVAL ? MINUTE),
-                 submitted_at = NULL, submission_ref = NULL, reopened_at = NOW(), reopened_by = ?,
-                 extra_time_minutes = extra_time_minutes + ?, published_at = NULL
-             WHERE id = ? AND status <> \'in_progress\''
-        );
-        $statement->execute(array(hash('sha256', $token), $minutes, $actorId, $minutes, $attemptId));
-        if ($statement->rowCount() < 1) {
-            throw new RuntimeException('This attempt could not be reopened.');
-        }
-        $this->cbt->audit('admin', $actorId, 'attempt.reopened', 'attempt', $attemptId, $before, array('status' => 'in_progress', 'minutes' => $minutes), $reason);
-        return $token;
     }
 
     private function snapshotQuestions($attemptId, array $assessment)
@@ -523,11 +542,12 @@ class CbtAttemptService
                 );
             }, $options);
             if ($question['question_type'] === 'matching') {
+                $correct = array_values(array_map(function ($option) { return $option['match_key']; }, $options));
                 $targets = array_values(array_unique(array_filter(array_map(function ($option) {
                     return $option['match_key'];
                 }, $options), function ($target) { return $target !== null && $target !== ''; })));
                 shuffle($targets);
-                $publicOptions = array('items' => $publicOptions, 'targets' => $targets);
+                $publicOptions = array('items' => $publicOptions, 'targets' => $targets, 'matching_order' => 'display');
             }
             $insert->execute(array(
                 $attemptId, $question['id'], $question['version_no'], $question['question_type'],
@@ -568,7 +588,12 @@ class CbtAttemptService
         foreach ($questions as $question) {
             if (!CbtService::isObjectiveType($question['question_type'])) {
                 if (!empty($question['answer_id'])) {
-                    $hasManual = true;
+                    $answer = $this->decode($question['answer_json'], null);
+                    if ($answer === null || (is_string($answer) && trim($answer) === '') || $answer === array()) {
+                        $this->pdo->prepare('UPDATE cbt_attempt_answers SET auto_marks = 0, manual_marks = 0, final_marks = 0 WHERE id = ?')->execute(array($question['answer_id']));
+                    } else {
+                        $hasManual = true;
+                    }
                 }
                 continue;
             }
@@ -602,9 +627,23 @@ class CbtAttemptService
         );
     }
 
-    private function scoreObjective(array $question, $answer)
+    private function expectedAnswer(array $question)
     {
         $expected = $this->decode($question['correct_answer_snapshot'], array());
+        if ($question['question_type'] !== 'matching') return $expected;
+        $options = $this->decode($question['options_snapshot'], array());
+        if (($options['matching_order'] ?? '') === 'display' || empty($options['items'])) return $expected;
+        // Legacy snapshots kept answers in bank order even when display items were shuffled.
+        $items = $options['items']; $original = $items;
+        usort($original, function ($a, $b) { return $a['sort_order'] <=> $b['sort_order']; });
+        $map = array();
+        foreach ($original as $i => $item) $map[$item['option_key']] = $expected[$i] ?? '';
+        return array_map(function ($item) use ($map) { return $map[$item['option_key']]; }, $items);
+    }
+
+    private function scoreObjective(array $question, $answer)
+    {
+        $expected = $this->expectedAnswer($question);
         $available = (float) $question['marks_available'];
         $negative = (float) $question['negative_marks'];
         $partial = (int) $question['allow_partial'] === 1;
@@ -661,7 +700,7 @@ class CbtAttemptService
         $scores = $this->one(
             'SELECT COALESCE(SUM(CASE WHEN aq.question_type <> \'essay\' THEN ans.final_marks ELSE 0 END), 0) AS objective_score,
                     COALESCE(SUM(CASE WHEN aq.question_type = \'essay\' THEN ans.final_marks ELSE 0 END), 0) AS manual_score,
-                    SUM(CASE WHEN aq.question_type = \'essay\' AND ans.manual_marks IS NULL THEN 1 ELSE 0 END) AS pending
+                    SUM(CASE WHEN aq.question_type = \'essay\' AND ans.id IS NOT NULL AND ans.manual_marks IS NULL THEN 1 ELSE 0 END) AS pending
              FROM cbt_attempt_questions aq
              LEFT JOIN cbt_attempt_answers ans ON ans.attempt_question_id = aq.id
              WHERE aq.attempt_id = ?',
@@ -676,12 +715,52 @@ class CbtAttemptService
         $percentage = (float) $attempt['total_marks'] > 0 ? round(($total / (float) $attempt['total_marks']) * 100, 2) : 0;
         $status = (int) $scores['pending'] > 0 ? 'marking' : 'marked';
         $statement = $this->pdo->prepare(
-            'UPDATE cbt_attempts SET objective_score = ?, manual_score = ?, total_score = ?, percentage = ?, grade = ?, status = ? WHERE id = ?'
+            'UPDATE cbt_attempts SET objective_score = ?, manual_score = ?, total_score = ?, percentage = ?, grade = ?, status = ?, published_at = NULL WHERE id = ?'
         );
         $statement->execute(array(
             $scores['objective_score'], $scores['manual_score'], $total,
             $percentage, $this->grade($percentage), $status, $attemptId
         ));
+    }
+
+    public function finalizeExpiredAttempts($assessmentId = null, $limit = 500)
+    {
+        $limit = max(1, min(5000, (int) $limit));
+        $params = array(date('Y-m-d H:i:s'));
+        if ($assessmentId !== null) $params[] = $assessmentId;
+        $rows = $this->all("SELECT id, assessment_id FROM cbt_attempts WHERE status = 'in_progress' AND expires_at <= ?"
+            . ($assessmentId === null ? '' : ' AND assessment_id = ?') . ' ORDER BY id LIMIT ' . $limit,
+            $params);
+        $count = 0;
+        foreach ($rows as $row) {
+            $this->pdo->beginTransaction();
+            try {
+                $this->lockedAssessment($row['assessment_id']);
+                $attempt = $this->one('SELECT * FROM cbt_attempts WHERE id = ? FOR UPDATE', array($row['id']));
+                if ($attempt['status'] === 'in_progress' && strtotime($attempt['expires_at']) <= time()) {
+                    $this->finalizeLocked($attempt, true);
+                    $count++;
+                }
+                $this->pdo->commit();
+            } catch (Throwable $exception) {
+                $this->pdo->rollBack();
+                throw $exception;
+            }
+        }
+        return $count;
+    }
+
+    private function invalidateResultApproval($assessmentId)
+    {
+        $this->pdo->prepare("UPDATE cbt_assessments SET status = 'awaiting_approval', approved_by = NULL, approved_at = NULL
+            WHERE id = ? AND status IN ('approved', 'published')")->execute(array($assessmentId));
+    }
+
+    private function assertRunning(array $assessment)
+    {
+        if (in_array($assessment['status'], array('paused', 'cancelled', 'archived', 'draft', 'pending_approval'), true)) {
+            throw new RuntimeException('This assessment is ' . $assessment['status'] . '. Answers and submissions are currently unavailable.');
+        }
     }
 
     private function lockedAssessment($assessmentId)
@@ -718,7 +797,7 @@ class CbtAttemptService
 
     private function assertAttemptWindow(array $assessment)
     {
-        if (!in_array($assessment['status'], array('scheduled', 'active', 'approved', 'published'), true)) {
+        if (!in_array($assessment['status'], array('scheduled', 'active', 'completed', 'marking', 'awaiting_approval', 'approved', 'published'), true)) {
             throw new RuntimeException('This assessment is not available.');
         }
         $now = new DateTimeImmutable('now');

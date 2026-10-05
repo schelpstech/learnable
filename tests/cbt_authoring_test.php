@@ -20,6 +20,7 @@ $tables = array(
     'cbt_assessments', 'cbt_assessment_topics', 'cbt_assessment_assignments',
     'cbt_questions', 'cbt_question_options', 'cbt_assessment_questions', 'cbt_audit_log',
     'cbt_attempts', 'cbt_notification_targets', 'cbt_attempt_questions', 'cbt_attempt_answers',
+    'cbt_integrity_events', 'cbt_marking_events', 'cbt_score_transfers', 'lhpresultrecord', 'lhpweekrecord',
 );
 // MySQL cannot reference a temporary table multiple times in assessment queries.
 // A uniquely named disposable schema exercises the real queries without live data.
@@ -81,7 +82,7 @@ $assessmentId = $service->createAssessment(array(
     'assessment_type' => 'weekly_test',
     'result_treatment' => 'practice',
     'total_marks' => 10,
-    'pass_mark' => 5,
+    'pass_mark' => 1,
     'start_at' => date('Y-m-d H:i:s', strtotime('+31 days')),
     'close_at' => date('Y-m-d H:i:s', strtotime('+32 days')),
     'duration_minutes' => 20,
@@ -153,6 +154,119 @@ cbt_authoring_check($receipt['status']==='marked','an objective script reaches t
 $service->approveResults($assessmentId,'qa-registry','Completed scripts reviewed.');
 cbt_authoring_check($service->assessment($assessmentId)['approved_by']==='qa-registry','academic approval records the approving registry actor');
 cbt_authoring_check($attemptService->publishResults($assessmentId,$teacher,false)===1,'the teacher can publish completed results after academic approval');
+
+// Regression cases use the same disposable schema, including legacy MyISAM score tables.
+function cbt_reject($callback, $contains, $message) {
+    try { $callback(); } catch (RuntimeException $e) {
+        cbt_authoring_check(stripos($e->getMessage(), $contains) !== false, $message . ': ' . $e->getMessage()); return;
+    }
+    throw new LogicException('FAIL: ' . $message);
+}
+$paperId = $service->duplicateAssessment($assessmentId, $teacher, false);
+$db->prepare('UPDATE cbt_assessments SET start_at=?, close_at=? WHERE id=?')->execute([date('Y-m-d H:i:s', strtotime('-40 days')), date('Y-m-d H:i:s', strtotime('-39 days')), $paperId]);
+$futureCopy = $service->duplicateAssessment($paperId, $teacher, false);
+cbt_authoring_check(strtotime($service->assessment($futureCopy)['start_at']) > time(), 'copying an old paper gives the draft a usable future schedule');
+$db->prepare('UPDATE cbt_assessments SET pass_mark=10 WHERE id=?')->execute([$futureCopy]);
+cbt_reject(fn()=> $service->publishAssessment($futureCopy, $teacher), 'pass mark', 'publishing an impossible pass mark is blocked');
+$service->updateAssessment($futureCopy, ['title'=>'Revised future paper', 'pass_mark'=>1, 'duration_minutes'=>45, 'shuffle_options'=>1], $teacher, false);
+cbt_authoring_check($service->assessment($futureCopy)['title'] === 'Revised future paper', 'teachers can edit draft title, time and settings');
+$paperId = $futureCopy;
+$base = ['class_id'=>$classId,'subject_id'=>$subjectId,'scheme_id'=>$schemeId,'difficulty'=>'easy','negative_marks'=>0,'visibility'=>'private'];
+$essayId = $service->createQuestion(array_merge($base, ['question_type'=>'essay','prompt_html'=>'Explain your answer.','marks'=>4,'model_answer'=>'Reasoning','marking_guide'=>'Award up to four marks.']), $teacher, false);
+$matchId = $service->createQuestion(array_merge($base, ['question_type'=>'matching','prompt_html'=>'Match country and currency.','marks'=>3,'option_text'=>['Nigeria','USA','Europe'],'match_key'=>['NGN','USD','EUR']]), $teacher, false);
+$service->addQuestionToAssessment($paperId, $essayId, $teacher, false);
+$service->addQuestionToAssessment($paperId, $matchId, $teacher, false);
+$service->updateAssessment($paperId, ['start_at'=>date('Y-m-d H:i:s',strtotime('-1 minute')), 'close_at'=>date('Y-m-d H:i:s',strtotime('+1 hour')), 'result_treatment'=>'ca'], $teacher, false);
+$service->publishAssessment($paperId,$teacher);
+$run = $attemptService->startAttempt($paperId,'qa-cbt-student','test-device');
+$state = $attemptService->examState($run['attempt_id'],$run['token']);
+cbt_reject(fn()=> $service->updateAssessment($paperId,['title'=>'Changed'], $teacher,false), 'before students start', 'settings cannot change after a student starts');
+$map = ['A'=>'NGN','B'=>'USD','C'=>'EUR']; $objectiveAnswerId = null;
+foreach ($state['questions'] as $q) {
+    if ($q['question_type']==='true_false') {
+        $objectiveQuestionId=$q['id'];
+        $attemptService->saveAnswer($run['attempt_id'],$run['token'],$q['id'],'T',false,2);
+        $attemptService->saveAnswer($run['attempt_id'],$run['token'],$q['id'],'F',false,1);
+    } elseif ($q['question_type']==='matching') {
+        $answer = array_map(fn($item)=>$map[$item['option_key']],$q['options']['items']);
+        $attemptService->saveAnswer($run['attempt_id'],$run['token'],$q['id'],$answer,false,1);
+    }
+}
+cbt_authoring_check($db->query('SELECT answer_json FROM cbt_attempt_answers WHERE attempt_question_id='.$objectiveQuestionId)->fetchColumn()==='"T"','an older answer save never replaces a newer version');
+$service->setAssessmentStatus($paperId,'paused',$teacher,false,'Testing pause');
+cbt_reject(fn()=> $attemptService->saveAnswer($run['attempt_id'],$run['token'],$objectiveQuestionId,'F',false,3), 'paused', 'paused papers reject answer writes');
+cbt_reject(fn()=> $attemptService->submitAttempt($run['attempt_id'],$run['token'],false), 'paused', 'paused papers reject early submission');
+$service->setAssessmentStatus($paperId,'scheduled',$teacher,false,'Resume');
+$oldExpiry=$state['attempt']['expires_at_iso'];
+$attemptService->addExtraTime($run['attempt_id'],5,'qa-registry',true,'Connection interruption');
+$state=$attemptService->examState($run['attempt_id'],$run['token']);
+cbt_authoring_check(strtotime($state['attempt']['expires_at_iso'])===strtotime($oldExpiry)+300,'live state exposes the updated extra-time deadline');
+$receipt=$attemptService->submitAttempt($run['attempt_id'],$run['token'],false);
+cbt_authoring_check($receipt['status']==='marked','an unanswered essay is zero and does not hold marking open');
+$row=$db->query('SELECT * FROM cbt_attempts WHERE id='.$run['attempt_id'])->fetch(PDO::FETCH_ASSOC);
+cbt_authoring_check((float)$row['total_score']===5.0,'shuffled matching answers and the latest objective answer receive full marks');
+// Old snapshots are also interpreted in display order, without changing their evidence.
+$scoreMethod=new ReflectionMethod(CbtAttemptService::class,'scoreObjective');
+$legacy=['question_type'=>'matching','marks_available'=>3,'negative_marks'=>0,'allow_partial'=>0,'correct_answer_snapshot'=>'["NGN","USD","EUR"]','options_snapshot'=>json_encode(['items'=>[['option_key'=>'C','sort_order'=>3],['option_key'=>'A','sort_order'=>1],['option_key'=>'B','sort_order'=>2]]])];
+cbt_authoring_check($scoreMethod->invoke($attemptService,$legacy,['EUR','NGN','USD'])===3.0,'legacy shuffled matching snapshots are scored correctly');
+$db->prepare('INSERT INTO lhpuser (uname,fname,classid,email,status) VALUES (?,?,?,?,1)')->execute(['qa-abandoned','QA Abandoned',$classId,'']);
+$abandoned=$attemptService->startAttempt($paperId,'qa-abandoned','test-device');
+$db->prepare('UPDATE cbt_attempts SET expires_at=? WHERE id=?')->execute([date('Y-m-d H:i:s', strtotime('-1 minute')), $abandoned['attempt_id']]);
+$attemptService->attemptsForAssessment($paperId,$teacher,false);
+cbt_authoring_check($db->query('SELECT status FROM cbt_attempts WHERE id='.$abandoned['attempt_id'])->fetchColumn()==='marked','staff script listings finalize abandoned expired attempts');
+$service->approveResults($paperId,'qa-registry','All scripts checked');
+$attemptService->publishResults($paperId,$teacher,false);
+$results=new CbtResultService($db);
+$db->exec('UPDATE lhpresultconfig SET status=1,midterm=1');
+cbt_reject(fn()=> $results->transferAssessment($paperId,$teacher,false),'locked','published term-result locks block CBT transfers');
+$db->exec('UPDATE cbt_assessments SET result_treatment="weekly" WHERE id='.$paperId);
+cbt_reject(fn()=> $results->transferAssessment($paperId,$teacher,false),'locked','published weekly-result locks block CBT transfers');
+$db->exec('UPDATE cbt_assessments SET result_treatment="ca" WHERE id='.$paperId);
+$db->exec('UPDATE lhpresultconfig SET status=0,midterm=0');
+$outcome=$results->transferAssessment($paperId,$teacher,false);
+cbt_authoring_check($outcome['transferred']===2,'approved published CBT results transfer to unlocked school records');
+cbt_authoring_check($results->transferAssessment($paperId,$teacher,false)['skipped']===2,'repeated transfers safely skip unchanged scores');
+$objectiveAnswerId=(int)$db->query('SELECT id FROM cbt_attempt_answers WHERE attempt_question_id='.$objectiveQuestionId)->fetchColumn();
+$attemptService->markAnswer($objectiveAnswerId,0,'Correction','Incorrect key reviewed',$teacher,false);
+cbt_authoring_check($service->assessment($paperId)['status']==='awaiting_approval' && !$service->assessment($paperId)['approved_at'],'mark corrections invalidate previous approval');
+$corrected=$db->query('SELECT status,published_at FROM cbt_attempts WHERE id='.$run['attempt_id'])->fetch(PDO::FETCH_ASSOC);
+cbt_authoring_check($corrected['status']==='marked' && !$corrected['published_at'],'correcting another answer does not revive a missing essay as pending');
+cbt_reject(fn()=> $attemptService->learnerReview($run['attempt_id'],'qa-cbt-student'),'not been published','corrected results remain hidden until republished');
+cbt_reject(fn()=> $attemptService->publishResults($paperId,$teacher,false),'approved','teachers cannot republish corrected marks without fresh approval');
+$service->approveResults($paperId,'qa-registry','Correction checked');
+$attemptService->publishResults($paperId,$teacher,false);
+$preview=$results->previewAssessmentTransfer($paperId,$teacher,false);
+$changed=array_values(array_filter($preview['attempts'],fn($row)=>$row['needs_amendment']));
+cbt_authoring_check(count($changed)===1,'transfer preview identifies corrected scores awaiting amendment');
+$transferId=$changed[0]['transfer_id'];
+cbt_reject(fn()=> $results->transferAssessment($paperId,$teacher,false),'amend','changed transferred scores are not silently skipped');
+$_SESSION=['auth_account_type'=>'staff','auth_username'=>$teacher,'active'=>$teacher,'user_type'=>'Instructor'];
+cbt_reject(fn()=> $results->amendTransfer($transferId,$teacher,'Correction'), 'administration', 'teachers cannot amend official transferred scores');
+$_SESSION=['unamed'=>'qa-registry','auth_account_type'=>'staff','auth_username'=>'qa-registry'];
+$db->exec('UPDATE lhpresultconfig SET status=1');
+cbt_reject(fn()=> $results->amendTransfer($transferId,'qa-registry','Correction'), 'locked', 'amendments respect official result locks');
+$db->exec('UPDATE lhpresultconfig SET status=0');
+$newScore=$results->amendTransfer($transferId,'qa-registry','Reapproved corrected marks');
+cbt_authoring_check($newScore===round(3/9*(int)$resultConfigTemplate['ca_score']),'authorized amendment updates the official score after fresh approval');
+$legacyId=$db->query('SELECT target_record_id FROM cbt_score_transfers WHERE id='.$transferId)->fetchColumn();
+$db->exec('UPDATE lhpresultrecord SET score=score+1 WHERE id='.$legacyId);
+cbt_reject(fn()=> $results->amendTransfer($transferId,'qa-registry','Correction'), 'changed since', 'amendments cannot overwrite intervening manual scorebook changes');
+// Reopened attempts may resume after the original closing time.
+$db->exec('UPDATE cbt_assessments SET close_at=DATE_SUB(NOW(), INTERVAL 1 HOUR) WHERE id='.$paperId);
+$attemptService->reopenAttempt($run['attempt_id'],10,'qa-registry',true,'Approved recovery');
+// A reopened script is available for resume while revised results await approval.
+$resumed=$attemptService->startAttempt($paperId,'qa-cbt-student','test-device');
+cbt_authoring_check($resumed['resumed'] && $resumed['attempt_id']===$run['attempt_id'],'the learner can resume a reopened attempt after the original closing time');
+$visible=$service->learnerAssessments('qa-cbt-student');
+$recoveryRows=array_values(array_filter($visible,fn($row)=>(int)$row['id']===$paperId));
+cbt_authoring_check(count($recoveryRows)===1 && strtotime($recoveryRows[0]['attempt_expires_at'])>time(),'the learner dashboard receives the reopened deadline for its resume button');
+// A flagged but blank essay remains unanswered and must not require manual marking.
+$state=$attemptService->examState($resumed['attempt_id'],$resumed['token']);
+foreach ($state['questions'] as $q) if ($q['question_type']==='essay') $attemptService->saveAnswer($resumed['attempt_id'],$resumed['token'],$q['id'],'',true,1);
+$receipt=$attemptService->submitAttempt($resumed['attempt_id'],$resumed['token'],false);
+cbt_authoring_check($receipt['status']==='marked','a flagged blank essay is recorded as zero instead of blocking result completion');
+
+
 echo "CBT authoring checks passed against an isolated disposable schema.\n";
 
 } finally {
