@@ -8,6 +8,7 @@ database/migrations/*
 !database/migrations/20260926_school_website.sql
 !database/migrations/20260927_school_whatsapp.sql
 !database/migrations/20261004_teacher_cbt_publishing.sql
+!database/migrations/20261022_school_website_content.sql
 .vscode
 docs/*
 !docs/school-website.md

@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/conf.php'; ?>
 
 <!-- Start Footer area-->
-<?php include "foot.html"; ?>
+<?php include __DIR__ . '/foot.php'; ?>
 
 <!-- End Footer area-->
 <!-- jquery

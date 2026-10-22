@@ -2,12 +2,19 @@
 if (isset($_POST['staff'])) { header('Location: ./staff.php'); exit; }
 if (isset($_POST['student'])) { header('Location: ./student.php'); exit; }
 require_once __DIR__ . '/classes/SchoolProfile.php';
+require_once __DIR__ . '/classes/SchoolWebsite.php';
 $school = [];
+$websiteContent = ['gallery' => [], 'event' => [], 'announcement' => []];
 try {
     require_once __DIR__ . '/config/database.php';
     $school = SchoolProfile::read(database_pdo());
 } catch (Throwable $exception) {
     // Keep the public entrance and portal links available during database outages.
+}
+try {
+    if (function_exists('database_pdo')) $websiteContent = SchoolWebsite::publicContent(database_pdo());
+} catch (Throwable $exception) {
+    // Optional website content must not block the school details or portal entrances.
 }
 function landing_escape($value) { return SchoolProfile::escape($value); }
 $name = trim($school['schname'] ?? '') ?: 'LearnAble School';
@@ -42,7 +49,8 @@ $sectionLabels = ['Creche' => 'Crèche', 'Nursery' => 'Nursery', 'Primary' => 'P
     <title><?php echo landing_escape($name); ?> | Welcome</title>
     <?php if ($logo): ?><link rel="icon" href="<?php echo landing_escape($logo); ?>"><?php endif; ?>
     <link rel="stylesheet" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/landing-modern.css?v=5">
+    <link rel="stylesheet" href="css/landing-modern.css?v=6">
+    <script src="assets/js/school-website.js?v=1" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -55,6 +63,9 @@ $sectionLabels = ['Creche' => 'Crèche', 'Nursery' => 'Nursery', 'Primary' => 'P
     <nav aria-label="Main navigation">
         <?php if ($about): ?><a href="#about">About us</a><?php endif; ?>
         <?php if ($sections): ?><a href="#our-school">Our school</a><?php endif; ?>
+        <?php if ($websiteContent['gallery']): ?><a href="#gallery">Gallery</a><?php endif; ?>
+        <?php if ($websiteContent['event']): ?><a href="#events">Events</a><?php endif; ?>
+        <?php if ($websiteContent['announcement']): ?><a href="#announcements">News</a><?php endif; ?>
         <a href="#contact">Contact</a>
         <a class="nav-portal" href="#portals">School portal <i class="fa fa-arrow-right" aria-hidden="true"></i></a>
     </nav>
@@ -64,11 +75,24 @@ $sectionLabels = ['Creche' => 'Crèche', 'Nursery' => 'Nursery', 'Primary' => 'P
         <div class="hero-copy"><span class="eyebrow"><span></span> A WARM WELCOME TO</span><h1 id="welcome-title"><?php echo landing_escape($name); ?></h1><?php if ($motto): ?><p class="hero-motto"><?php echo landing_escape($motto); ?></p><?php endif; ?><p class="hero-description">Get to know our school, connect with us, and access everything you need for your school day.</p><div class="hero-actions"><a class="button button-green" href="#contact">Contact the school <i class="fa fa-arrow-right" aria-hidden="true"></i></a><a class="text-link" href="#portals">Access your portal <i class="fa fa-angle-right" aria-hidden="true"></i></a></div><div class="hero-footnote"><i class="fa fa-graduation-cap" aria-hidden="true"></i><span><?php echo $hasFounded ? 'Part of your learning journey since ' . $founded : 'A place for learning. A school community.'; ?></span></div></div>
         <figure class="hero-image"><img src="<?php echo landing_escape($photo); ?>" alt="<?php echo $hasSchoolPhoto ? landing_escape($name . ' — school photograph') : 'A teacher guiding pupils during a classroom lesson'; ?>" fetchpriority="high" width="900" height="1000"><figcaption><span>OUR SCHOOL. OUR COMMUNITY.</span><strong>Learning brings us together.</strong></figcaption></figure>
     </section>
+    <?php if ($websiteContent['announcement']): ?>
+    <section id="announcements" class="website-news page-width" aria-labelledby="news-title"><div class="section-heading"><div><span class="eyebrow">FROM THE SCHOOL OFFICE</span><h2 id="news-title">News & announcements.</h2></div><p>The latest updates for our school community.</p></div><div class="website-news-grid"><?php foreach ($websiteContent['announcement'] as $announcement): ?><article class="website-news-card"><span class="website-news-label"><i class="fa fa-bullhorn" aria-hidden="true"></i> School announcement</span><h3><?php echo landing_escape($announcement['title']); ?></h3><p><?php echo nl2br(landing_escape($announcement['body'])); ?></p></article><?php endforeach; ?></div></section>
+    <?php endif; ?>
     <?php if ($about): ?>
     <section id="about" class="about-section page-width" aria-labelledby="about-title"><div><span class="eyebrow">ROOTED IN OUR COMMUNITY</span><h2 id="about-title">Get to know<br>our school.</h2><?php if ($hasFounded): ?><span class="founded-label">Established <?php echo $founded; ?></span><?php endif; ?></div><div class="about-copy"><p><?php echo nl2br(landing_escape($about)); ?></p><a class="text-link" href="#contact">We’d love to hear from you <i class="fa fa-arrow-right" aria-hidden="true"></i></a></div></section>
     <?php endif; ?>
     <?php if ($sections): ?>
     <section id="our-school" class="sections-band" aria-labelledby="sections-title"><div class="page-width"><div class="section-heading"><div><span class="eyebrow">OUR SCHOOL</span><h2 id="sections-title">Room to learn and grow.</h2></div><p>Explore the sections available at <?php echo landing_escape($name); ?>.</p></div><div class="school-sections"><?php foreach ($sections as $i => $section): ?><article class="section-card"><span class="section-number"><?php echo sprintf('%02d', $i + 1); ?></span><i class="fa fa-<?php echo ['Creche'=>'heart-o','Nursery'=>'sun-o','Primary'=>'book','Secondary'=>'graduation-cap'][$section]; ?>" aria-hidden="true"></i><h3><?php echo $sectionLabels[$section]; ?></h3><a href="#contact">Enquire about this section <span aria-hidden="true">↗</span></a></article><?php endforeach; ?></div></div></section>
+    <?php endif; ?>
+    <?php if ($websiteContent['gallery']): ?>
+    <section id="gallery" class="website-gallery page-width" aria-labelledby="gallery-title"><div class="section-heading"><div><span class="eyebrow">LIFE AT OUR SCHOOL</span><h2 id="gallery-title">Moments worth sharing.</h2></div><p>A glimpse into our classrooms, celebrations and school life.</p></div>
+    <div class="school-gallery" data-school-gallery role="region" aria-roledescription="carousel" aria-label="School photo gallery">
+        <div class="gallery-viewport"><div class="gallery-track" data-gallery-track><?php foreach ($websiteContent['gallery'] as $i => $image): ?><figure class="gallery-slide" data-gallery-slide role="group" aria-roledescription="slide" aria-label="<?php echo ($i + 1) . ' of ' . count($websiteContent['gallery']); ?>"><img src="<?php echo landing_escape(SchoolProfile::imageUrl($image['image_filename'])); ?>" alt="<?php echo landing_escape($image['title']); ?>" loading="lazy" decoding="async" width="1200" height="750"><figcaption><?php echo landing_escape($image['title']); ?></figcaption></figure><?php endforeach; ?></div></div>
+        <div class="gallery-controls" data-gallery-controls hidden><div><button type="button" data-gallery-previous aria-label="Previous photograph"><i class="fa fa-angle-left" aria-hidden="true"></i></button><span data-gallery-count></span><button type="button" data-gallery-next aria-label="Next photograph"><i class="fa fa-angle-right" aria-hidden="true"></i></button></div><button class="gallery-play" type="button" data-gallery-play aria-label="Pause automatic slideshow">Pause slideshow</button></div><span class="website-sr-only" aria-live="polite" data-gallery-live></span>
+    </div></section>
+    <?php endif; ?>
+    <?php if ($websiteContent['event']): ?>
+    <section id="events" class="website-events" aria-labelledby="events-title"><div class="page-width"><div class="section-heading"><div><span class="eyebrow">DATES FOR YOUR DIARY</span><h2 id="events-title">Coming up at school.</h2></div><p>Plan ahead for the moments that bring us together.</p></div><div class="website-event-grid"><?php foreach ($websiteContent['event'] as $event): $eventDate = new DateTimeImmutable($event['event_date']); ?><article class="website-event-card"><time datetime="<?php echo landing_escape($event['event_date']); ?>"><strong><?php echo $eventDate->format('d'); ?></strong><span><?php echo $eventDate->format('M Y'); ?></span></time><div><h3><?php echo landing_escape($event['title']); ?></h3><?php if ($event['venue']): ?><span class="website-event-venue"><i class="fa fa-map-marker" aria-hidden="true"></i> <?php echo landing_escape($event['venue']); ?></span><?php endif; ?><?php if ($event['body']): ?><p><?php echo nl2br(landing_escape($event['body'])); ?></p><?php endif; ?></div></article><?php endforeach; ?></div></div></section>
     <?php endif; ?>
     <?php if ($admissions): ?>
     <section class="admissions page-width" aria-labelledby="admissions-title"><div class="admissions-box"><div><span class="eyebrow">JOIN OUR SCHOOL COMMUNITY</span><h2 id="admissions-title">Your next chapter starts here.</h2><p><?php echo nl2br(landing_escape($admissions)); ?></p></div><a class="button button-green" href="#contact">Admissions enquiries <i class="fa fa-arrow-right" aria-hidden="true"></i></a></div></section>

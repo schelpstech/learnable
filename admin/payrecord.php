@@ -536,7 +536,7 @@ $termd = $db_handle->runQuery($query);
   </div>
   <!-- Data Table area End-->
   <!-- Start Footer area-->
-  <?php include 'foot.html'; ?>
+  <?php include __DIR__ . '/foot.php'; ?>
   <!-- End Footer area-->
 
 

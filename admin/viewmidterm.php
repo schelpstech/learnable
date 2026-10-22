@@ -568,7 +568,7 @@ elseif($totalscore >= 19.5){
    
     <button id="cmd" onclick="generatePDF()" class="btn btn-default btn-icon-notika"><i class="notika-icon notika-down-arrow"></i><h3>Download Results</h3> </button>
     <!-- Start Footer area-->
-    <?php include "foot.html"; ?>
+    <?php include __DIR__ . '/foot.php'; ?>
     
     <!-- End Footer area-->
     <!-- jquery

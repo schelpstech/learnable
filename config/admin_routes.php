@@ -3,6 +3,7 @@
 return array(
     'dashboard' => 'dashboard.php',
     'profile' => 'profile.php',
+    'website' => 'website.php',
     'staff' => 'mgstaff.php',
     'learners' => 'mglearners.php',
     'terms' => 'mgterm.php',

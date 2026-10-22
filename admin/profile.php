@@ -28,14 +28,14 @@ $uploadMb = round(min(6 * 1024 * 1024, SchoolProfile::uploadLimit()) / 1048576, 
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/responsive.css">
-    <link rel="stylesheet" href="../assets/css/school-profile.css?v=1">
+    <link rel="stylesheet" href="../assets/css/school-profile.css?v=2">
 </head>
 <body>
 <?php include __DIR__ . '/nav.html'; ?>
 <main class="profile-page">
     <header class="profile-heading">
         <div><span class="profile-eyebrow">YOUR SCHOOL, ONLINE</span><h1>School profile</h1><p>Your school details and website, managed in one place.</p></div>
-        <a class="profile-preview" href="../index.php" target="_blank" rel="noopener">View school website <i class="fa fa-external-link" aria-hidden="true"></i></a>
+        <div class="profile-heading-links"><a class="profile-preview" href="index.php?route=website">Gallery, events & announcements</a><a class="profile-preview" href="../index.php" target="_blank" rel="noopener">View school website <i class="fa fa-external-link" aria-hidden="true"></i></a></div>
     </header>
     <?php if ($notice): ?><div class="alert alert-<?php echo $notice[0] === 'success' ? 'success' : 'danger'; ?>" role="status"><?php echo SchoolProfile::escape($notice[1]); ?></div><?php endif; ?>
     <form method="post" action="schprofile.php" enctype="multipart/form-data">
