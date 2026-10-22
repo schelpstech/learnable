@@ -67,6 +67,7 @@ $sectionLabels = ['Creche' => 'Crèche', 'Nursery' => 'Nursery', 'Primary' => 'P
         <?php if ($websiteContent['event']): ?><a href="#events">Events</a><?php endif; ?>
         <?php if ($websiteContent['announcement']): ?><a href="#announcements">News</a><?php endif; ?>
         <a href="#contact">Contact</a>
+        <a href="admin.php"><i class="fa fa-lock" aria-hidden="true"></i> Admin access</a>
         <a class="nav-portal" href="#portals">School portal <i class="fa fa-arrow-right" aria-hidden="true"></i></a>
     </nav>
 </header>
