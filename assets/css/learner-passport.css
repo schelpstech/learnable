@@ -1,0 +1,15 @@
+.learner-passport-card { padding: 24px; margin-bottom: 24px; background: #fff; border: 1px solid #e1e7f0; border-radius: 12px; color: #223149; }
+.learner-passport-card h3 { font-size: 20px; margin: 0 0 8px; }
+.learner-passport-card p { margin: 0 0 16px; }
+.learner-passport-form { display: flex; gap: 24px; align-items: flex-start; }
+.learner-passport-image { width: 120px; height: 145px; object-fit: contain; background: #f3f6fb; border: 1px solid #dbe3ed; border-radius: 8px; flex-shrink: 0; }
+.learner-passport-controls { flex: 1; min-width: 0; }
+.learner-passport-controls label, .learner-passport-controls small { display: block; margin-bottom: 8px; }
+.learner-passport-controls input[type=file] { display: block; max-width: 100%; margin-bottom: 8px; }
+.learner-passport-controls small { color: #52617a; }
+.learner-passport-button { border: 0; border-radius: 6px; background: #2864dc; color: #fff; padding: 10px 16px; cursor: pointer; margin-top: 8px; }
+.learner-passport-button:disabled { opacity: .6; cursor: wait; }
+.learner-passport-card .learner-passport-status { margin: 12px 0 0; }
+.learner-passport-status[data-error=true] { color: #a31b2b; }
+.learner-passport-status[data-error=false] { color: #17663c; }
+@media (max-width: 480px) { .learner-passport-card { padding: 18px; } .learner-passport-form { flex-direction: column; gap: 16px; } }

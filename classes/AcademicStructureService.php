@@ -5,16 +5,19 @@ final class AcademicStructureService extends SchoolService
     public function classes()
     {
         $term = $this->activeTerm();
-        return $this->rows(
-            'SELECT c.classid,c.classname,COUNT(DISTINCT u.id) AS population,
-                    MAX(st.staffname) AS class_teacher
+        $classes = $this->rows(
+            'SELECT c.classid,c.classname,COUNT(DISTINCT u.id) AS population
              FROM lhpclass c
              LEFT JOIN lhpuser u ON u.classid=c.classid AND u.status=1
-             LEFT JOIN lhpclassalloc ca ON ca.classid=c.classid AND ca.term=?
-             LEFT JOIN lhpstaff st ON st.sname=ca.tutorid
-             GROUP BY c.classid,c.classname ORDER BY c.classname',
-            array($term)
+             GROUP BY c.classid,c.classname ORDER BY c.classname'
         );
+        $teachers = [];
+        foreach ($this->rows('SELECT ca.classid,ca.tutorid,st.staffname FROM lhpclassalloc ca LEFT JOIN lhpstaff st ON st.sname=ca.tutorid WHERE ca.term=? ORDER BY ca.classlocid DESC', [$term]) as $row) {
+            if (!isset($teachers[$row['classid']])) $teachers[$row['classid']] = $row['staffname'] ?: $row['tutorid'];
+        }
+        foreach ($classes as &$class) $class['class_teacher'] = $teachers[$class['classid']] ?? '';
+        unset($class);
+        return $classes;
     }
 
     public function subjects()
@@ -32,6 +35,51 @@ final class AcademicStructureService extends SchoolService
     public function staff()
     {
         return $this->rows('SELECT sname,staffname FROM lhpstaff WHERE status=1 ORDER BY staffname');
+    }
+
+    public function classTeacher($classId)
+    {
+        $classId = self::integer($classId, 'Class', 1);
+        $class = $this->one('SELECT classid,classname FROM lhpclass WHERE classid=?', [$classId]);
+        if (!$class) throw new InvalidArgumentException('Class not found.');
+        $term = $this->activeTerm();
+        $assignments = $this->rows('SELECT ca.*,s.staffname FROM lhpclassalloc ca LEFT JOIN lhpstaff s ON s.sname=ca.tutorid WHERE ca.classid=? AND ca.term=? ORDER BY ca.classlocid DESC', [$classId,$term]);
+        return ['class'=>$class, 'term'=>$term, 'assignments'=>$assignments];
+    }
+
+    public function classTeachers()
+    {
+        return $this->rows("SELECT sname,staffname FROM lhpstaff WHERE status=1 AND role='t' ORDER BY staffname,sname");
+    }
+
+    public function saveClassTeacher(array $data, $actor)
+    {
+        $classId = self::integer($data['class_id'] ?? 0, 'Class', 1);
+        $teacherId = self::text($data['teacher_id'] ?? '', 64);
+        $term = $this->activeTerm();
+        if (($data['term'] ?? '') !== $term) throw new InvalidArgumentException('The active term changed. Reopen Edit class teacher and try again.');
+        return $this->locked('class-teacher:'.$term.':'.$classId, function () use ($classId,$teacherId,$term,$actor) {
+            return $this->transaction(function () use ($classId,$teacherId,$term,$actor) {
+                $class = $this->one('SELECT classid FROM lhpclass WHERE classid=? FOR UPDATE', [$classId]);
+                $teacher = $this->one("SELECT sname FROM lhpstaff WHERE sname=? AND status=1 AND role='t'", [$teacherId]);
+                if (!$class || !$teacher) throw new InvalidArgumentException('Choose a valid class and an active teaching staff member.');
+                $before = $this->rows('SELECT * FROM lhpclassalloc WHERE classid=? AND term=? ORDER BY classlocid DESC FOR UPDATE', [$classId,$term]);
+                if ($before) {
+                    $id = (int)$before[0]['classlocid'];
+                    // Old versions inserted duplicates. Keep one record for this class and term.
+                    $this->execute('DELETE FROM lhpclassalloc WHERE classid=? AND term=? AND classlocid<>?', [$classId,$term,$id]);
+                    $this->execute('UPDATE lhpclassalloc SET tutorid=? WHERE classlocid=?', [$teacherId,$id]);
+                } else {
+                    $this->execute('INSERT INTO lhpclassalloc (classid,tutorid,term) VALUES (?,?,?)', [$classId,$teacherId,$term]);
+                    $id = (int)$this->db->lastInsertId();
+                }
+                $after = $this->one('SELECT * FROM lhpclassalloc WHERE classlocid=?', [$id]);
+                // Verify the stored username too: old production columns can truncate long IDs.
+                if (!$after || $after['tutorid'] !== $teacherId) throw new RuntimeException('The selected teacher could not be saved. Please contact the administrator.');
+                $this->audit('class_teacher',$classId,$actor,$before ? 'replace' : 'assign',$before,$after);
+                return $id;
+            });
+        });
     }
 
     public function allocations()

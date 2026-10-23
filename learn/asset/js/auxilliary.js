@@ -749,94 +749,26 @@ function show_broadsheet() {
 }
 
 
-function toggle_modify() {
-    $("#view_profile").hide();
-    $("#edit_profile").show();
-}
-
-
 function modify_learner() {
-    // Gather input values
-    var learner_ref = $("#learner_ref").val().trim();
-    var fullname = $("#fullname").val().trim();
-    var gender = $("#gender").val().trim();
-    var date_of_birth = $("#date_of_birth").val().trim();
-    var phone = $("#phone").val().trim();
-    var email = $("#email").val().trim();
-    var img = $("#imageInput").val().trim();
-
-    // Validate required fields
-    if (fullname === "" || gender === "" || date_of_birth === "" || phone === "" || email === "") {
-        alert("One of the required information is missing");
-        return;
-    }
-
-    // Prepare data for AJAX request
-    var action = 'modify_learner';
-    var upload = (img !== "") ? 'yes' : 'no';
-    var imagebase64data = '';
-
-    if (upload === 'yes') {
-        var imageCanvas = document.getElementById("myCanvas");
-        if (imageCanvas) {
-            imagebase64data = imageCanvas.toDataURL("image/png").replace('data:image/png;base64,', '');
-        }
-    }
-
-    // AJAX request to modify learner information
+    var form = document.getElementById('learner-details-form');
+    var button = form.querySelector('button[type="submit"]');
+    if (button.disabled || !form.reportValidity()) return;
+    var status = $('#learner-details-status');
+    button.disabled = true;
+    status.text('Saving learner details…');
     $.ajax({
-        url: "../../app/ajax_query.php",
-        method: "POST",
-        data: {
-            learner_ref: learner_ref,
-            fullname: fullname,
-            gender: gender,
-            date_of_birth: date_of_birth,
-            phone: phone,
-            email: email,
-            imagebase64data: imagebase64data,
-            action: action,
-            upload: upload,
-        },
-        beforeSend: function () {
-            // Show loader and hide UI elements
-            $("#view_profile, #edit_profile").hide();
-            $("#loader").show();
-        },
-        success: function (data) {
-            // Update info div with server response
-            $("#info").html(data);
-        },
-        complete: function () {
-            // Hide loader and show edit profile button
-            $("#loader").hide();
-            $("#edit_profile").show();
-        },
-        error: function () {
-            // Handle AJAX error if needed
-            alert("Error: Unable to process request.");
-        }
-    });
-
-    // AJAX request to fetch updated learner list
-    var allocated_class = $("#classid").val();
-    action = 'show_learners';
-
-    $.ajax({
-        url: "../../app/ajax_query.php",
-        method: "POST",
-        data: {
-            allocated_class: allocated_class,
-            action: action,
-        },
-        success: function (data) {
-            // Update response div with updated learner list
-            $("#response").html(data);
-        },
-        error: function () {
-            // Handle AJAX error if needed
-            alert("Error: Unable to fetch learner list.");
-        }
+        url: '../../app/ajax_query.php',
+        method: 'POST',
+        data: $(form).serialize(),
+        dataType: 'json'
+    }).done(function (data) {
+        status.text(data.message);
+        status.css('color', data.ok ? '#17663c' : '#a31b2b');
+    }).fail(function (xhr) {
+        status.text(xhr.responseJSON ? xhr.responseJSON.message : 'Unable to save. Please refresh and try again.');
+        status.css('color', '#a31b2b');
+    }).always(function () {
+        button.disabled = false;
     });
 }
 

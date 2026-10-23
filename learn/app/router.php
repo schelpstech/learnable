@@ -17,6 +17,25 @@ try {
     exit('Page not found.');
 }
 
+if ($portalRoute->page() === 'manage_learner') {
+    try {
+        (new LearnerProfileService($db_conn))->learner($portalRoute->param('instance'), $portalAccess);
+    } catch (InvalidArgumentException $exception) {
+        http_response_code(404); exit('Learner not found.');
+    } catch (RuntimeException $exception) {
+        http_response_code(403); exit('Only the assigned class teacher can manage this learner.');
+    }
+}
+if ($portalRoute->page() === 'class_learners') {
+    try {
+        $classLearnerList = (new LearnerProfileService($db_conn))->classList($portalRoute->param('class_id'), $portalAccess);
+    } catch (InvalidArgumentException $exception) {
+        http_response_code(404); exit('Class not found.');
+    } catch (RuntimeException $exception) {
+        http_response_code(403); exit('This class is not assigned to you in the active term.');
+    }
+}
+
 // Retire the two legacy assessment composers without breaking saved links.
 // All new assessments and questions now belong to the unified CBT workflow.
 if ($portalRoute->page() === 'resources'

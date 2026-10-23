@@ -1,4 +1,4 @@
-<div class="col-xl-10 offset-1">
+<div class="col-12 col-xl-10 offset-xl-1">
     <div class="col-12 QA_section">
         <div class="card QA_table ">
             <div class="card-header">
@@ -29,13 +29,7 @@
                                     <tr>
                                         <td class="center"><?php echo $count++; ?></td>
                                         <td class="center">
-                                        <img src="<?php
-                                            if (!empty($data['picture'])) {
-                                                echo '../../asset/img/passport/'.$data['picture'];
-                                            }else {
-                                                echo '../../asset/img/passport/nopix.jpg';
-                                            }
-                                            ?> " width="100" />
+                                        <img src="<?php echo htmlspecialchars('../../../' . LearnerProfileService::picturePath($data['picture'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" width="80" height="96" style="object-fit: contain;" alt="Learner passport" />
                                         </td>
                                         <td class="center"><?php echo $data['uname']; ?></td>
                                         <td class="left strong"><?php echo $data['fname']; ?></td>
@@ -50,7 +44,7 @@
                                         </td>
                                         <td>
                                             <div class="action_btns d-flex">
-                                                <a href="../../app/router.php?pageid=manage_learner&amp;instance=<?php echo rawurlencode($data['uname']) ?>" class="action_btn mr_10"> <i class="ti-hand-point-up"></i> </a>
+                                                <a href="../../app/router.php?pageid=manage_learner&amp;instance=<?php echo rawurlencode($data['uname']) ?>" class="btn_1">Profile / passport</a>
                                             </div>
                                         </td>
                                     </tr>

@@ -383,7 +383,7 @@ foreach ($classresult as $classed) {
 				<td><?php echo $email ?></td>
 				<td><?php echo $stat ?></td>
 				<td>
-				    <a href="stdedit.php?unam=<?php echo $uname ?>" type="button"  class="btn btn-info" >Edit</a>
+				    <a href="stdedit.php?unam=<?php echo rawurlencode($uname) ?>" type="button" class="btn btn-info">Edit / passport</a>
 				</td>
 			
 		

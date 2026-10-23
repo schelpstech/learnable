@@ -32,6 +32,8 @@
     
     elseif ($pageid == 'class_manager') {
         include 'classmanager/dashboard.php';
+    }elseif ($pageid == 'class_learners') {
+        include 'classmanager/learners.php';
     }elseif ($pageid == 'scoresheet') {
         include 'scoresheet/scorebook.php';
     }elseif ($pageid == 'calendar') {

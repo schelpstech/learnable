@@ -56,4 +56,31 @@ $service->saveSubject(array('id'=>$subjectId,'class_id'=>9911,'name'=>'QA Subjec
 academic_check($db->query('SELECT sbjname FROM lhpsubject WHERE sbjid=' . (int)$subjectId)->fetchColumn() === 'QA Subject Renamed', 'subject name can be edited without changing its ID');
 academic_check($db->query('SELECT subject FROM lhpalloc WHERE aid=' . (int)$allocationId)->fetchColumn() === 'QA Subject Renamed', 'subject rename synchronizes the allocation display copy');
 
+foreach (['qa_class_t1','qa_class_t2'] as $teacherName) {
+    $row=$staffTemplate; unset($row['staffid']);
+    $row['sname']=$teacherName; $row['staffname']=$teacherName; $row['role']='t';
+    $insert('lhpstaff',$row);
+}
+$classData=['class_id'=>9911,'teacher_id'=>'qa_class_t1','term'=>'QA Active Term'];
+$firstClassAllocation=$service->saveClassTeacher($classData,'qa-admin');
+academic_check($firstClassAllocation>0,'class teacher can be assigned for the active term');
+$insert('lhpclassalloc',['classid'=>9911,'tutorid'=>'qa_class_t1','term'=>'QA Prior Term']);
+$insert('lhpclassalloc',['classid'=>9911,'tutorid'=>'qa_class_t1','term'=>'QA Active Term']);
+$classData['teacher_id']='qa_class_t2';
+$service->saveClassTeacher($classData,'qa-admin');
+$current=$service->classTeacher(9911);
+academic_check(count($current['assignments'])===1 && $current['assignments'][0]['tutorid']==='qa_class_t2','changing class teacher replaces and consolidates duplicate active-term assignments');
+academic_check($db->query("SELECT tutorid FROM lhpclassalloc WHERE term='QA Prior Term'")->fetchColumn()==='qa_class_t1','changing class teacher preserves historical assignments');
+academic_check($service->classes()[0]['class_teacher']==='qa_class_t2','class register displays the replacement teacher');
+$service->saveClassTeacher($classData,'qa-admin');
+academic_check(count($service->classTeacher(9911)['assignments'])===1,'repeated saves never add duplicate class teachers');
+$classData['term']='QA Prior Term';
+academic_denied(function()use($service,$classData){$service->saveClassTeacher($classData,'qa-admin');},'a stale term cannot change class allocation');
+$classData['term']='QA Active Term'; $classData['teacher_id']='unknown';
+academic_denied(function()use($service,$classData){$service->saveClassTeacher($classData,'qa-admin');},'unknown staff cannot become class teachers');
+$db->exec("UPDATE lhpstaff SET status=0 WHERE sname='qa_class_t1'");
+$classData['teacher_id']='qa_class_t1';
+academic_denied(function()use($service,$classData){$service->saveClassTeacher($classData,'qa-admin');},'inactive staff cannot become class teachers');
+academic_check($service->classTeacher(9911)['assignments'][0]['tutorid']==='qa_class_t2','rejected saves retain the existing class teacher');
+
 echo "Academic structure checks passed against connection-local temporary tables.\n";

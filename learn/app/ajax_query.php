@@ -1,5 +1,23 @@
 <?php
 require_once __DIR__ . '/../controller/start.inc.php';
+// Profile edits use current class-teacher ownership and cannot write image paths.
+if (($_POST['action'] ?? '') === 'modify_learner') {
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Cache-Control: no-store');
+    try {
+        if ($portalAccess->role() !== 'teacher') throw new RuntimeException('Only class teachers can use this editor.');
+        CbtSecurity::requireCsrf($_POST['csrf_token'] ?? '', 'portal');
+        (new LearnerProfileService($db_conn))->updateDetails($_POST['learner_ref'] ?? '', $portalAccess, $_POST);
+        echo json_encode(['ok'=>true, 'message'=>'Learner details saved successfully.']);
+    } catch (InvalidArgumentException $exception) {
+        http_response_code(422);
+        echo json_encode(['ok'=>false, 'message'=>$exception->getMessage()]);
+    } catch (RuntimeException $exception) {
+        http_response_code($exception instanceof PDOException ? 500 : 403);
+        echo json_encode(['ok'=>false, 'message'=>$exception instanceof PDOException ? 'Unable to save learner details. Please try again.' : $exception->getMessage()]);
+    }
+    exit;
+}
 // Old bookmarked editors must not bypass the current authorization, locks and validation.
 if (in_array($_POST['action'] ?? '', array('record_ca_scores_for_all','record_exam_scores_for_all','record_weekly_scores_for_all','add_enote','modify_enote','remove_enote'), true)) {
     http_response_code(409);
@@ -381,37 +399,19 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
     include_once '../view/include/classmanager/widget.php';
 }
 //CLASS MANAGER - show LEARNERS
-if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($active_term) && $_POST['action'] == 'show_learners') {
-    $tblName = 'lhpuser';
-    $conditions = array(
-        'where' => array(
-            'lhpuser.classid' => $_POST['allocated_class'],
-        ),
-        'order_by' => 'lhpuser.status DESC, lhpuser.fname ASC ',
-    );
-    $learner_list = $model->getRows($tblName, $conditions);
-
-    $conditions = array(
-        'select' => '
-                        (SELECT COUNT(uname) from lhpuser where status = 1 and gender = "Male" and classid = "' . $_POST["allocated_class"] . '") as male,
-                        (SELECT COUNT(uname) from lhpuser where status = 1 and gender = "Female" and classid = "' . $_POST["allocated_class"] . '") as female,
-                        (SELECT COUNT(uname) from lhpuser where status = 1 and classid = "' . $_POST["allocated_class"] . '") as total
-            ',
-        'return_type' => 'single',
-    );
-    $learner_statistics = $model->getRows($tblName, $conditions);
-
-    $tblName = 'lhpclass';
-    $conditions = array(
-        'where' => array(
-            'classid' => $_POST['allocated_class'],
-        ),
-        'return_type' => 'single',
-    );
-    $classname = $model->getRows($tblName, $conditions);
-
-
-    include_once '../view/include/classmanager/learner_list.php';
+if (($_POST['action'] ?? '') === 'show_learners') {
+    try {
+        $list = (new LearnerProfileService($db_conn))->classList($_POST['allocated_class'] ?? 0, $portalAccess);
+        $learner_list = $list['learners'];
+        $learner_statistics = $list['statistics'];
+        $classname = $list['class'];
+        include '../view/include/classmanager/learner_list.php';
+    } catch (InvalidArgumentException $exception) {
+        http_response_code(400); echo 'Choose a valid class.';
+    } catch (RuntimeException $exception) {
+        http_response_code(403); echo 'This class is not assigned to you in the active term.';
+    }
+    exit;
 }
 
 //CLASS MANAGER - show subject list
@@ -501,60 +501,6 @@ if (isset($_POST['allocated_class']) && isset($_SESSION['active']) && isset($act
     include_once '../view/include/classmanager/broadsheet.php';
 }
 
-//CLASS MANAGER - Modify Data
-if (isset($_POST['learner_ref'], $_POST['fullname'], $_POST['gender'], $_POST['date_of_birth'], $_POST['phone'])
-    && isset($_SESSION['active'], $_SESSION['user_type'], $active_term)
-    && $_SESSION['user_type'] === 'Instructor'
-    && $_POST['action'] === 'modify_learner'
-    && preg_match('/^[A-Za-z0-9_.\- ]{1,100}$/', $_POST['learner_ref'])) {
-    $learnerRef = $_POST['learner_ref'];
-    $tblName = 'lhpuser';
-    $profile_data = array(
-        'fname' => $_POST['fullname'],
-        'gender' => $_POST['gender'],
-        'dob' => $_POST['date_of_birth'],
-        'numb' => $_POST['phone'],
-        'email' => $_POST['email'],
-    );
-    $conditions = array(
-        'uname' => $learnerRef,
-    );
-
-    if ($_POST['upload'] == 'yes') {
-        $dir = '../asset/img/passport/';
-        if (!is_dir($dir)) {
-            mkdir($dir);
-        }
-        $fileTmpPath = $_POST['imagebase64data'];
-        $random = $utility->generateRandomString(7);
-        // form the filename 
-        $filename_path = $learnerRef . $random . ".jpg";
-        // remove special characters from file name
-        $filename_path = $utility->RemoveSpecialChar($filename_path);
-        // generate image from posted base64 data
-        $decoded = base64_decode($fileTmpPath);
-        // move image to folder
-        if (file_put_contents($dir . $filename_path, $decoded)) {
-            $profile_data += array(
-                'picture' => $filename_path
-            );
-        }
-    }
-    $action = $model->upDate($tblName, $profile_data, $conditions);
-    if ($action) {
-        echo
-        '<div class="alert text-white bg-success d-flex align-items-center justify-content-between" role="alert">
-                      <div class="alert-text">Success! <b>Learner profile has been modified successfully</b>!</div>
-                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>';
-    } else {
-        echo
-        '<div class="alert text-white bg-danger d-flex align-items-center justify-content-between" role="alert">
-                      <div class="alert-text">Error! Unable to modify learner profile</div>
-                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>';
-    }
-}
 //Scoresheet Dashboard - Weekly, CA, Exam, Cumulative
 if (isset($_POST['allocated_subject']) && isset($_SESSION['active']) && isset($active_term)) {
     $tblName = 'lhpresultconfig';

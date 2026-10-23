@@ -37,6 +37,7 @@ final class PortalRoute
             'payment' => array('Learner'),
             'resources' => array('Instructor'),
             'class_manager' => array('Instructor'),
+            'class_learners' => array('Instructor'),
             'scoresheet' => array('Instructor'),
             'manage_learner' => array('Instructor'),
             'calendar' => array('Learner', 'Instructor'),
@@ -96,6 +97,9 @@ final class PortalRoute
         }
         if ($page === 'manage_learner' && !isset($params['instance'])) {
             throw new InvalidArgumentException('A learner reference is required.');
+        }
+        if ($page === 'class_learners' && (!isset($params['class_id']) || !ctype_digit($params['class_id']) || (int)$params['class_id'] < 1)) {
+            throw new InvalidArgumentException('A class reference is required.');
         }
         if ($page === 'calendar' && isset($params['month']) && !preg_match('/^\d{4}-\d{2}$/', $params['month'])) {
             throw new InvalidArgumentException('Invalid calendar month.');

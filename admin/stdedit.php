@@ -1,26 +1,18 @@
 <?php
-// Check user login or not
-include "conf.php";
-if(!isset($_SESSION['unamed'])){
-   header('Location: ../index.php');
+include __DIR__ . '/conf.php';
+require_once dirname(__DIR__) . '/classes/autoload.php';
+$edt = $_GET['unam'] ?? '';
+try {
+    $passportLearner = (new LearnerProfileService(database_pdo()))->learner($edt, $staffAccess);
+} catch (InvalidArgumentException $exception) {
+    http_response_code(404); exit('Learner not found.');
+} catch (RuntimeException $exception) {
+    http_response_code(403); exit('Access denied.');
 }
-?>
-<?php
-if(!empty($_GET['unam'])) {         
-        $edt = $_GET["unam"];
- 
-}
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpuser WHERE uname = '".$edt."'";
-$editresult = $db_handle->runQuery($query);
-?>
-
-<?php
-require_once ("DBController.php");
-$db_handle = new DBController();
-$query = "SELECT * FROM lhpclass";
-$classresult = $db_handle->runQuery($query);
+$editresult = [$passportLearner];
+$classresult = database_pdo()->query('SELECT * FROM lhpclass ORDER BY classname')->fetchAll(PDO::FETCH_ASSOC);
+$passportRoot = '../';
+$passportScope = 'admin';
 ?>
 
 <!doctype html>
@@ -158,7 +150,10 @@ $classresult = $db_handle->runQuery($query);
                         <br>
                         <br>
 						<div class="row">
-						<form method="POST" action="edlearner.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
+						<div class="col-lg-12">
+                            <?php require dirname(__DIR__) . '/views/shared/learner-passport.php'; ?>
+                        </div>
+                        <form method="POST" action="edlearner.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
                          
 							 	<div class="col-lg-6 col-md-4 col-sm-4 col-xs-12" hidden>
                                 <label> Learner's UserName</label>
@@ -168,7 +163,7 @@ $classresult = $db_handle->runQuery($query);
                                     </div>
 									
                                     <div class="nk-int-st">
-                                        <input type="text" required="yes" class="form-control" name="named"  value="<?php echo $edt; ?>">
+                                        <input type="text" required="yes" class="form-control" name="named"  value="<?php echo htmlspecialchars($edt, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
                             </div>
