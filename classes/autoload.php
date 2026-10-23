@@ -8,6 +8,7 @@ $sharedClasses = array(
     'DBBackup.php',
     'PortalRoute.php',
     'ReportService.php',
+    'MidtermReportService.php',
     'CalendarService.php',
     'CbtSecurity.php',
     'StaffAccess.php',
