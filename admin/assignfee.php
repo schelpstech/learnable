@@ -9,25 +9,31 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         if(!in_array($action,array('assign','status'),true))throw new InvalidArgumentException('Unknown fee assignment action.');
         if($action==='status'){
             $targetStatus=(int)($_POST['status'] ?? -1);$service->changeAssignmentStatus($_POST['id'] ?? 0,$targetStatus,$_SESSION['unamed'],($_POST['confirm'] ?? '')==='yes');
-            workflow_redirect('fee-assignments',$targetStatus?'Assigned fee activated.':'Assigned fee deactivated. The record and payment history remain available.');
+            $_SESSION['workflow_notice'] = $targetStatus ? 'Assigned fee activated.' : 'Assigned fee deactivated.';
+            $query = ['route' => 'fee-assignments', 'term' => $term, 'class_id' => $classFilter, 'status' => $status];
+        } else {
+            $result=$service->assign($_POST,$_SESSION['unamed']);
+            $_SESSION['workflow_notice'] = number_format($result['created']) . ' charges created. ' . number_format($result['skipped']) . ' existing active charges skipped.';
+            $query = ['route' => 'fee-assignments', 'term' => $_POST['term']];
         }
-        $result=$service->assign($_POST,$_SESSION['unamed']);
-        workflow_redirect('fee-assignments',number_format($result['created']).' learner charge'.($result['created']===1?' was':'s were').' created; '.number_format($result['skipped']).' existing active assignment'.($result['skipped']===1?' was':'s were').' skipped.');
+        header('Location: index.php?' . http_build_query($query), true, 303);
+        exit;
     }catch(Throwable $e){$workflowError=workflow_error($e);}
 }
-$terms=array();$classes=array();$fees=array();$assignments=array();$learners=array();$summary=array('active_records'=>0,'inactive_records'=>0,'active_payable'=>0);
+$terms=array();$classes=array();$fees=array();$assignments=array();$learners=array();$summary=array('active_gross'=>0,'active_discounts'=>0,'active_payable'=>0);
 try{
-    $terms=$service->terms();$classes=$service->classes();$fees=$service->definitionsForTerm($term,'active');$summary=$service->assignmentSummary($term);$assignments=$service->assignments($term,$classFilter,$status);
+    $terms=$service->terms();$classes=$service->classes();$summary=$service->assignmentSummary($term,$classFilter);$assignments=$service->assignments($term,$classFilter,$status,null);
     $selectedClass=(int)($_POST['class_id'] ?? 0);if($selectedClass)$learners=$service->learners($selectedClass);
+    $fees=$service->definitionsForTerm($term,'active');
 }catch(Throwable $e){$workflowError=workflow_error($e);}
 $form=$workflowError && $_SERVER['REQUEST_METHOD']==='POST'?$_POST:array();
 $workflowTitle='Assign fees';$workflowIntro='Choose a term, then apply a reusable session fee to one learner, a class, or the school.';$workflowScripts=array('../assets/js/fees.js?v=2');
 require __DIR__ . '/workflow_header.php';
 ?>
 <nav class="workspace-subnav no-print" aria-label="Fee management"><a href="index.php?route=fees">Fee setup</a><a class="active" href="index.php?route=fee-assignments">Assign fees</a><a href="index.php?route=discounts">Discounts</a><a href="index.php?route=payments">Payments</a></nav>
-<div class="workspace-stats"><div><span>Active assigned fees</span><strong><?php echo number_format((int)$summary['active_records']); ?></strong></div><div><span>Current payable before payments</span><strong>₦<?php echo number_format((int)$summary['active_payable']); ?></strong></div><div><span>Inactive records · retained</span><strong><?php echo number_format((int)$summary['inactive_records']); ?></strong></div></div>
+<div class="workspace-stats"><div><span>Active charges billed</span><strong>₦<?php echo number_format((int)$summary['active_gross']); ?></strong></div><div><span>Discounts on active charges</span><strong>₦<?php echo number_format((int)$summary['active_discounts']); ?></strong></div><div><span>Net billed before payments</span><strong>₦<?php echo number_format((int)$summary['active_payable']); ?></strong></div></div>
 <div class="workspace-grid fee-workspace"><section class="workspace-card"><p class="workspace-eyebrow">Term-specific learner charge</p><h2>Assign a session fee</h2><p class="workspace-muted">The selected catalogue fee is saved against <?php echo wh($term); ?>. Existing active copies in this term are skipped automatically.</p>
-<?php if($fees): ?><form method="post" data-fee-assignment data-learners-url="fee_learners.php"><input type="hidden" name="action" value="assign"><input type="hidden" name="csrf_token" value="<?php echo wh($workflowCsrf); ?>">
+<?php if($terms): ?><form method="post" data-fee-assignment data-learners-url="fee_learners.php"><input type="hidden" name="action" value="assign"><input type="hidden" name="csrf_token" value="<?php echo wh($workflowCsrf); ?>">
 <div class="workspace-fields"><label class="workspace-wide">Academic term<select name="term" data-fee-term required><?php foreach($terms as $row): ?><option value="<?php echo wh($row['term']); ?>" <?php echo $term===$row['term']?'selected':''; ?>><?php echo wh($row['term'].((int)$row['status']===1?' · Active':'')); ?></option><?php endforeach; ?></select><small>Changing the term reloads the fee catalogue for that academic session.</small></label><label class="workspace-wide">Who should receive the fee?<select name="audience" data-fee-audience required><option value="learner" <?php echo ($form['audience'] ?? '')==='learner'?'selected':''; ?>>One learner</option><option value="class" <?php echo ($form['audience'] ?? '')==='class'?'selected':''; ?>>Every active learner in one class</option><option value="school" <?php echo ($form['audience'] ?? '')==='school'?'selected':''; ?>>Every active learner in the school</option></select></label>
 <label class="workspace-wide" data-assignment-class>Class<select name="class_id" data-assignment-class-select><option value="">Choose class</option><?php foreach($classes as $row): ?><option value="<?php echo (int)$row['classid']; ?>" <?php echo (string)($form['class_id'] ?? '')===(string)$row['classid']?'selected':''; ?>><?php echo wh($row['classname']); ?></option><?php endforeach; ?></select></label>
 <label class="workspace-wide" data-assignment-learner>Learner<select name="learner_id" data-assignment-learner-select data-current="<?php echo wh($form['learner_id'] ?? ''); ?>"><option value="">Choose class first</option><?php foreach($learners as $row): ?><option value="<?php echo wh($row['uname']); ?>" <?php echo ($form['learner_id'] ?? '')===$row['uname']?'selected':''; ?>><?php echo wh($row['learner_name'].' · '.$row['uname']); ?></option><?php endforeach; ?></select><small data-learner-help>Only active learners in the selected class are shown.</small></label>

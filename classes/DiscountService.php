@@ -3,11 +3,14 @@
 final class DiscountService extends SchoolService
 {
     public function fees($term) {
-        return $this->rows("SELECT f.*, COALESCE(u.fname,f.stdid) AS learner_name, COALESCE(c.classname,f.classid) AS class_name,
+        return $this->rows("SELECT f.*, COALESCE(
+                (SELECT NULLIF(TRIM(u.fname),'') FROM lhpuser u WHERE u.uname=f.stdid ORDER BY u.id DESC LIMIT 1),
+                f.stdid) AS learner_name, COALESCE(c.classname,f.classid) AS class_name,
             CASE WHEN f.feeid='PreviousBalance' THEN 'Previous term balance' ELSE COALESCE(l.feename,f.feeid) END AS fee_name
-            FROM lhpassignedfee f LEFT JOIN lhpuser u ON u.uname=f.stdid
-            LEFT JOIN lhpclass c ON c.classid=f.classid LEFT JOIN lhpfeelist l ON l.feeid=f.feeid
-            WHERE f.term=? AND f.status=1 ORDER BY u.fname,f.assid", array($term));
+            FROM lhpassignedfee f
+            LEFT JOIN lhpclass c ON CAST(c.classid AS CHAR)=f.classid
+            LEFT JOIN lhpfeelist l ON CAST(l.feeid AS CHAR)=f.feeid
+            WHERE f.term=? AND f.status=1 ORDER BY learner_name,f.assid", array($term));
     }
     public function change($id, $amount, $expected, $actor, $remove = false, $confirmed = false) {
         $id = self::integer($id, 'Fee record', 1);

@@ -1,611 +1,152 @@
 <?php
+require __DIR__ . '/workflow_bootstrap.php';
 
-// Check user login or not
-include 'conf.php';
-if (!isset($_SESSION['unamed'])) {
-  header('Location: ../index.php');
+$ledger = new PaymentLedgerService($workflowDb);
+$feeService = new FeeService($workflowDb);
+$edit = null;
+$payments = [];
+$form = [];
+$term = '';
+$selectedStatus = is_string($_GET['status'] ?? null) ? $_GET['status'] : 'all';
+if (!in_array($selectedStatus, ['all', '0', '1', '2'], true)) $selectedStatus = 'all';
+$termOptions = $feeService->terms();
+$classes = $feeService->classes();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        CbtSecurity::requireCsrf($_POST['csrf_token'] ?? '', 'admin');
+        $id = $ledger->save($_POST);
+        $payment = $ledger->payment($id);
+        $_SESSION['workflow_notice'] = 'Payment record saved.';
+        header('Location: index.php?' . http_build_query(['route' => 'payments', 'term' => $payment['term']]), true, 303);
+        exit;
+    } catch (Throwable $error) {
+        $workflowError = workflow_error($error);
+        $form = array_filter($_POST, 'is_scalar');
+    }
 }
+
+try {
+    if (isset($_GET['id'])) $edit = $ledger->payment($_GET['id']);
+    $term = $ledger->term($edit['term'] ?? $_GET['term'] ?? null);
+    $payments = $ledger->payments($term);
+} catch (Throwable $error) {
+    $workflowError = workflow_error($error);
+}
+$form = $form ?: ($edit ?? []);
+$totals = [0 => 0, 1 => 0, 2 => 0];
+foreach ($payments as $payment) {
+    $status = (int)$payment['status'];
+    if (isset($totals[$status])) $totals[$status] += (int)$payment['amount'];
+}
+$visible = array_filter($payments, function ($payment) use ($selectedStatus) {
+    return $selectedStatus === 'all' || $selectedStatus === (string)$payment['status'];
+});
+$termQuery = rawurlencode($term);
+$workflowTitle = 'Payment records';
+$workflowIntro = 'Review receipts by term, record a payment, or update its confirmation status.';
+$workflowScripts = ['../assets/js/payment-register.js?v=1'];
+require __DIR__ . '/workflow_header.php';
 ?>
-<?php
-require_once('DBController.php');
-$db_handle = new DBController();
-$query = 'SELECT * FROM lhpclass';
-$classresult = $db_handle->runQuery($query);
-?>
-
-<?php
-require_once('DBController.php');
-$db_handle = new DBController();
-$query = 'SELECT DISTINCT term FROM lhpfeelist';
-$feeresult = $db_handle->runQuery($query);
-?>
-
-<?php
-require_once('DBController.php');
-$db_handle = new DBController();
-$query = 'SELECT * FROM lpterm where status = 1';
-$termd = $db_handle->runQuery($query);
-
-
-?>
-<!doctype html>
-<html class="no-js" lang="">
-
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Payment Records - LearnAble</title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- favicon
-		============================================ -->
-  <link rel="shortcut icon" type="image/x-icon" href="img/logo/favicon.png">
-  <!-- Google Fonts
-		============================================ -->
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
-  <!-- Bootstrap CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <!-- font awesome CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/font-awesome.min.css">
-  <!-- owl.carousel CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/owl.carousel.css">
-  <link rel="stylesheet" href="css/owl.theme.css">
-  <link rel="stylesheet" href="css/owl.transitions.css">
-  <!-- meanmenu CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/meanmenu/meanmenu.min.css">
-  <!-- animate CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/animate.css">
-  <!-- normalize CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/normalize.css">
-  <!-- wave CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/wave/waves.min.css">
-  <link rel="stylesheet" href="css/wave/button.css">
-  <!-- mCustomScrollbar CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/scrollbar/jquery.mCustomScrollbar.min.css">
-  <!-- Notika icon CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/notika-custom-icon.css">
-  <!-- Data Table JS
-		============================================ -->
-  <link rel="stylesheet" href="css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
-  <!-- main CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/main.css">
-  <!-- style CSS
-		============================================ -->
-  <link rel="stylesheet" href="style.css">
-  <!-- responsive CSS
-		============================================ -->
-  <link rel="stylesheet" href="css/responsive.css">
-  <!-- modernizr JS
-		============================================ -->
-  <script src="js/html2pdf.bundle.min.js"></script>
-
-
-  <script>
-    function generatePDF() {
-      // Choose the element that our invoice is rendered in.
-      const element = document.getElementById("doc");
-      // Choose the element and save the PDF for our user.
-      html2pdf()
-        .set({
-          html2canvas: {
-            scale: 4
-          }
-        })
-        .from(element)
-        .save();
-
-
-    }
-  </script>
-
-  <script>
-    function getstudent() {
-      var str = '';
-      var val = document.getElementById('classtn');
-      for (i = 0; i < val.length; i++) {
-        if (val[i].selected) {
-          str += val[i].value + ',';
-        }
-      }
-      var str = str.slice(0, str.length - 1);
-
-      $.ajax({
-        type: "GET",
-        url: "get_fee.php",
-        data: 'classid=' + str,
-        success: function(data) {
-          $("#std-list").html(data);
-        }
-      });
-    }
-  </script>
-
-  <script>
-    function getamount() {
-      var str = '';
-      var val = document.getElementById('std-list');
-      for (i = 0; i < val.length; i++) {
-        if (val[i].selected) {
-          str += val[i].value + ',';
-        }
-      }
-      var str = str.slice(0, str.length - 1);
-
-      $.ajax({
-        type: "GET",
-        url: "getamt.php",
-        data: 'stdid=' + str,
-        success: function(data) {
-          $("#amount").html(data);
-        }
-      });
-    }
-  </script>
-
-
-
-  <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
-
-
-</head>
-
-<body>
-  <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-  <!-- Start Header Top Area -->
-  <div class="header-top-area">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <div class="logo-area">
-            <a href="#"><img src="img/logo/logo.png" alt="" /></a>
-          </div>
+<nav class="workspace-subnav no-print" aria-label="Payment management">
+    <a class="active" href="index.php?route=payments&amp;term=<?php echo $termQuery; ?>">Payment records</a>
+    <a href="index.php?route=payment-reports&amp;term=<?php echo $termQuery; ?>">School report</a>
+    <a href="index.php?route=payment-view&amp;term=<?php echo $termQuery; ?>">Class details</a>
+</nav>
+<form method="get" action="index.php" class="workspace-toolbar no-print">
+    <input type="hidden" name="route" value="payments">
+    <label>Academic term<select name="term" required>
+        <?php foreach ($termOptions as $option): ?>
+            <option value="<?php echo wh($option['term']); ?>" <?php echo $term === $option['term'] ? 'selected' : ''; ?>><?php echo wh($option['term']); ?></option>
+        <?php endforeach; ?>
+    </select></label>
+    <label>Payment status<select name="status">
+        <option value="all">All statuses</option>
+        <?php foreach (PaymentLedgerService::STATUSES as $status => $label): ?>
+            <option value="<?php echo $status; ?>" <?php echo $selectedStatus === (string)$status ? 'selected' : ''; ?>><?php echo wh($label); ?></option>
+        <?php endforeach; ?>
+    </select></label>
+    <button class="workspace-button secondary">Apply filters</button>
+</form>
+<?php if ($term !== ''): ?>
+<div class="workspace-stats">
+    <?php foreach (PaymentLedgerService::STATUSES as $status => $label): ?>
+    <div><span><?php echo wh($label); ?> · whole term</span><strong>₦<?php echo number_format($totals[$status]); ?></strong></div>
+    <?php endforeach; ?>
+</div>
+<section class="workspace-card no-print">
+    <h2><?php echo $edit ? 'Edit payment #' . (int)$edit['transid'] : 'Record a payment'; ?></h2>
+    <p class="workspace-muted"><?php echo wh($term); ?> · Only confirmed payments reduce the learner’s balance.</p>
+    <form method="post" action="index.php?route=payments&amp;term=<?php echo $termQuery; ?><?php if ($edit) echo '&amp;id=' . (int)$edit['transid']; ?>"
+        <?php if (!$edit): ?>data-payment-entry data-selected-learner="<?php echo wh($form['student'] ?? ''); ?>"<?php endif; ?>>
+        <input type="hidden" name="csrf_token" value="<?php echo wh($workflowCsrf); ?>">
+        <input type="hidden" name="term" value="<?php echo wh($term); ?>">
+        <?php if ($edit): ?>
+            <input type="hidden" name="id" value="<?php echo (int)$edit['transid']; ?>">
+            <input type="hidden" name="previous_amount" value="<?php echo wh($form['previous_amount'] ?? $edit['amount']); ?>">
+            <input type="hidden" name="previous_status" value="<?php echo wh($form['previous_status'] ?? $edit['status']); ?>">
+            <p><?php echo wh($edit['stdid'] . ' · ' . $edit['reference'] . ' · ' . $edit['paydate']); ?></p>
+        <?php endif; ?>
+        <div class="workspace-fields">
+        <?php if (!$edit): ?>
+            <label>Recorded class<select name="class_id" required>
+                <option value="">Choose a class</option>
+                <?php foreach ($classes as $class): ?>
+                    <option value="<?php echo (int)$class['classid']; ?>" <?php echo (string)$class['classid'] === ($form['class_id'] ?? '') ? 'selected' : ''; ?>><?php echo wh($class['classname']); ?></option>
+                <?php endforeach; ?>
+            </select></label>
+            <label>Learner<select name="student" required><option value="">Choose a class first</option></select>
+                <small data-payment-balance role="status"></small>
+            </label>
+            <label>Payment date<input type="date" name="paydate" value="<?php echo wh($form['paydate'] ?? date('Y-m-d')); ?>" required></label>
+            <label>Reference<input name="reference" maxlength="254" value="<?php echo wh($form['reference'] ?? ''); ?>" required></label>
+            <label>Method<select name="mode" required>
+                <option value="">Choose a method</option>
+                <?php foreach (PaymentLedgerService::MODES as $value => $label): ?>
+                    <option value="<?php echo wh($value); ?>" <?php echo ($form['mode'] ?? '') === $value ? 'selected' : ''; ?>><?php echo wh($label); ?></option>
+                <?php endforeach; ?>
+            </select></label>
+        <?php endif; ?>
+            <label>Amount (₦)<input type="number" name="amount" min="1" max="2147483647" step="1" value="<?php echo wh($form['amount'] ?? ''); ?>" required></label>
+            <label>Payment status<select name="status" required>
+                <option value="">Choose a status</option>
+                <?php foreach (PaymentLedgerService::STATUSES as $value => $label): ?>
+                    <option value="<?php echo $value; ?>" <?php echo (string)($form['status'] ?? '') === (string)$value ? 'selected' : ''; ?>><?php echo wh($label); ?></option>
+                <?php endforeach; ?>
+            </select></label>
         </div>
-        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-
+        <div class="workspace-actions">
+            <button class="workspace-button"><?php echo $edit ? 'Save changes' : 'Record payment'; ?></button>
+            <?php if ($edit): ?><a class="workspace-button secondary" href="index.php?route=payments&amp;term=<?php echo $termQuery; ?>">Cancel</a><?php endif; ?>
         </div>
-      </div>
+    </form>
+</section>
+<section class="workspace-card">
+    <div class="fee-section-heading"><h2>Payment register</h2><button type="button" data-print class="workspace-button secondary no-print">Print</button></div>
+    <label class="no-print">Find a payment<input type="search" data-table-search="#payment-table" placeholder="Learner, class or reference"></label>
+    <div class="workspace-table-wrap">
+        <table class="workspace-table" id="payment-table">
+            <thead><tr><th>Date</th><th>Learner / recorded class</th><th>Reference</th><th>Method</th><th>Amount</th><th>Status</th><th class="no-print">Actions</th></tr></thead>
+            <tbody>
+            <?php foreach ($visible as $payment): ?>
+                <tr>
+                    <td><?php echo wh($payment['paydate']); ?></td>
+                    <td><strong><?php echo wh($payment['learner_name'] ?? $payment['stdid']); ?></strong><small><?php echo wh($payment['stdid'] . ' · ' . ($payment['classname'] ?? $payment['classid'])); ?></small></td>
+                    <td><?php echo wh($payment['reference']); ?></td>
+                    <td><?php echo wh(PaymentLedgerService::MODES[$payment['mode']] ?? $payment['mode']); ?></td>
+                    <td class="money">₦<?php echo number_format((int)$payment['amount']); ?></td>
+                    <td><?php echo wh(PaymentLedgerService::STATUSES[(int)$payment['status']] ?? 'Unknown'); ?></td>
+                    <td class="no-print">
+                        <a href="index.php?route=payments&amp;term=<?php echo $termQuery; ?>&amp;id=<?php echo (int)$payment['transid']; ?>">Edit</a>
+                        <?php if ((int)$payment['status'] === 1 && (string)$payment['stdid'] !== ''): ?>
+                            · <a href="receipt.php?term=<?php echo $termQuery; ?>&amp;lid=<?php echo rawurlencode((string)$payment['stdid']); ?>&amp;classid=<?php echo rawurlencode((string)$payment['classid']); ?>">Term receipt</a>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
-  </div>
-  <!-- End Header Top Area -->
-  <!-- Mobile Menu start -->
-  <?php include 'nav.html'; ?>
-  <!-- Main Menu area End-->
-  <!-- Breadcomb area Start-->
-  <div class="breadcomb-area">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="breadcomb-list">
-            <div class="row">
-              <div class="col-lg-9 col-md-6 col-sm-6 col-xs-12">
-                <div class="breadcomb-wp">
-                  <div class="breadcomb-icon">
-                    <i class="notika-icon notika-support"></i>
-                  </div>
-                  <div class="breadcomb-ctn">
-                    <h2>Welcome Admin</h2>
-                    <h2> <?php
-
-                          if (isset($_SESSION['feemessage']) && $_SESSION['feemessage']) {
-                            printf('<b>%s</b>', $_SESSION['feemessage']);
-                            unset($_SESSION['feemessage']);
-                          }
-                          ?></h2>
-                    <p><span class="bread-ntd"></span></p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-3 col-md-6 col-sm-6 col-xs-3">
-                <div class="breadcomb-report">
-                  <button type="button" onclick="generatePDF()" title="Download PDF" class="btn"><i class="notika-icon notika-sent"></i></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="form-element-area">
-    <div class="container">
-      <div class="row">
-
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="form-element-list">
-            <div class="basic-tb-hd">
-              <h2>Payment Records</h2>
-              <p> You can record payments of cash received, bank transfer or deposit on this page. </p>
-
-            </div>
-          </div>
-        </div>
-      </div>
-      <br>
-      <br>
-      <br>
-      <div class="row">
-        <form method="POST" action="recordpayment.php" class="form-element-area" id="fupload" enctype="multipart/form-data">
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Current Term</label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" class="form-control" name="term" required="yes">
-                  <?php
-                  foreach ($termd as $tm) {
-                  ?>
-                    <option value="<?php echo $tm['term']; ?>"><?php echo $tm['term']; ?></option>
-                  <?php
-                  }
-                  ?>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Select Class</label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" class="form-control" name="classname" id="classtn" onChange="getstudent();" required="yes">
-                  <option value="">Select Class</option>
-
-                  <?php
-                  foreach ($classresult as $classd) {
-                  ?>
-                    <option value="<?php echo $classd['classid']; ?>"><?php echo $classd['classname']; ?></option>
-                  <?php
-                  }
-                  ?>
-                </select>
-              </div>
-            </div>
-          </div>
-
-
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Select Learner</label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" class="form-control" name="learner" id="std-list" onChange="getamount();" required="yes">
-                  <option value="">Select Learner</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Mode of Payment</label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" class="form-control" name="mode" required="yes">
-                  <option value="">Select Mode of Payment</option>
-                  <option value="transfer">Bank Transfer</option>
-                  <option value="deposit">Bank Deposit</option>
-                  <option value="epayment">E-Payment</option>
-                  <option value="cash">Cash Payment</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Transaction Reference Number </label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-calendar"></i>
-              </div>
-              <div class="nk-int-st">
-                <input type="text" required="yes" class="form-control" name="payref">
-
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Payment Date </label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-calendar"></i>
-              </div>
-              <div class="nk-int-st">
-                <input type="date" required="yes" class="form-control" name="paydate" max="<?php echo date('Y-m-d') ?>">
-
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Payment Status </label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" class="form-control" name="status">
-                  <option value="">Select Current Payment Status</option>
-                  <option value="1">Payment Value Successfully Received</option>
-                  <option value="2">Payment Value is Pending</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Total Outstanding Payment </label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-support"></i>
-              </div>
-
-              <div class="nk-int-st">
-                <select type="text" class="form-control" name="paid" id="amount">
-                  <option value="">Select Student to show current balance</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">
-            <label>Amount Paid </label>
-            <div class="form-group ic-cmp-int">
-              <div class="form-ic-cmp">
-                <i class="notika-icon notika-calendar"></i>
-              </div>
-              <div class="nk-int-st">
-                <input type="number" required="yes" class="form-control" name="amountpaid" min="100">
-
-              </div>
-            </div>
-          </div>
-
-
-          <br>
-          <br>
-          <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
-
-            <div class="form-group ic-cmp-int">
-
-              <div class="nk-int-st">
-                <input type="submit" class="form-control" name="paybill" value="  Record Payment for  Selected Learner  " />
-              </div>
-            </div>
-          </div>
-
-
-        </form>
-
-      </div>
-    </div>
-  </div>
-
-  </div>
-  </div>
-
-  <!-- Breadcomb area End-->
-  <!-- Data Table area Start-->
-  <div id="doc" class="data-table-area">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="data-table-list">
-            <div class="basic-tb-hd">
-              <h2>School Fees Payment History
-
-              </h2>
-              <p>Here is a list of all school fees made by learners </p>
-            </div>
-            <div class="table-responsive">
-              <table id="data-table-basic" class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>S/N</th>
-                    <th>Payment Date</th>
-                    <th>Term</th>
-                    <th>Class</th>
-                    <th>Full name</th>
-                    <th> Amount Paid</th>
-                    <th> Payment Mode</th>
-                    <th>Transaction Reference </th>
-                    <th> Status</th>
-                    <th> Modify</th>
-
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  include_once './conn.php';
-
-                  $sql = "SELECT * FROM lpterm WHERE status  = 1";
-                  $result = mysqli_query($con, $sql);
-                  $row = mysqli_fetch_array($result);
-                  $currentTerm = $row['term'] ?? '';
-
-                  $count = 1;
-                  $query = $conn->prepare("select * from lhptransaction where term = '$currentTerm' ORDER BY paydate DESC , rectime DESC");
-                  $query->setFetchMode(PDO::FETCH_OBJ);
-                  $query->execute();
-                  while ($row = $query->fetch()) {
-                    $tid = $row->transid;
-                    $dated = $row->paydate;
-                    $term = $row->term;
-                    $classid = $row->classid;
-                    $stdid = $row->stdid;
-                    $amount = $row->amount;
-                    $ref = $row->reference;
-                    $mode = $row->mode;
-                    $status = $row->status;
-
-                    $sql = "SELECT * FROM lhpclass WHERE classid  = '$classid'";
-                    $result = mysqli_query($con, $sql);
-                    $row = mysqli_fetch_array($result);
-                    if ($row['classname'] != '') {
-                      $feeclass = $row['classname'];
-                    } else {
-                      $feeclass = $classid;
-                    }
-
-                    $sql = "SELECT * FROM lhpuser WHERE uname  = '$stdid'";
-                    $result = mysqli_query($con, $sql);
-                    $row = mysqli_fetch_array($result);
-                    $std = $row['fname'] ?? '';
-                    if ($status == 1) {
-                      $feestatus = '<a href="receipt.php?term=' . $term . '&lid=' . $stdid . '&classid=' . $classid . '" type="button"  class="btn btn-success" >Successfully Confirmed</a>';
-                    } elseif ($status == 2) {
-                      $feestatus = '<a href="#" type="button"  class="btn btn-warning" >Pending Confirmation</a>';
-                    } elseif ($status == 0) {
-                      $feestatus = '<a href="#" type="button"  class="btn btn-danger" >Unsuccessful Transaction</a>';
-                    }
-                    $modifypayment = '<a href="modifyPayRecord.php?transref=' . $tid . '" type="button"  class="btn btn-primary" >Modify</a>';
-                  ?>
-                    <tr><strong>
-                        <td><?php echo $count++ ?></td>
-                        <td><?php echo $dated ?></td>
-                        <td><?php echo $term ?></td>
-                        <td><?php echo $feeclass ?></td>
-                        <td><?php echo $std ?></td>
-                        <td><?php echo $amount ?></td>
-                        <td><?php echo $mode ?></td>
-                        <td><?php echo $ref ?></td>
-                        <td><?php echo $feestatus ?></td>
-                        <td><?php echo $modifypayment ?></td>
-                      </strong>
-                    </tr>
-                  <?php } ?>
-                </tbody>
-
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th>S/N</th>
-                    <th>Payment Date</th>
-                    <th>Term</th>
-                    <th>Class</th>
-                    <th>Full name</th>
-                    <th> Amount Paid</th>
-                    <th> Payment Mode</th>
-                    <th>Transaction Reference </th>
-                    <th> Status</th>
-                    <th> Modify</th>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Data Table area End-->
-  <!-- Start Footer area-->
-  <?php include __DIR__ . '/foot.php'; ?>
-  <!-- End Footer area-->
-
-
-  <!-- jquery
-		============================================ -->
-  <script src="js/vendor/jquery-1.12.4.min.js"></script>
-  <!-- bootstrap JS
-		============================================ -->
-  <script src="js/bootstrap.min.js"></script>
-  <!-- wow JS
-		============================================ -->
-  <script src="js/wow.min.js"></script>
-  <!-- price-slider JS
-		============================================ -->
-  <script src="js/jquery-price-slider.js"></script>
-  <!-- owl.carousel JS
-		============================================ -->
-  <script src="js/owl.carousel.min.js"></script>
-  <!-- scrollUp JS
-		============================================ -->
-  <script src="js/jquery.scrollUp.min.js"></script>
-  <!-- meanmenu JS
-		============================================ -->
-  <script src="js/meanmenu/jquery.meanmenu.js"></script>
-  <!-- counterup JS
-		============================================ -->
-  <script src="js/counterup/jquery.counterup.min.js"></script>
-  <script src="js/counterup/waypoints.min.js"></script>
-  <script src="js/counterup/counterup-active.js"></script>
-  <!-- mCustomScrollbar JS
-		============================================ -->
-  <script src="js/scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
-  <!-- sparkline JS
-		============================================ -->
-  <script src="js/sparkline/jquery.sparkline.min.js"></script>
-  <script src="js/sparkline/sparkline-active.js"></script>
-  <!-- flot JS
-		============================================ -->
-  <script src="js/flot/jquery.flot.js"></script>
-  <script src="js/flot/jquery.flot.resize.js"></script>
-  <script src="js/flot/flot-active.js"></script>
-  <!-- knob JS
-		============================================ -->
-  <script src="js/knob/jquery.knob.js"></script>
-  <script src="js/knob/jquery.appear.js"></script>
-  <script src="js/knob/knob-active.js"></script>
-  <!--  Chat JS
-		============================================ -->
-  <script src="js/chat/jquery.chat.js"></script>
-  <!--  todo JS
-		============================================ -->
-  <script src="js/todo/jquery.todo.js"></script>
-  <!--  wave JS
-		============================================ -->
-  <script src="js/wave/waves.min.js"></script>
-  <script src="js/wave/wave-active.js"></script>
-  <!-- plugins JS
-		============================================ -->
-  <script src="js/plugins.js"></script>
-  <!-- Data Table JS
-		============================================ -->
-  <script src="js/data-table/jquery.dataTables.min.js"></script>
-  <script src="js/data-table/data-table-act.js"></script>
-  <!-- main JS
-		============================================ -->
-  <script src="js/main.js"></script>
-  <!-- tawk chat JS
-		============================================ -->
-  <script src="js/tawk-chat.js"></script>
-</body>
-
-</html>
+    <?php if (!$visible): ?><div class="workspace-empty">No payments match this term and status.</div><?php endif; ?>
+</section>
+<?php endif; ?>
+<?php require __DIR__ . '/workflow_footer.php'; ?>

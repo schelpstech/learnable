@@ -21,6 +21,7 @@ $sharedClasses = array(
     'StaffAccountService.php',
     'DiscountService.php',
     'FeeService.php',
+    'PaymentLedgerService.php',
     'ExpenseService.php',
     'InventoryService.php',
     'TeachingService.php',

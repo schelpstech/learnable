@@ -7,15 +7,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         CbtSecurity::requireCsrf($_POST['csrf_token'] ?? '', 'admin');
         $remove = ($_POST['action'] ?? '') === 'remove';
         $service->change($_POST['id'] ?? 0,$remove ? 0 : ($_POST['discount'] ?? ''),$_POST['expected'] ?? 0,$_SESSION['unamed'],$remove,($_POST['confirm'] ?? '') === 'yes');
-        workflow_redirect('discounts',$remove ? 'Discount removed. The fee and payment history are unchanged.' : 'Discount saved. The payable balance has been updated.');
+        $_SESSION['workflow_notice'] = $remove ? 'Discount removed.' : 'Discount saved. The term balance has been updated.';
+        header('Location: index.php?' . http_build_query(['route' => 'discounts', 'term' => $term]), true, 303);
+        exit;
     } catch (Throwable $e) { $workflowError = workflow_error($e); }
 }
 $fees=$service->fees($term);$selected=null;
 foreach($fees as $f) if((string)$f['assid']===(string)($_GET['id'] ?? $_POST['id'] ?? '')) $selected=$f;
 $discounts=array_filter($fees,function($f){return (int)$f['discount']>0;});
+$discountTotal = array_sum(array_column($discounts, 'discount'));
 $workflowTitle='Discounts';$workflowIntro='Manage fee concessions with care. Removing a discount restores the fee balance; it never deletes the fee.';
 require __DIR__ . '/workflow_header.php';
 ?>
+<div class="workspace-stats">
+    <div><span>Discounts on active charges · <?php echo wh($term); ?></span><strong>₦<?php echo number_format($discountTotal); ?></strong></div>
+    <div><span>Active charges with a discount</span><strong><?php echo number_format(count($discounts)); ?></strong></div>
+</div>
 <div class="workspace-grid"><section class="workspace-card"><h2><?php echo $selected?'Edit discount':'Award a discount'; ?></h2>
 <p class="workspace-muted"><?php echo wh($term); ?> · Amounts are recorded in whole naira.</p>
 <label>Find an assigned fee<input type="search" id="discount-fee-search" placeholder="Type a learner, class or fee name"></label>

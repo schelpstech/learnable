@@ -218,14 +218,22 @@ final class FeeService extends SchoolService
         });
     }
 
-    public function assignmentSummary($term)
+    public function assignmentSummary($term, $classId = 0)
     {
         $term = $this->term($term);
+        $params = [$term];
+        $classFilter = '';
+        if ($classId) {
+            $classFilter = ' AND classid=?';
+            $params[] = (string)self::integer($classId, 'Class', 1);
+        }
         return $this->one('SELECT COUNT(*) AS records,
             SUM(CASE WHEN status=1 THEN 1 ELSE 0 END) AS active_records,
+            COALESCE(SUM(CASE WHEN status=1 THEN amount ELSE 0 END),0) AS active_gross,
+            COALESCE(SUM(CASE WHEN status=1 THEN discount ELSE 0 END),0) AS active_discounts,
             COALESCE(SUM(CASE WHEN status=1 THEN amount-COALESCE(discount,0) ELSE 0 END),0) AS active_payable,
             SUM(CASE WHEN status=0 THEN 1 ELSE 0 END) AS inactive_records
-            FROM lhpassignedfee WHERE term=?', array($term));
+            FROM lhpassignedfee WHERE term=?' . $classFilter, $params);
     }
 
     public function assignments($term, $classId = 0, $status = 'active', $limit = 250)
@@ -235,14 +243,16 @@ final class FeeService extends SchoolService
         $params = array($term); $where = 'a.term=?';
         if ($classId) { $classId=self::integer($classId,'Class',1); $where.=' AND a.classid=?'; $params[]=$classId; }
         if ($status !== 'all') { $where.=' AND a.status=?'; $params[]=$status==='active'?1:0; }
-        $limit = self::integer($limit,'Limit',1,500);
-        return $this->rows('SELECT a.*,COALESCE(NULLIF(TRIM(u.fname),""),a.stdid) AS learner_name,
+        $limitSql = $limit === null ? '' : ' LIMIT ' . self::integer($limit, 'Limit', 1, 500);
+        return $this->rows('SELECT a.*,COALESCE(
+            (SELECT NULLIF(TRIM(u.fname),"") FROM lhpuser u WHERE u.uname=a.stdid ORDER BY u.id DESC LIMIT 1),
+            a.stdid) AS learner_name,
             COALESCE(c.classname,a.classid) AS class_name,
             CASE WHEN a.feeid="PreviousBalance" THEN "Previous term balance" ELSE COALESCE(f.feename,CONCAT("Fee #",a.feeid)) END AS fee_name
-            FROM lhpassignedfee a LEFT JOIN lhpuser u ON u.uname=a.stdid
+            FROM lhpassignedfee a
             LEFT JOIN lhpclass c ON CAST(c.classid AS CHAR)=a.classid
             LEFT JOIN lhpfeelist f ON CAST(f.feeid AS CHAR)=a.feeid
-            WHERE '.$where.' ORDER BY a.status DESC,a.rectime DESC,a.assid DESC LIMIT '.$limit, $params);
+            WHERE '.$where.' ORDER BY a.status DESC,a.rectime DESC,a.assid DESC'.$limitSql, $params);
     }
 
     public function changeAssignmentStatus($id, $status, $actor, $confirmed = false)
